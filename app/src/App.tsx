@@ -32,6 +32,7 @@ import {
   type Verdict,
 } from "./court";
 import { marketDetail, walletPositions } from "./pantaApi";
+import Multichain from "./Multichain";
 import { PANTA_PROGRAM_ID, buildPantaSettle, simulatePantaSettle, verdictToYesWins, type PantaSettle, type SimResult } from "./pantaSettle";
 
 // three.js is heavy: load it after first paint so the page is usable immediately.
@@ -473,6 +474,7 @@ export default function App() {
           <a href="#case">The case</a>
           <a href="#run">Live demo</a>
           <a href="#live">Live mainnet</a>
+          <a href="#multichain">Multichain</a>
           <a href="#privacy">Privacy</a>
           <Ext href={REPORT}>Conflict Report</Ext>
         </nav>
@@ -1020,6 +1022,8 @@ export default function App() {
         </section>
 
         <PantaLive />
+
+        <Multichain />
 
         <section id="privacy" className="block" aria-labelledby="privacy-h">
           <div className="block-head">
