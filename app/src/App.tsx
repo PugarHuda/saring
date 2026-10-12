@@ -44,8 +44,8 @@ const STATUS_LABEL: Record<Status, string> = {
   failed: "Failed",
 };
 
-const REPORT = "https://pugarhuda.github.io/blindcourt/";
-const REPO = "https://github.com/PugarHuda/blindcourt";
+const REPORT = "https://pugarhuda.github.io/saring/";
+const REPO = "https://github.com/PugarHuda/saring";
 
 /** Each juror's ballots in order, derived from the scripted casts (nothing hardcoded). */
 function ballots(sc: Scenario) {
