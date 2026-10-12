@@ -1,0 +1,1317 @@
+{
+ "summary": {
+  "generated_utc": "2026-10-12T10:01:47.583Z",
+  "votingV2": "0x004395edb43EFca9885CEdad51EC9fAf93Bd34ac",
+  "rpc": [
+   "https://rpc.mevblocker.io",
+   "https://mainnet.gateway.tenderly.co",
+   "https://eth.drpc.org"
+  ],
+  "disputes_checked": 10,
+  "vote_tallies_exact_match": 10,
+  "report_conflict_rows_verified_on_L1": "70/70",
+  "conflicted_voters_report_vs_onchain": "19→19, 5→5, 1→1, 12→12, 5→5, 9→9, 7→3, 4→4, 5→5, 3→3",
+  "all_tallies": null
+ },
+ "results": [
+  {
+   "request_id": "YES_OR_NO_QUERY-1751675358-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0x9869681814d10e4e5b92fbfaf85802081726c2e15a2a639fb5b3c2cb62555322",
+   "round": 10138,
+   "onchainLastVotingRound": 10138,
+   "resolvedTx": "0xaef28cdb37ca6d93a45dac8c7b37b53b111381819768d66d9f81ba34a0836ae2",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73748316,
+   "compare": {
+    "voters": [
+     243,
+     243
+    ],
+    "tokens_revealed": [
+     19286638,
+     19286638
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     0.9325,
+     0.9325
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2025-07-08",
+     "2025-07-08"
+    ],
+    "conflicted_voters": [
+     19,
+     19
+    ],
+    "conflicted_tokens": [
+     27246,
+     27246
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 19,
+   "reportRows": 19,
+   "rowChecks": [
+    {
+     "voter": "0x196f239229aae65883802b5bb512e17084147ff6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 100000.01
+     },
+     "reportHeld": "{\"No\": 100000.01}"
+    },
+    {
+     "voter": "0xcb8c77837f470053f91e1e288cac223118c69937",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 45.41
+     },
+     "reportHeld": "{\"No\": 45.41}"
+    },
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 298.97
+     },
+     "reportHeld": "{\"Yes\": 298.97}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 11914.75
+     },
+     "reportHeld": "{\"No\": 11914.75}"
+    },
+    {
+     "voter": "0x27b0fc6c4a5a0cf213a570097279a5bde61214d2",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 27.03
+     },
+     "reportHeld": "{\"Yes\": 27.03}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 381378.64
+     },
+     "reportHeld": "{\"No\": 381378.64}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 117.13
+     },
+     "reportHeld": "{\"No\": 117.13}"
+    },
+    {
+     "voter": "0x5ebc1d2809f4dfca9cb518efd2307fdffc36d55d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 10.77
+     },
+     "reportHeld": "{\"No\": 10.77}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 156.54
+     },
+     "reportHeld": "{\"No\": 156.54}"
+    },
+    {
+     "voter": "0x36ce63c738971b948cf0afb842b7617254c15bc0",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 135.48
+     },
+     "reportHeld": "{\"No\": 135.48}"
+    },
+    {
+     "voter": "0xb67a6e67072025c1db86e552dc17f7bf9c296122",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 129.88
+     },
+     "reportHeld": "{\"No\": 129.88}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 400
+     },
+     "reportHeld": "{\"No\": 400.0}"
+    },
+    {
+     "voter": "0xc3ac3355b2686fa503246a92e34d0b7261b39d6b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1019.14
+     },
+     "reportHeld": "{\"No\": 1019.14}"
+    },
+    {
+     "voter": "0xefbc103259b500ebe6408fc7c91535b0e158e22b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 42301.97
+     },
+     "reportHeld": "{\"No\": 42301.97}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 136.84
+     },
+     "reportHeld": "{\"No\": 136.84}"
+    },
+    {
+     "voter": "0x73cde0e4f0480ea6b98bfa292ea936685716af4d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 143.14
+     },
+     "reportHeld": "{\"No\": 143.14}"
+    },
+    {
+     "voter": "0x5f4f59301e46bf6f6603a8c4cf826bdac70339d1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 5472.66
+     },
+     "reportHeld": "{\"No\": 5472.66}"
+    },
+    {
+     "voter": "0x3e4ce5d976e1e0f4c7022889d6755c1ef7e9eae4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 4175347.02
+     },
+     "reportHeld": "{\"Yes\": 4175347.02}"
+    },
+    {
+     "voter": "0xfec8d555a934e1c293039c8842a4c10bd5512269",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 71977.1
+     },
+     "reportHeld": "{\"Yes\": 71977.1}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1750932824-0x616e63696c6c61727944617461486173683a633561343863343",
+   "market": "Fordow nuclear facility destroyed before July?",
+   "volume_usd": 28623187,
+   "priceRequestId": "0xa3e954c72d4114fc68bd5b3f3bb0d6cba9d1039f6624cc884e2ce6dfe4f0747d",
+   "round": 10134,
+   "onchainLastVotingRound": 10134,
+   "resolvedTx": "0xd491188f6f948018c8df641d4163429e07418c26b30cfe907e319458c707bc10",
+   "conditionId": "0xfe4ddfdf4e6b6188967331f5932c8ec6dcbc815572ef9f3566b5d903a708b61f",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73425102,
+   "compare": {
+    "voters": [
+     311,
+     311
+    ],
+    "tokens_revealed": [
+     23126956,
+     23126956
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     0.8801,
+     0.8801
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2025-06-30",
+     "2025-06-30"
+    ],
+    "conflicted_voters": [
+     5,
+     5
+    ],
+    "conflicted_tokens": [
+     4083,
+     4083
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 5,
+   "reportRows": 5,
+   "rowChecks": [
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 76.92
+     },
+     "reportHeld": "{\"No\": 76.92}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 132899.57
+     },
+     "reportHeld": "{\"Yes\": 132899.57}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 300
+     },
+     "reportHeld": "{\"Yes\": 300.0}"
+    },
+    {
+     "voter": "0x5f4f59301e46bf6f6603a8c4cf826bdac70339d1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 5412.59
+     },
+     "reportHeld": "{\"Yes\": 5412.59}"
+    },
+    {
+     "voter": "0x48acc4a909ddb127787a7d1d63b47e98f66174f6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 96587.47
+     },
+     "reportHeld": "{\"No\": 96587.47}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1741310207-0x713a207469746c653a2057696c6c205472756d7020637265617",
+   "market": "Will Trump create Bitcoin reserve in first 100 days?",
+   "volume_usd": 23324353,
+   "priceRequestId": "0x74137e2140b6a021b0bc84ac99ae87d6152fbf72ef8e1ef58d75fbb3035cd96c",
+   "round": 10078,
+   "onchainLastVotingRound": 10078,
+   "resolvedTx": "0x13b8c4fdfcf8d8d4bb2f2122e83e5614ba48d47a24c59a7bfaaec718512bb59a",
+   "conditionId": "0xd6c186dd4a5167684c27462d0bb541bd22ca4861298c00ade1991c6240364762",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 68895985,
+   "compare": {
+    "voters": [
+     290,
+     290
+    ],
+    "tokens_revealed": [
+     21106537,
+     21106537
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9825,
+     0.9825
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2025-03-10",
+     "2025-03-10"
+    ],
+    "conflicted_voters": [
+     1,
+     1
+    ],
+    "conflicted_tokens": [
+     65,
+     65
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 1,
+   "reportRows": 1,
+   "rowChecks": [
+    {
+     "voter": "0x2da3ddbf5a284d2da51661533d37af655d1720af",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 114652.05
+     },
+     "reportHeld": "{\"Yes\": 114652.05}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1750259984-0x616e63696c6c61727944617461486173683a623232643934316",
+   "market": "Major cyberattack on Iran in June?",
+   "volume_usd": 17449127,
+   "priceRequestId": "0x8305d5ef91f1ac2ba0e6e18cfe1b813914d4d3ca15356722bfd2e49d7aa8ddb0",
+   "round": 10131,
+   "onchainLastVotingRound": 10131,
+   "resolvedTx": "0xf9ee36add1f4320b792da13ccdc73efce4cb72bd2e7817226d6abb845c7ff50d",
+   "conditionId": "0x2158d1f83118f06d7399d5000e9c44f317eb8a0801a6f588d261bf2cf2310445",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73180336,
+   "compare": {
+    "voters": [
+     290,
+     290
+    ],
+    "tokens_revealed": [
+     23040225,
+     23040225
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     0.9027,
+     0.9027
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2025-06-24",
+     "2025-06-24"
+    ],
+    "conflicted_voters": [
+     12,
+     12
+    ],
+    "conflicted_tokens": [
+     5096,
+     5096
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 12,
+   "reportRows": 12,
+   "rowChecks": [
+    {
+     "voter": "0x95d928a9db65c718b1e922ec3518055b577dd83b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 54405.91
+     },
+     "reportHeld": "{\"No\": 54405.91}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 82681.25
+     },
+     "reportHeld": "{\"Yes\": 82681.25}"
+    },
+    {
+     "voter": "0x5ebc1d2809f4dfca9cb518efd2307fdffc36d55d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 104.75
+     },
+     "reportHeld": "{\"Yes\": 104.75}"
+    },
+    {
+     "voter": "0x3e1b1a4a8fba26e80f4678d3ea3ac1daca78523e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 113.16
+     },
+     "reportHeld": "{\"Yes\": 113.16}"
+    },
+    {
+     "voter": "0x9fdb970aef60007fee4ea132b5f4ebc376740aea",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 94.15
+     },
+     "reportHeld": "{\"Yes\": 94.15}"
+    },
+    {
+     "voter": "0x3abebe2bfd423dbb6357674476d44e9bd178817d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 99.35
+     },
+     "reportHeld": "{\"Yes\": 99.35}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 50
+     },
+     "reportHeld": "{\"Yes\": 50.0}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 102.76
+     },
+     "reportHeld": "{\"Yes\": 102.76}"
+    },
+    {
+     "voter": "0x20d9065d276c303a68bbd38cd42ea4c2df49dd50",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1606.8
+     },
+     "reportHeld": "{\"No\": 1606.8}"
+    },
+    {
+     "voter": "0x9a772c0e045f645da05709f2599582208aacfcbf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1000.01
+     },
+     "reportHeld": "{\"No\": 1000.01}"
+    },
+    {
+     "voter": "0xc842e13a5b20738f620e785180df75ed51157582",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 89184.23
+     },
+     "reportHeld": "{\"No\": 89184.23}"
+    },
+    {
+     "voter": "0xf1ab3e86b04ecc629411a4b391617d7817294a31",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 250.01
+     },
+     "reportHeld": "{\"No\": 250.01}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1766444223-0x616e63696c6c61727944617461486173683a333762356330643",
+   "market": "Will Trump release more Epstein files by December 22?",
+   "volume_usd": 16511188,
+   "priceRequestId": "0x91e4173479341720e7d215a3f881e073da1f46f8af99b6fe245e369648f16b85",
+   "round": 10223,
+   "onchainLastVotingRound": 10223,
+   "resolvedTx": "0x93fbe54233ed5f167a90381c34b18dc78b3f5f807d8cd0cef62ed35ebd9f55c3",
+   "conditionId": "0x8e6ff03d48ea73396ca8c8eac6a8cada2a7507545a78901c4769776be351eaf5",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 80793114,
+   "compare": {
+    "voters": [
+     933,
+     933
+    ],
+    "tokens_revealed": [
+     24026906,
+     24026906
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     0.9889,
+     0.9889
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2025-12-25",
+     "2025-12-25"
+    ],
+    "conflicted_voters": [
+     5,
+     5
+    ],
+    "conflicted_tokens": [
+     3545,
+     3545
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 5,
+   "reportRows": 5,
+   "rowChecks": [
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 27558.91
+     },
+     "reportHeld": "{\"Yes\": 27558.91}"
+    },
+    {
+     "voter": "0x89db2ba3d788ea8bc566c736a2a72db6b24f3b7e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 2049.97
+     },
+     "reportHeld": "{\"No\": 2049.97}"
+    },
+    {
+     "voter": "0x822943930995a663702e3a361e8c3ebd00c01dc4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 56617.83
+     },
+     "reportHeld": "{\"No\": 56617.83}"
+    },
+    {
+     "voter": "0xa6cfa9eba5d9a65cef934ab3f2e17a81c7a74b68",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 40
+     },
+     "reportHeld": "{\"No\": 40.0}"
+    },
+    {
+     "voter": "0x27d425d567ef2e1c043f5d0996d2f99a78435b28",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 100
+     },
+     "reportHeld": "{\"Yes\": 100.0}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1753502405-0x616e63696c6c61727944617461486173683a653463373332333",
+   "market": "Thailand strikes Cambodia by Friday?",
+   "volume_usd": 15037403,
+   "priceRequestId": "0xcbf53e5b73b0f292f03d27399777c002b70b7dde2291d3038579025d509d640e",
+   "round": 10149,
+   "onchainLastVotingRound": 10149,
+   "resolvedTx": "0xad4fedf4b5378a71f71cc3bd77e80368ee33e4e6f72270c1cec890ad834c66e5",
+   "conditionId": "0x35bc1bf05846a2d4a72ff03f1c93b8f41ec6a45241a2292ddbb2c919dd7a68f3",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 74609353,
+   "compare": {
+    "voters": [
+     218,
+     218
+    ],
+    "tokens_revealed": [
+     22833456,
+     22833456
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     0.9589,
+     0.9589
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2025-07-30",
+     "2025-07-30"
+    ],
+    "conflicted_voters": [
+     9,
+     9
+    ],
+    "conflicted_tokens": [
+     6856,
+     6856
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 9,
+   "reportRows": 9,
+   "rowChecks": [
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 111.11
+     },
+     "reportHeld": "{\"No\": 111.11}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 11983.12
+     },
+     "reportHeld": "{\"Yes\": 11983.12}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 20000.41
+     },
+     "reportHeld": "{\"Yes\": 20000.41}"
+    },
+    {
+     "voter": "0xacb1a67a4725c7433d238dbad292fdae839d6272",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 1123510.42
+     },
+     "reportHeld": "{\"Yes\": 1123510.42}"
+    },
+    {
+     "voter": "0x2b379bfb86e900fe8f3a1434ee79097aa5b883dc",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 50.1
+     },
+     "reportHeld": "{\"Yes\": 50.1}"
+    },
+    {
+     "voter": "0xc3ac3355b2686fa503246a92e34d0b7261b39d6b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 1022.21
+     },
+     "reportHeld": "{\"Yes\": 1022.21}"
+    },
+    {
+     "voter": "0x93d49a6c813a0d9d82437f5ad57311efc29ebd2f",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 75154.21
+     },
+     "reportHeld": "{\"No\": 75154.21}"
+    },
+    {
+     "voter": "0x8bb52ffa561eda95e4dce9811f23d289a55dd622",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 30395.4
+     },
+     "reportHeld": "{\"No\": 30395.4}"
+    },
+    {
+     "voter": "0xb607eab0436a56675ca1ce443eea5df83c9d86ea",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 25893.25
+     },
+     "reportHeld": "{\"No\": 25893.25}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1763010004-0x616e63696c6c61727944617461486173683a626166373763343",
+   "market": "Will the government shutdown end November 12?",
+   "volume_usd": 13086678,
+   "priceRequestId": "0xdfb43266b1832f0d8c37394d9459ded0a003c3bef6157a31f5a9804ad9affccc",
+   "round": 10203,
+   "onchainLastVotingRound": 10203,
+   "resolvedTx": "0xe00513c515fa533943503284384ef5c1272cd10fb87063059367a5299c434058",
+   "conditionId": "0x077fc0c447abfc7e094713e86d62acc20480560a6eb60bfbfc86a1c5f00b9339",
+   "conditionHow": "NegRiskOperator.questionIds -> NegRiskAdapter.getConditionId",
+   "polyBlock": 79071919,
+   "compare": {
+    "voters": [
+     644,
+     644
+    ],
+    "tokens_revealed": [
+     20232751,
+     20232751
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     1,
+     1
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2025-11-15",
+     "2025-11-15"
+    ],
+    "conflicted_voters": [
+     7,
+     3
+    ],
+    "conflicted_tokens": [
+     8400,
+     2604
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 7,
+   "reportRows": 7,
+   "rowChecks": [
+    {
+     "voter": "0x81f981f743ef69eecd5ea860a252f46825022ac0",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {},
+     "reportHeld": "{\"No\": 270.27}"
+    },
+    {
+     "voter": "0xe35c3f0ad5972ec28773b31598527a9a0d0b22a6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 1000
+     },
+     "reportHeld": "{\"Yes\": 1000.0}"
+    },
+    {
+     "voter": "0x07e9ddcbeb02b121df864ede32e79e6d11fcd4cc",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 12
+     },
+     "reportHeld": "{\"Yes\": 12.0}"
+    },
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {},
+     "reportHeld": "{\"No\": 38847.71}"
+    },
+    {
+     "voter": "0x790b5bf583a11e3f4cee9003c0b420a06dc4f04f",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {},
+     "reportHeld": "{\"No\": 1659.63}"
+    },
+    {
+     "voter": "0x89db2ba3d788ea8bc566c736a2a72db6b24f3b7e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {},
+     "reportHeld": "{\"No\": 520.0}"
+    },
+    {
+     "voter": "0xfc799f6c33028eb7e178af4e093deb2fdf6b45c8",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 2179.95
+     },
+     "reportHeld": "{\"Yes\": 2179.95}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": [
+    "0x81f981f743ef69eecd5ea860a252f46825022ac0",
+    "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+    "0x790b5bf583a11e3f4cee9003c0b420a06dc4f04f",
+    "0x89db2ba3d788ea8bc566c736a2a72db6b24f3b7e"
+   ]
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1751342431-0x616e63696c6c61727944617461486173683a383866353235666",
+   "market": "Will Tesla launch a driverless Robotaxi service before July?",
+   "volume_usd": 11890598,
+   "priceRequestId": "0x7d3f0b25750ecb7add239b98fe489df48f027feb9ff8bcac17bdc72116fa4ba2",
+   "round": 10136,
+   "onchainLastVotingRound": 10136,
+   "resolvedTx": "0x35cdca257e7da1e676d3c0221c726cf1a06693a6b64144c2cbf3f5e044f8f681",
+   "conditionId": "0xac1b6017f9447f21dfd69829b5d7b084aef5893f7ddd6abdca8d95f40238f398",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73585806,
+   "compare": {
+    "voters": [
+     281,
+     281
+    ],
+    "tokens_revealed": [
+     23173666,
+     23173666
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     1,
+     1
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2025-07-04",
+     "2025-07-04"
+    ],
+    "conflicted_voters": [
+     4,
+     4
+    ],
+    "conflicted_tokens": [
+     2199,
+     2199
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 4,
+   "reportRows": 4,
+   "rowChecks": [
+    {
+     "voter": "0x7c9c7bb3d6880f0d720feb4fa6164bd3e49f76ed",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 2.01
+     },
+     "reportHeld": "{\"No\": 2.01}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 124999.65
+     },
+     "reportHeld": "{\"No\": 124999.65}"
+    },
+    {
+     "voter": "0x87a726a806f48a435d8bf627678c85f26b46c1b6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 2000
+     },
+     "reportHeld": "{\"No\": 2000.0}"
+    },
+    {
+     "voter": "0x5cbcf31708d71e3cb4c98e93dffc50a4eec7ae1b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 876.58
+     },
+     "reportHeld": "{\"No\": 876.58}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1767434825-0x616e63696c6c61727944617461486173683a656531313162643",
+   "market": "Maduro in U.S. custody by January 31?",
+   "volume_usd": 11034070,
+   "priceRequestId": "0x29ea831598aed36151332309fe57e38ecf267b90ea39c7def12ba49050d278e5",
+   "round": 10229,
+   "onchainLastVotingRound": 10229,
+   "resolvedTx": "0x6618fb1fdb5c652e6138f8b0ba65a7d07e650a6b20429bf7d8f78ddf89f0715c",
+   "conditionId": "0xbfa45527ec959aacc36f7c312bd4f328171a7681ef1aeb3a7e34db5fb47d3f1d",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 81312262,
+   "compare": {
+    "voters": [
+     909,
+     909
+    ],
+    "tokens_revealed": [
+     24009908,
+     24009908
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     1,
+     1
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2026-01-06",
+     "2026-01-06"
+    ],
+    "conflicted_voters": [
+     5,
+     5
+    ],
+    "conflicted_tokens": [
+     5326,
+     5326
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 5,
+   "reportRows": 5,
+   "rowChecks": [
+    {
+     "voter": "0xe5c3a3bad46475dd53100cdbecb0a7541aba0391",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 698368.52
+     },
+     "reportHeld": "{\"Yes\": 698368.52}"
+    },
+    {
+     "voter": "0x3b9ffd4ceffd768df16d79e7492a1bffd087c44f",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 42.44
+     },
+     "reportHeld": "{\"Yes\": 42.44}"
+    },
+    {
+     "voter": "0x58eefd863153474468e019b507dcc0808119d055",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 18577.57
+     },
+     "reportHeld": "{\"Yes\": 18577.57}"
+    },
+    {
+     "voter": "0x1bdf9162bca99fe285b9d574b6490ca7a1aa1b70",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 53012.01
+     },
+     "reportHeld": "{\"Yes\": 53012.01}"
+    },
+    {
+     "voter": "0x4d8d5be4d0726e59ffc12885ff70acad8aaf1325",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 28929.2
+     },
+     "reportHeld": "{\"Yes\": 28929.2}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1772393149-0x616e63696c6c61727944617461486173683a396331346236656",
+   "market": "Will US or Israel strike Iran first?",
+   "volume_usd": 0,
+   "priceRequestId": "0x4e62a603b632a3c05c094ba4b0ac92b9ade7ae066619d841e1f121c16b857413",
+   "round": 10258,
+   "onchainLastVotingRound": 10258,
+   "resolvedTx": "0x4eb4dd6d843e40d4409be47446cfaa4292cf385b0266402c5790d5091999bff0",
+   "conditionId": "0x6f01b7736bea0faed4087b73e2ab3592446cef68ea9eef8d314b2484f682228a",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 83817080,
+   "compare": {
+    "voters": [
+     623,
+     623
+    ],
+    "tokens_revealed": [
+     21084302,
+     21084302
+    ],
+    "winner_all": [
+     "50-50",
+     "50-50"
+    ],
+    "winner_share_all": [
+     0.9998,
+     0.9998
+    ],
+    "resolved_outcome": [
+     "50-50",
+     "50-50"
+    ],
+    "vote_round_end_utc": [
+     "2026-03-05",
+     "2026-03-05"
+    ],
+    "conflicted_voters": [
+     3,
+     3
+    ],
+    "conflicted_tokens": [
+     4273,
+     4273
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 3,
+   "reportRows": 3,
+   "rowChecks": [
+    {
+     "voter": "0x92772bb3c161c573717865e59de038821935376c",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Israel": 679132.21
+     },
+     "reportHeld": "{\"Israel\": 679132.21}"
+    },
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "US": 1,
+      "Israel": 1
+     },
+     "reportHeld": "{\"Israel\": 1.0}"
+    },
+    {
+     "voter": "0x8c59b0b6a3980d20264a9abb57d9d13860c63a3c",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "US": 2
+     },
+     "reportHeld": "{\"US\": 2.0}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  }
+ ],
+ "all_tallies_mismatches": null
+}

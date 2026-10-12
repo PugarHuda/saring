@@ -1,0 +1,2199 @@
+{
+ "summary": {
+  "generated_utc": "2026-10-12T10:24:04.936Z",
+  "votingV2": "0x004395edb43EFca9885CEdad51EC9fAf93Bd34ac",
+  "rpc": [
+   "https://rpc.mevblocker.io",
+   "https://mainnet.gateway.tenderly.co",
+   "https://eth.drpc.org"
+  ],
+  "disputes_checked": 10,
+  "vote_tallies_exact_match": 10,
+  "report_conflict_rows_verified_on_L1": "96/96",
+  "conflicted_voters_report_vs_onchain": "14→14, 14→14, 6→6, 11→11, 1→1, 1→1, 11→11, 18→18, 19→19, 1→1",
+  "all_tallies": {
+   "disputes": 4121,
+   "exact_match": 4079,
+   "mismatched": 42,
+   "not_on_L1": 0
+  }
+ },
+ "results": [
+  {
+   "request_id": "YES_OR_NO_QUERY-1780286405-0x616e63696c6c61727944617461486173683a376234346234656",
+   "market": "MicroStrategy sells any Bitcoin by May 31, 2026?",
+   "volume_usd": 375813105,
+   "priceRequestId": "0xcc65430709d3b731d53c5dfcd775f628f1d5f0b1eb23558becd7b6be801896b6",
+   "round": 10303,
+   "onchainLastVotingRound": 10303,
+   "resolvedTx": "0xc50ff080715b8fded2658cf8ccfd31994f8c3f56d58f238e98e1b9fa70f37f78",
+   "conditionId": "0x3733a1b647e7364095736ab0966465d896a84cf3b6bc1695ca1f26c3239b3868",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 87883887,
+   "compare": {
+    "voters": [
+     607,
+     607
+    ],
+    "tokens_revealed": [
+     19433398,
+     19433398
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     0.986,
+     0.986
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2026-06-03",
+     "2026-06-03"
+    ],
+    "conflicted_voters": [
+     14,
+     14
+    ],
+    "conflicted_tokens": [
+     24372,
+     24372
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 14,
+   "reportRows": 14,
+   "rowChecks": [
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 50
+     },
+     "reportHeld": "{\"No\": 50.0}"
+    },
+    {
+     "voter": "0x1cc972ff969689873f8010bdd0cf3dc30618397e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 49226.92
+     },
+     "reportHeld": "{\"Yes\": 49226.92}"
+    },
+    {
+     "voter": "0x28ec3b46262c614df6d5a3ff2726c9746f1d1675",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 7500
+     },
+     "reportHeld": "{\"Yes\": 7500.0}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1539.99
+     },
+     "reportHeld": "{\"No\": 1539.99}"
+    },
+    {
+     "voter": "0xccd917241ae046cee7e56559dd195d35aea5946e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 200
+     },
+     "reportHeld": "{\"Yes\": 200.0}"
+    },
+    {
+     "voter": "0x2b379bfb86e900fe8f3a1434ee79097aa5b883dc",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 121
+     },
+     "reportHeld": "{\"No\": 121.0}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 4279.98
+     },
+     "reportHeld": "{\"No\": 4279.98}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 109
+     },
+     "reportHeld": "{\"No\": 109.0}"
+    },
+    {
+     "voter": "0x3b7236c911f87fd75315c4ed44a1d2eed725ad14",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1639.97
+     },
+     "reportHeld": "{\"No\": 1639.97}"
+    },
+    {
+     "voter": "0xaef6a3580a365c524a5bc9aabeb2a13c2a1a7b7c",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 47
+     },
+     "reportHeld": "{\"No\": 47.0}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 47.99
+     },
+     "reportHeld": "{\"No\": 47.99}"
+    },
+    {
+     "voter": "0x9fdb970aef60007fee4ea132b5f4ebc376740aea",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 620
+     },
+     "reportHeld": "{\"No\": 620.0}"
+    },
+    {
+     "voter": "0x40c23c8cd5b04dfad655afbccac8277da4778a84",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 434.38
+     },
+     "reportHeld": "{\"No\": 434.38}"
+    },
+    {
+     "voter": "0xca64e575083e0a8f9c73ffc214d78027d98fc51b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 30455
+     },
+     "reportHeld": "{\"Yes\": 30455.0}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1780287173-0x616e63696c6c61727944617461486173683a376234346234656",
+   "market": "MicroStrategy sells any Bitcoin by May 31, 2026?",
+   "volume_usd": 375813105,
+   "priceRequestId": "0x293d603fcd80aa58dd9d93734766ce80886a64c103ce72c95434eebf74a88ff7",
+   "round": 10303,
+   "onchainLastVotingRound": 10303,
+   "resolvedTx": "0xc50ff080715b8fded2658cf8ccfd31994f8c3f56d58f238e98e1b9fa70f37f78",
+   "conditionId": "0x3733a1b647e7364095736ab0966465d896a84cf3b6bc1695ca1f26c3239b3868",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 87883887,
+   "compare": {
+    "voters": [
+     607,
+     607
+    ],
+    "tokens_revealed": [
+     19433398,
+     19433398
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     0.9861,
+     0.9861
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2026-06-03",
+     "2026-06-03"
+    ],
+    "conflicted_voters": [
+     14,
+     14
+    ],
+    "conflicted_tokens": [
+     24372,
+     24372
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 14,
+   "reportRows": 14,
+   "rowChecks": [
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 50
+     },
+     "reportHeld": "{\"No\": 50.0}"
+    },
+    {
+     "voter": "0x1cc972ff969689873f8010bdd0cf3dc30618397e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 49226.92
+     },
+     "reportHeld": "{\"Yes\": 49226.92}"
+    },
+    {
+     "voter": "0x28ec3b46262c614df6d5a3ff2726c9746f1d1675",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 7500
+     },
+     "reportHeld": "{\"Yes\": 7500.0}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1539.99
+     },
+     "reportHeld": "{\"No\": 1539.99}"
+    },
+    {
+     "voter": "0xccd917241ae046cee7e56559dd195d35aea5946e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 200
+     },
+     "reportHeld": "{\"Yes\": 200.0}"
+    },
+    {
+     "voter": "0x2b379bfb86e900fe8f3a1434ee79097aa5b883dc",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 121
+     },
+     "reportHeld": "{\"No\": 121.0}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 4279.98
+     },
+     "reportHeld": "{\"No\": 4279.98}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 109
+     },
+     "reportHeld": "{\"No\": 109.0}"
+    },
+    {
+     "voter": "0x3b7236c911f87fd75315c4ed44a1d2eed725ad14",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1639.97
+     },
+     "reportHeld": "{\"No\": 1639.97}"
+    },
+    {
+     "voter": "0xaef6a3580a365c524a5bc9aabeb2a13c2a1a7b7c",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 47
+     },
+     "reportHeld": "{\"No\": 47.0}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 47.99
+     },
+     "reportHeld": "{\"No\": 47.99}"
+    },
+    {
+     "voter": "0x9fdb970aef60007fee4ea132b5f4ebc376740aea",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 620
+     },
+     "reportHeld": "{\"No\": 620.0}"
+    },
+    {
+     "voter": "0x40c23c8cd5b04dfad655afbccac8277da4778a84",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 434.38
+     },
+     "reportHeld": "{\"No\": 434.38}"
+    },
+    {
+     "voter": "0xca64e575083e0a8f9c73ffc214d78027d98fc51b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 30455
+     },
+     "reportHeld": "{\"Yes\": 30455.0}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1775234977-0x616e63696c6c61727944617461486173683a636166376661323",
+   "market": "US forces enter Iran by April 30?",
+   "volume_usd": 269049107,
+   "priceRequestId": "0x8aa612551c6e498b86808f08adb4adb93a23bbbbbaae8b49f10bdc9a78c10e2e",
+   "round": 10274,
+   "onchainLastVotingRound": 10274,
+   "resolvedTx": "0xcebc7ad43d8114f2ec9f33fe8da7a7f5cc51ae03ea9699bfefa2a48c3e9fc6a6",
+   "conditionId": "0x6d0e09d0f04572d9b1adad84703458b0297bc5603b69dccbde93147ee4443246",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 85198907,
+   "compare": {
+    "voters": [
+     619,
+     619
+    ],
+    "tokens_revealed": [
+     17065082,
+     17065082
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     1,
+     1
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2026-04-06",
+     "2026-04-06"
+    ],
+    "conflicted_voters": [
+     6,
+     6
+    ],
+    "conflicted_tokens": [
+     7525,
+     7525
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 6,
+   "reportRows": 6,
+   "rowChecks": [
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 8878.49
+     },
+     "reportHeld": "{\"Yes\": 8878.49}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 491.68
+     },
+     "reportHeld": "{\"Yes\": 491.68}"
+    },
+    {
+     "voter": "0x803e38c54240244046545b421fffe4e05bcd5d0b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 81.91
+     },
+     "reportHeld": "{\"No\": 81.91}"
+    },
+    {
+     "voter": "0x3b7236c911f87fd75315c4ed44a1d2eed725ad14",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 534.31
+     },
+     "reportHeld": "{\"Yes\": 534.31}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 103.08
+     },
+     "reportHeld": "{\"Yes\": 103.08}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 606.48
+     },
+     "reportHeld": "{\"Yes\": 606.48}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1775361091-0x616e63696c6c61727944617461486173683a636166376661323",
+   "market": "US forces enter Iran by April 30?",
+   "volume_usd": 269049107,
+   "priceRequestId": "0x8fffb73d9c9d18e16296167b08aa126f27b8bd0e87d7a921d1fe5a0a4b370515",
+   "round": 10275,
+   "onchainLastVotingRound": 10275,
+   "resolvedTx": "0xc3afa8a28893dc715b06c912d3ed42782fa8eda11003c91ab89b066386bbc850",
+   "conditionId": "0x6d0e09d0f04572d9b1adad84703458b0297bc5603b69dccbde93147ee4443246",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 85286075,
+   "compare": {
+    "voters": [
+     635,
+     635
+    ],
+    "tokens_revealed": [
+     17237963,
+     17237963
+    ],
+    "winner_all": [
+     "Yes",
+     "Yes"
+    ],
+    "winner_share_all": [
+     0.9992,
+     0.9992
+    ],
+    "resolved_outcome": [
+     "Yes",
+     "Yes"
+    ],
+    "vote_round_end_utc": [
+     "2026-04-08",
+     "2026-04-08"
+    ],
+    "conflicted_voters": [
+     11,
+     11
+    ],
+    "conflicted_tokens": [
+     14528,
+     14528
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 11,
+   "reportRows": 11,
+   "rowChecks": [
+    {
+     "voter": "0x1f5fb98e4639a2778bce691e3b1af9f984d0799e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 2525.64
+     },
+     "reportHeld": "{\"No\": 2525.64}"
+    },
+    {
+     "voter": "0x1b96e385806aabcb2a4702e9a09a2ddd351dc1e1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 6000
+     },
+     "reportHeld": "{\"Yes\": 6000.0}"
+    },
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 19383.65
+     },
+     "reportHeld": "{\"Yes\": 19383.65}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 491.68
+     },
+     "reportHeld": "{\"Yes\": 491.68}"
+    },
+    {
+     "voter": "0x803e38c54240244046545b421fffe4e05bcd5d0b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 81.91
+     },
+     "reportHeld": "{\"No\": 81.91}"
+    },
+    {
+     "voter": "0x3b7236c911f87fd75315c4ed44a1d2eed725ad14",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 534.31
+     },
+     "reportHeld": "{\"Yes\": 534.31}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 103.08
+     },
+     "reportHeld": "{\"Yes\": 103.08}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 606.48
+     },
+     "reportHeld": "{\"Yes\": 606.48}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 47.36
+     },
+     "reportHeld": "{\"Yes\": 47.36}"
+    },
+    {
+     "voter": "0x9fdb970aef60007fee4ea132b5f4ebc376740aea",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 217.19
+     },
+     "reportHeld": "{\"Yes\": 217.19}"
+    },
+    {
+     "voter": "0xde196a17ee4f711b047733a2e61a84349df7de43",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 2500
+     },
+     "reportHeld": "{\"No\": 2500.0}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1748542409-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0x26f662edd901594e6cf535c0205c75a6b802e21f548f8854c03f32df8e7f0c81",
+   "round": 10120,
+   "onchainLastVotingRound": 10120,
+   "resolvedTx": "0x45f4e1e0e09c4c106e4a1b3277bfcaae0747cf2cb6642681dc2a5b09bccef891",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 72291578,
+   "compare": {
+    "voters": [
+     256,
+     256
+    ],
+    "tokens_revealed": [
+     23382873,
+     23382873
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9909,
+     0.9909
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2025-06-02",
+     "2025-06-02"
+    ],
+    "conflicted_voters": [
+     1,
+     1
+    ],
+    "conflicted_tokens": [
+     2340,
+     2340
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 1,
+   "reportRows": 1,
+   "rowChecks": [
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 113.33
+     },
+     "reportHeld": "{\"Yes\": 113.33}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1748837483-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0xa1a544e5fee8b407a2b6f3fab1fec8ccbfcaa11f4f50e4cb7623178abeb228fb",
+   "round": 10121,
+   "onchainLastVotingRound": 10121,
+   "resolvedTx": "0xf704daac25ba3b1530035761aa21a05ad19cdc341ad697f9af266cdc7e263b07",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 72371979,
+   "compare": {
+    "voters": [
+     193,
+     193
+    ],
+    "tokens_revealed": [
+     20643340,
+     20643340
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9387,
+     0.9387
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2025-06-04",
+     "2025-06-04"
+    ],
+    "conflicted_voters": [
+     1,
+     1
+    ],
+    "conflicted_tokens": [
+     2344,
+     2344
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 1,
+   "reportRows": 1,
+   "rowChecks": [
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 113.33
+     },
+     "reportHeld": "{\"Yes\": 113.33}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1750927670-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0x0208546fb52c85d6d30ad4a61e4ba26a2fad17fe66aaa423bb736c541b980e0e",
+   "round": 10133,
+   "onchainLastVotingRound": 10133,
+   "resolvedTx": "0x1c0282dd9118600f0c73e53ab093ccacad2b8efbffd9f994f8442507e9d93392",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73341177,
+   "compare": {
+    "voters": [
+     286,
+     286
+    ],
+    "tokens_revealed": [
+     23245879,
+     23245879
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9274,
+     0.9274
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2025-06-28",
+     "2025-06-28"
+    ],
+    "conflicted_voters": [
+     11,
+     11
+    ],
+    "conflicted_tokens": [
+     17973,
+     17973
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 11,
+   "reportRows": 11,
+   "rowChecks": [
+    {
+     "voter": "0x196f239229aae65883802b5bb512e17084147ff6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 9999.99
+     },
+     "reportHeld": "{\"Yes\": 9999.99}"
+    },
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 113.33
+     },
+     "reportHeld": "{\"Yes\": 113.33}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 11914.75
+     },
+     "reportHeld": "{\"No\": 11914.75}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 7000.11
+     },
+     "reportHeld": "{\"No\": 7000.11}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 156.54
+     },
+     "reportHeld": "{\"No\": 156.54}"
+    },
+    {
+     "voter": "0x36ce63c738971b948cf0afb842b7617254c15bc0",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 135.48
+     },
+     "reportHeld": "{\"No\": 135.48}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 100
+     },
+     "reportHeld": "{\"No\": 100.0}"
+    },
+    {
+     "voter": "0xb67a6e67072025c1db86e552dc17f7bf9c296122",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 129.88
+     },
+     "reportHeld": "{\"No\": 129.88}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 136.84
+     },
+     "reportHeld": "{\"No\": 136.84}"
+    },
+    {
+     "voter": "0x24eb1c355c05439819a23dd0842d5d038d1ca05a",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 40
+     },
+     "reportHeld": "{\"No\": 40.0}"
+    },
+    {
+     "voter": "0x73cde0e4f0480ea6b98bfa292ea936685716af4d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 143.14
+     },
+     "reportHeld": "{\"No\": 143.14}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1751341891-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0xe9709a7b42427b9e444e0dc22c7e4a57952e361cc8d815d8efb180bff4c9c451",
+   "round": 10136,
+   "onchainLastVotingRound": 10136,
+   "resolvedTx": "0x35cdca257e7da1e676d3c0221c726cf1a06693a6b64144c2cbf3f5e044f8f681",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73585806,
+   "compare": {
+    "voters": [
+     287,
+     287
+    ],
+    "tokens_revealed": [
+     22757385,
+     22757385
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9376,
+     0.9376
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2025-07-04",
+     "2025-07-04"
+    ],
+    "conflicted_voters": [
+     18,
+     18
+    ],
+    "conflicted_tokens": [
+     20565,
+     20565
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 18,
+   "reportRows": 18,
+   "rowChecks": [
+    {
+     "voter": "0x196f239229aae65883802b5bb512e17084147ff6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 9999.99
+     },
+     "reportHeld": "{\"Yes\": 9999.99}"
+    },
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 215.63
+     },
+     "reportHeld": "{\"Yes\": 215.63}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 11914.75
+     },
+     "reportHeld": "{\"No\": 11914.75}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 234961.3
+     },
+     "reportHeld": "{\"No\": 234961.3}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 117.13
+     },
+     "reportHeld": "{\"No\": 117.13}"
+    },
+    {
+     "voter": "0xd8d7bec7225b074f11ffc11ba47f56e96a35d24e",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 241.9
+     },
+     "reportHeld": "{\"Yes\": 241.9}"
+    },
+    {
+     "voter": "0x5ebc1d2809f4dfca9cb518efd2307fdffc36d55d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 10.77
+     },
+     "reportHeld": "{\"No\": 10.77}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 156.54
+     },
+     "reportHeld": "{\"No\": 156.54}"
+    },
+    {
+     "voter": "0x87a726a806f48a435d8bf627678c85f26b46c1b6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 600
+     },
+     "reportHeld": "{\"No\": 600.0}"
+    },
+    {
+     "voter": "0x36ce63c738971b948cf0afb842b7617254c15bc0",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 135.48
+     },
+     "reportHeld": "{\"No\": 135.48}"
+    },
+    {
+     "voter": "0xb67a6e67072025c1db86e552dc17f7bf9c296122",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 129.88
+     },
+     "reportHeld": "{\"No\": 129.88}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 100
+     },
+     "reportHeld": "{\"No\": 100.0}"
+    },
+    {
+     "voter": "0xc3ac3355b2686fa503246a92e34d0b7261b39d6b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1019.14
+     },
+     "reportHeld": "{\"No\": 1019.14}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 136.84
+     },
+     "reportHeld": "{\"No\": 136.84}"
+    },
+    {
+     "voter": "0x73cde0e4f0480ea6b98bfa292ea936685716af4d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 143.14
+     },
+     "reportHeld": "{\"No\": 143.14}"
+    },
+    {
+     "voter": "0x3172aee5e0b47bb23e87db93327f58e06e6a73b6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 4167.46
+     },
+     "reportHeld": "{\"Yes\": 4167.46}"
+    },
+    {
+     "voter": "0x20d9065d276c303a68bbd38cd42ea4c2df49dd50",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 5048.48
+     },
+     "reportHeld": "{\"Yes\": 5048.48}"
+    },
+    {
+     "voter": "0x48acc4a909ddb127787a7d1d63b47e98f66174f6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 128859.36
+     },
+     "reportHeld": "{\"Yes\": 128859.36}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1751675358-0x616e63696c6c61727944617461486173683a393335343764623",
+   "market": "Will Zelenskyy wear a suit before July?",
+   "volume_usd": 242231180,
+   "priceRequestId": "0x9869681814d10e4e5b92fbfaf85802081726c2e15a2a639fb5b3c2cb62555322",
+   "round": 10138,
+   "onchainLastVotingRound": 10138,
+   "resolvedTx": "0xaef28cdb37ca6d93a45dac8c7b37b53b111381819768d66d9f81ba34a0836ae2",
+   "conditionId": "0x655e5ca101c466b6293aa15e06173b78b293221803d56e35551f708cd82eb352",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 73748316,
+   "compare": {
+    "voters": [
+     243,
+     243
+    ],
+    "tokens_revealed": [
+     19286638,
+     19286638
+    ],
+    "winner_all": [
+     "No",
+     "No"
+    ],
+    "winner_share_all": [
+     0.9325,
+     0.9325
+    ],
+    "resolved_outcome": [
+     "No",
+     "No"
+    ],
+    "vote_round_end_utc": [
+     "2025-07-08",
+     "2025-07-08"
+    ],
+    "conflicted_voters": [
+     19,
+     19
+    ],
+    "conflicted_tokens": [
+     27246,
+     27246
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 19,
+   "reportRows": 19,
+   "rowChecks": [
+    {
+     "voter": "0x196f239229aae65883802b5bb512e17084147ff6",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 100000.01
+     },
+     "reportHeld": "{\"No\": 100000.01}"
+    },
+    {
+     "voter": "0xcb8c77837f470053f91e1e288cac223118c69937",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 45.41
+     },
+     "reportHeld": "{\"No\": 45.41}"
+    },
+    {
+     "voter": "0x9860d7309039b9a44b1df878ed4484133a881316",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 298.97
+     },
+     "reportHeld": "{\"Yes\": 298.97}"
+    },
+    {
+     "voter": "0xa85160a81da205ae57f6d55f16c9c43d773c7438",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 11914.75
+     },
+     "reportHeld": "{\"No\": 11914.75}"
+    },
+    {
+     "voter": "0x27b0fc6c4a5a0cf213a570097279a5bde61214d2",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 27.03
+     },
+     "reportHeld": "{\"Yes\": 27.03}"
+    },
+    {
+     "voter": "0x93a692fe5477902c3cf5f6997c1cf59a3712ced4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 381378.64
+     },
+     "reportHeld": "{\"No\": 381378.64}"
+    },
+    {
+     "voter": "0x5071e6d385f584b5875166563c1670460905ad7b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 117.13
+     },
+     "reportHeld": "{\"No\": 117.13}"
+    },
+    {
+     "voter": "0x5ebc1d2809f4dfca9cb518efd2307fdffc36d55d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 10.77
+     },
+     "reportHeld": "{\"No\": 10.77}"
+    },
+    {
+     "voter": "0xc573ddc59824f248d3688df0474805f35c2c09c1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 156.54
+     },
+     "reportHeld": "{\"No\": 156.54}"
+    },
+    {
+     "voter": "0x36ce63c738971b948cf0afb842b7617254c15bc0",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 135.48
+     },
+     "reportHeld": "{\"No\": 135.48}"
+    },
+    {
+     "voter": "0xb67a6e67072025c1db86e552dc17f7bf9c296122",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 129.88
+     },
+     "reportHeld": "{\"No\": 129.88}"
+    },
+    {
+     "voter": "0x4821eaeb37061e3c26b2264838e788f8de06bdcf",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 400
+     },
+     "reportHeld": "{\"No\": 400.0}"
+    },
+    {
+     "voter": "0xc3ac3355b2686fa503246a92e34d0b7261b39d6b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 1019.14
+     },
+     "reportHeld": "{\"No\": 1019.14}"
+    },
+    {
+     "voter": "0xefbc103259b500ebe6408fc7c91535b0e158e22b",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 42301.97
+     },
+     "reportHeld": "{\"No\": 42301.97}"
+    },
+    {
+     "voter": "0x8e561b9823d9bf7067f5f64980ae26b6b9969e77",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 136.84
+     },
+     "reportHeld": "{\"No\": 136.84}"
+    },
+    {
+     "voter": "0x73cde0e4f0480ea6b98bfa292ea936685716af4d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 143.14
+     },
+     "reportHeld": "{\"No\": 143.14}"
+    },
+    {
+     "voter": "0x5f4f59301e46bf6f6603a8c4cf826bdac70339d1",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 5472.66
+     },
+     "reportHeld": "{\"No\": 5472.66}"
+    },
+    {
+     "voter": "0x3e4ce5d976e1e0f4c7022889d6755c1ef7e9eae4",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 4175347.02
+     },
+     "reportHeld": "{\"Yes\": 4175347.02}"
+    },
+    {
+     "voter": "0xfec8d555a934e1c293039c8842a4c10bd5512269",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "Yes": 71977.1
+     },
+     "reportHeld": "{\"Yes\": 71977.1}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1776910518-0x616e63696c6c61727944617461486173683a646331396461616",
+   "market": "US x Iran ceasefire extended by April 22, 2026?",
+   "volume_usd": 203621392,
+   "priceRequestId": "0xbffbac516c7b8507519a871c1bef0795c5c32a61f5e9dd082a286b2f22c63a0f",
+   "round": 10284,
+   "onchainLastVotingRound": 10284,
+   "resolvedTx": "0xc8d79e431fce46c74d946acb27c621d886d0f76ee69f150b297ce57598b08575",
+   "conditionId": "0x1d2787cb8aed975d092b2799ed6f4083e9445f7420cdc09e9d47e7d54356c6cd",
+   "conditionHow": "keccak(ooRequester, questionID, 2) exists on CTF",
+   "polyBlock": 86063222,
+   "compare": {
+    "voters": [
+     612,
+     612
+    ],
+    "tokens_revealed": [
+     18184837,
+     18184837
+    ],
+    "winner_all": [
+     "other",
+     "other"
+    ],
+    "winner_share_all": [
+     0.9956,
+     0.9956
+    ],
+    "resolved_outcome": [
+     "other",
+     "other"
+    ],
+    "vote_round_end_utc": [
+     "2026-04-26",
+     "2026-04-26"
+    ],
+    "conflicted_voters": [
+     1,
+     1
+    ],
+    "conflicted_tokens": [
+     1885,
+     1885
+    ]
+   },
+   "voteMismatches": [],
+   "reportRowsVerified": 1,
+   "reportRows": 1,
+   "rowChecks": [
+    {
+     "voter": "0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d",
+     "onL1": true,
+     "tokensMatch": true,
+     "sideMatch": true,
+     "walletMatch": true,
+     "onchainHeld": {
+      "No": 150.92
+     },
+     "reportHeld": "{\"No\": 150.92}"
+    }
+   ],
+   "onlyOnchain": [],
+   "onlyReport": []
+  }
+ ],
+ "all_tallies_mismatches": [
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2072656",
+   "market": "Will Bitcoin reach $110,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 192,
+    "tokens_revealed": 20818084,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2072656",
+   "market": "Will Bitcoin reach $120,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20804119,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 192,
+    "tokens_revealed": 20818084,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2072656",
+   "market": "Will Bitcoin reach $150,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 192,
+    "tokens_revealed": 20818084,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2064697",
+   "market": "Will Bitcoin dip to $80,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 190,
+    "tokens_revealed": 20704554,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2072656",
+   "market": "Will Bitcoin reach $140,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 192,
+    "tokens_revealed": 20818084,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2064697",
+   "market": "Will Bitcoin dip to $70,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 190,
+    "tokens_revealed": 20704554,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2064697",
+   "market": "Will Bitcoin dip to $50,000 by January 31, 2025?",
+   "report": {
+    "voters": 190,
+    "tokens_revealed": 20752357,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 190,
+    "tokens_revealed": 20704554,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be less than $500m on Feb 21?",
+   "report": {
+    "voters": 337,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1738385997-0x713a207469746c653a2057696c6c20426974636f696e2064697",
+   "market": "Will Bitcoin dip to $60,000 by January 31, 2025?",
+   "report": {
+    "voters": 191,
+    "tokens_revealed": 20817984,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 190,
+    "tokens_revealed": 20704554,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565229-0x616e63696c6c61727944617461486173683a646633663638376",
+   "market": "LoL: LNG Esports vs Ultra Prime - Game 2 Winner",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565151-0x616e63696c6c61727944617461486173683a663737666663303",
+   "market": "LoL: LNG Esports vs Ultra Prime (BO3)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be more than $5b on Feb 21?",
+   "report": {
+    "voters": 341,
+    "tokens_revealed": 20579742,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769569205-0x616e63696c6c61727944617461486173683a616139336439636",
+   "market": "Will the highest temperature in Buenos Aires be 35°C or below on January 27?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $3.5b and $4b on Feb 21?",
+   "report": {
+    "voters": 338,
+    "tokens_revealed": 20579736,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $1b and $1.5b on Feb 21?",
+   "report": {
+    "voters": 337,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $4b and $4.5b on Feb 21?",
+   "report": {
+    "voters": 337,
+    "tokens_revealed": 20579234,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $4.5b and $5b on Feb 21?",
+   "report": {
+    "voters": 339,
+    "tokens_revealed": 20579737,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $3b and $3.5b on Feb 21?",
+   "report": {
+    "voters": 337,
+    "tokens_revealed": 20579735,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565217-0x616e63696c6c61727944617461486173683a346566313331643",
+   "market": "LoL: LNG Esports vs Ultra Prime - Game 1 Winner",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $2b and $2.5b on Feb 21?",
+   "report": {
+    "voters": 337,
+    "tokens_revealed": 20579720,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $1.5b and $2b on Feb 21?",
+   "report": {
+    "voters": 336,
+    "tokens_revealed": 20579730,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740157203-0x713a207469746c653a2057696c6c20746865206d61726b65742",
+   "market": "Will the market cap of $LIBRA (FDV) be between $2.5b and $3b on Feb 21?",
+   "report": {
+    "voters": 336,
+    "tokens_revealed": 20579719,
+    "winner_share_all": 1
+   },
+   "l1": {
+    "voters": 338,
+    "tokens_revealed": 20579731,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1740889240-0x713a207469746c653a2057696c6c20446565626f2053616d756",
+   "market": "Will Deebo Samuel be traded to the Baltimore Ravens?",
+   "report": {
+    "voters": 267,
+    "tokens_revealed": 21459688,
+    "winner_share_all": 0.92
+   },
+   "l1": {
+    "voters": 266,
+    "tokens_revealed": 21459687,
+    "winner_share_all": 0.9201
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769569369-0x616e63696c6c61727944617461486173683a386232666161316",
+   "market": "Will the highest temperature in Buenos Aires be 40°C on January 27?",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769462621-0x616e63696c6c61727944617461486173683a393363383032343",
+   "market": "Games Total: O/U 2.5",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565249-0x616e63696c6c61727944617461486173683a643634316632376",
+   "market": "Game Handicap: LNG (-1.5)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565265-0x616e63696c6c61727944617461486173683a306435353662323",
+   "market": "Games Total: O/U 2.5",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23686283,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23686283,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565503-0x616e63696c6c61727944617461486173683a633033666666316",
+   "market": "Series: Most inhibitors?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565855-0x616e63696c6c61727944617461486173683a323762326639623",
+   "market": "Series: Most drakes?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769566095-0x616e63696c6c61727944617461486173683a333835313738303",
+   "market": "Series: LNG Esports Kill Handicap (-13.5)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769566109-0x616e63696c6c61727944617461486173683a646531643062346",
+   "market": "Series: LNG Esports Kill Handicap (-15.5)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769566103-0x616e63696c6c61727944617461486173683a396332636137626",
+   "market": "Series: LNG Esports Kill Handicap (-14.5)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769566139-0x616e63696c6c61727944617461486173683a636231363538383",
+   "market": "Series: LNG Esports Tower Handicap (-10.5)",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565595-0x616e63696c6c61727944617461486173683a343736353535653",
+   "market": "Series: Most nashors?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565393-0x616e63696c6c61727944617461486173683a626165616237653",
+   "market": "Series: Most towers?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769565301-0x616e63696c6c61727944617461486173683a616130656662643",
+   "market": "Series: Most kills?",
+   "report": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 646,
+    "tokens_revealed": 23687324,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592349-0x616e63696c6c61727944617461486173683a656438373632373",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Most Sixes USA Women Winner",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592365-0x616e63696c6c61727944617461486173683a376633663432643",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Most Sixes Draw",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592425-0x616e63696c6c61727944617461486173683a656365303631346",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Team Top Batter USA Women Winner",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592437-0x616e63696c6c61727944617461486173683a373733653662653",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Team Top Batter Draw",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592461-0x616e63696c6c61727944617461486173683a353531303136356",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Team Top Batter Netherlands Women Winner",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  },
+  {
+   "request_id": "YES_OR_NO_QUERY-1769592377-0x616e63696c6c61727944617461486173683a633465643235353",
+   "market": "Women's T20 World Cup Qualifier: Netherlands Women vs USA Women - Most Sixes Netherlands Women Winner",
+   "report": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 0.9976
+   },
+   "l1": {
+    "voters": 647,
+    "tokens_revealed": 23687325,
+    "winner_share_all": 1
+   }
+  }
+ ]
+}

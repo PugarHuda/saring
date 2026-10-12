@@ -1,0 +1,13 @@
+{
+ "root": "0x9eb03f8171aa6cb079efb210af191385fc5b3f9706638b1e7cf14b5c67d157af",
+ "datasetHash": "0x97c8866ef8cf95d4ee5f07bb623df09eda4f6efdae9d6b0c6bffa8f94f3cc216",
+ "leafCount": 2256,
+ "disputeCount": 834,
+ "conflictRows": 2256,
+ "csvRows": 2256,
+ "unmappedRows": 0,
+ "leafEncoding": "keccak256(bytes.concat(keccak256(abi.encode(bytes32 disputeId, address voter))))",
+ "disputeId": "UMA VotingV2 priceRequestId = keccak256(abi.encode(bytes32 identifier, uint256 time, bytes ancillaryData))",
+ "source": "conflict-report/out/conflicts.csv",
+ "generated_utc": "2026-10-12T10:03:42.714Z"
+}

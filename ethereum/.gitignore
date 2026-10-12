@@ -1,0 +1,7 @@
+node_modules/
+.cache/
+conflict-registry/out/
+conflict-registry/cache/
+conflict-registry/lib/
+conflict-registry/broadcast/
+conflict-registry/data/deployment-31337.json

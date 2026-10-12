@@ -1,0 +1,72 @@
+[L1] scanning VotingV2 RequestAdded/RequestResolved logs, blocks 26175647..26175656 (10 blocks)
+[L1] 0 new logs; index holds 4515 YES_OR_NO_QUERY requests
+
+[verify] MicroStrategy sells any Bitcoin by May 31, 2026? (2026-06-03)
+
+[verify] MicroStrategy sells any Bitcoin by May 31, 2026? (2026-06-03)
+
+[verify] US forces enter Iran by April 30? (2026-04-06)
+
+[verify] US forces enter Iran by April 30? (2026-04-08)
+
+[verify] Will Zelenskyy wear a suit before July? (2025-06-02)
+
+[verify] Will Zelenskyy wear a suit before July? (2025-06-04)
+
+[verify] Will Zelenskyy wear a suit before July? (2025-06-28)
+
+[verify] Will Zelenskyy wear a suit before July? (2025-07-04)
+
+[verify] Will Zelenskyy wear a suit before July? (2025-07-08)
+
+[verify] US x Iran ceasefire extended by April 22, 2026? (2026-04-26)
+[all] 4121 disputes across 315 rounds
+[all] rounds 20/315
+[all] rounds 40/315
+[all] rounds 60/315
+[all] rounds 80/315
+[all] rounds 100/315
+[all] rounds 120/315
+[all] rounds 140/315
+[all] rounds 160/315
+[all] rounds 180/315
+[all] rounds 200/315
+[all] rounds 220/315
+[all] rounds 240/315
+[all] rounds 260/315
+[all] rounds 280/315
+[all] rounds 300/315
+
+| # | market | round | voters rpt/L1 | UMA revealed rpt/L1 | winner share rpt/L1 | resolved | conflicted rpt (Data API) / on-chain balance | report rows verified on L1 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | MicroStrategy sells any Bitcoin by May 31, 2026? | 10303 | 607 / 607 | 19,433,398 / 19,433,398 | 0.986 / 0.986 | No / No | 14 / 14 | 14/14 |
+| 2 | MicroStrategy sells any Bitcoin by May 31, 2026? | 10303 | 607 / 607 | 19,433,398 / 19,433,398 | 0.9861 / 0.9861 | No / No | 14 / 14 | 14/14 |
+| 3 | US forces enter Iran by April 30? | 10274 | 619 / 619 | 17,065,082 / 17,065,082 | 1 / 1 | other / other | 6 / 6 | 6/6 |
+| 4 | US forces enter Iran by April 30? | 10275 | 635 / 635 | 17,237,963 / 17,237,963 | 0.9992 / 0.9992 | Yes / Yes | 11 / 11 | 11/11 |
+| 5 | Will Zelenskyy wear a suit before July? | 10120 | 256 / 256 | 23,382,873 / 23,382,873 | 0.9909 / 0.9909 | other / other | 1 / 1 | 1/1 |
+| 6 | Will Zelenskyy wear a suit before July? | 10121 | 193 / 193 | 20,643,340 / 20,643,340 | 0.9387 / 0.9387 | other / other | 1 / 1 | 1/1 |
+| 7 | Will Zelenskyy wear a suit before July? | 10133 | 286 / 286 | 23,245,879 / 23,245,879 | 0.9274 / 0.9274 | other / other | 11 / 11 | 11/11 |
+| 8 | Will Zelenskyy wear a suit before July? | 10136 | 287 / 287 | 22,757,385 / 22,757,385 | 0.9376 / 0.9376 | other / other | 18 / 18 | 18/18 |
+| 9 | Will Zelenskyy wear a suit before July? | 10138 | 243 / 243 | 19,286,638 / 19,286,638 | 0.9325 / 0.9325 | No / No | 19 / 19 | 19/19 |
+| 10 | US x Iran ceasefire extended by April 22, 2026? | 10284 | 612 / 612 | 18,184,837 / 18,184,837 | 0.9956 / 0.9956 | other / other | 1 / 1 | 1/1 |
+
+{
+ "generated_utc": "2026-10-12T10:24:04.936Z",
+ "votingV2": "0x004395edb43EFca9885CEdad51EC9fAf93Bd34ac",
+ "rpc": [
+  "https://rpc.mevblocker.io",
+  "https://mainnet.gateway.tenderly.co",
+  "https://eth.drpc.org"
+ ],
+ "disputes_checked": 10,
+ "vote_tallies_exact_match": 10,
+ "report_conflict_rows_verified_on_L1": "96/96",
+ "conflicted_voters_report_vs_onchain": "14→14, 14→14, 6→6, 11→11, 1→1, 1→1, 11→11, 18→18, 19→19, 1→1",
+ "all_tallies": {
+  "disputes": 4121,
+  "exact_match": 4079,
+  "mismatched": 42,
+  "not_on_L1": 0
+ }
+}
+EXIT 0
