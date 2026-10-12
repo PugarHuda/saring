@@ -53,39 +53,64 @@ function transferTx(secret, to, lamports, blockhash) {
   return { tx: concat([1], sig, message), signature: b58encode(sig), from };
 }
 
+// ponytail: per-instance memory; a shared KV store would make limits global across instances.
+const COOLDOWN_MS = 10 * 60_000;
+const lastGrant = new Map(); // ip or address -> timestamp
+const inFlight = new Set(); // addresses being funded right now
+
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+  const ip = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim() || "unknown";
+  let address;
+  try {
+    address = (typeof req.body === "string" ? JSON.parse(req.body) : req.body)?.address;
+    const now = Date.now();
+    for (const k of [ip, address]) {
+      if (k && now - (lastGrant.get(k) ?? 0) < COOLDOWN_MS) return res.status(429).json({ error: "please wait a few minutes before asking again" });
+    }
+    if (inFlight.has(address)) return res.status(429).json({ error: "already funding this wallet" });
+    inFlight.add(address);
+    const out = await grant(req, address);
+    if (out.status === 200) for (const k of [ip, address]) lastGrant.set(k, Date.now());
+    return res.status(out.status).json(out.body);
+  } catch {
+    return res.status(502).json({ error: "faucet temporarily unavailable" });
+  } finally {
+    inFlight.delete(address);
+  }
+}
+
+async function grant(req, address) {
+  const reply = (status, body) => ({ status, body });
+  if (req.method !== "POST") return reply(405, { error: "POST only" });
   const { HELIUS_KEY, FAUCET_SECRET } = process.env;
-  if (!HELIUS_KEY || !FAUCET_SECRET) return res.status(500).json({ error: "faucet not configured" });
+  if (!HELIUS_KEY || !FAUCET_SECRET) return reply(500, { error: "faucet not configured" });
   const url = `https://devnet.helius-rpc.com/?api-key=${HELIUS_KEY}`;
 
-  let to, address;
+  let to;
   try {
-    address = (typeof req.body === "string" ? JSON.parse(req.body) : req.body).address;
-    to = b58decode(address);
+    to = b58decode(String(address));
     if (to.length !== 32) throw new Error();
   } catch {
-    return res.status(400).json({ error: "invalid address" });
+    return reply(400, { error: "invalid address" });
   }
 
-  // ponytail: per-address balance cap only; add a per-IP limit (KV) if the faucet gets drained.
   if ((await rpc(url, "getBalance", [address])).value >= ENOUGH) {
-    return res.status(429).json({ error: "this wallet already has enough devnet SOL" });
+    return reply(429, { error: "this wallet already has enough devnet SOL" });
   }
   const secret = Uint8Array.from(JSON.parse(FAUCET_SECRET));
   const { value: { blockhash } } = await rpc(url, "getLatestBlockhash", [{ commitment: "confirmed" }]);
   const { tx, signature, from } = transferTx(secret, to, GRANT, blockhash);
   if ((await rpc(url, "getBalance", [b58encode(from)])).value < Number(GRANT) + 5000) {
-    return res.status(503).json({ error: "faucet is empty" });
+    return reply(503, { error: "faucet is empty" });
   }
   await rpc(url, "sendTransaction", [Buffer.from(tx).toString("base64"), { encoding: "base64" }]);
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 20; i++) {
     const s = (await rpc(url, "getSignatureStatuses", [[signature]])).value[0];
-    if (s?.err) return res.status(500).json({ error: "transfer failed", signature });
+    if (s?.err) return reply(500, { error: "transfer failed", signature });
     if (s?.confirmationStatus === "confirmed" || s?.confirmationStatus === "finalized") {
-      return res.status(200).json({ signature, sol: Number(GRANT) / 1e9 });
+      return reply(200, { signature, sol: Number(GRANT) / 1e9 });
     }
     await new Promise((r) => setTimeout(r, 1000));
   }
-  res.status(504).json({ error: "transfer not confirmed yet", signature });
+  return reply(504, { error: "transfer not confirmed yet", signature });
 }
