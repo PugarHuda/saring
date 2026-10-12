@@ -1,0 +1,20 @@
+{
+  "cluster": "devnet",
+  "court": "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb",
+  "courtId": 1523018018,
+  "pantaMarket": "3wdVRLDiMeuWRjGcFq2FZgAyCLhswTwNSKEHgNFRSZNB",
+  "question": "Will @debar be the outright winner of the NectarFi Frontier Traders Competition?",
+  "holdersMirrored": 42,
+  "verdict": {
+    "yes": 0,
+    "no": 1,
+    "excluded": 1,
+    "incomplete": false,
+    "outcome": "NO"
+  },
+  "yesWins": false,
+  "resolve": {
+    "queueSig": "3i3ut7kx1RVrf3Y8Mm23uHehXC76iThLuLC2LCDj9gEjJGdFFHjZy8vXNKGBEg8Kj3v5jSgj21nh5Qd2xsSwGPGz",
+    "callbackSig": "63hLukWGrjnvRnErqPVFjW6dT8cXWWwKEoP7PCUiTBZj6dsutCCUGXTCgM3c6iDZ36HiJkuT2aKCtBgyFyTUVCF6"
+  }
+}

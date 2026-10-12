@@ -1,0 +1,51 @@
+Saring court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb (devnet): yes=0 no=1 excluded=1 outcome=NO
+Panta market Hh6G6x7zfHTYdJAPL24ScKcgptHMgdkvZ74RtbaC1GAW (mainnet): "Will Cristiano Ronaldo respond to Messi, Mbappé, and Haaland by scoring 2+ goals against DR Congo today?"
+  is_resolved=false oracle_result_submitted=false pending_review=None resolution_time=2026-06-17T20:00:00.000Z
+
+== A resolve_event, oracle = Saring operator key
+  resolve_event(yes_wins=false), data=b8374e2f7226325a00, fee payer 4M2EtWmjCir2wfMBxtHtTjvg5PxAJitXSQhNMV9odTMk
+    oracle                           3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            Hh6G6x7zfHTYdJAPL24ScKcgptHMgdkvZ74RtbaC1GAW
+    vault                            78PBhvmDarFyPrrmMUuF5Bi1qyAA7pRmDiDg9yXueF2C
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 5Mt56teMFuEQPmpe4teF…
+  simulation err={"InstructionError":[0,{"Custom":6025}]} units=19805
+  anchor error: Unauthorized (6025): Unauthorized action
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: ResolveEvent
+    | Program log: AnchorError thrown in programs/balr-market-rs/src/instructions/resolve_event.rs:37. Error Code: Unauthorized. Error Number: 6025. Error Message: Unauthorized action.
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 19805 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp failed: custom program error: 0x1789
+
+== B resolve_event, oracle = Panta admin[0] (unsigned)
+  resolve_event(yes_wins=false), data=b8374e2f7226325a00, fee payer 664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    oracle                           664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            Hh6G6x7zfHTYdJAPL24ScKcgptHMgdkvZ74RtbaC1GAW
+    vault                            78PBhvmDarFyPrrmMUuF5Bi1qyAA7pRmDiDg9yXueF2C
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 5Mt56teMFuEQPmpe4teF…
+  simulation err={"InstructionError":[0,{"Custom":6097}]} units=19955
+  anchor error: OracleResultNotSubmitted (6097): Oracle has not submitted the initial result for this event yet
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: ResolveEvent
+    | Program log: AnchorError thrown in programs/balr-market-rs/src/instructions/resolve_event.rs:52. Error Code: OracleResultNotSubmitted. Error Number: 6097. Error Message: Oracle has not submitted the initial result for this event yet.
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 19955 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp failed: custom program error: 0x17d1
+
+== C submit_oracle_result, oracle = Panta admin[0] (unsigned)
+  submit_oracle_result(yes_wins=false), data=6d196fa11d4e99d300, fee payer 664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    oracle                           664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            Hh6G6x7zfHTYdJAPL24ScKcgptHMgdkvZ74RtbaC1GAW
+    vault                            78PBhvmDarFyPrrmMUuF5Bi1qyAA7pRmDiDg9yXueF2C
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 5Mt56teMFuEQPmpe4teF…
+  simulation err=null units=22743
+  anchor error: none
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: SubmitOracleResult
+    | Program data: KUyfa2QGqIf4ACvO6nYR4iKgSUflb6UPAPrvvdedym+WraV3QZM6k0uWg2MA0eODm5p+NGYezkoto0OJL+OAmPr7gUI4uxAkAA==
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 22743 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp success

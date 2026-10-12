@@ -1,0 +1,69 @@
+Saring court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb (devnet): yes=0 no=1 excluded=1 outcome=NO
+Panta market 2ypz5gkfQAyNLMv6vsxbqoJVKkxCtALuR8Bb3qdD4CZq (mainnet): "Will ZCASH be above $5,000 on september 7th, 2026?"
+  is_resolved=false oracle_result_submitted=false pending_review=None resolution_time=2026-09-08T00:00:00.000Z
+
+== A resolve_event, oracle = Saring operator key
+  resolve_event_usdc(yes_wins=false), data=501339b19c14b14000, fee payer 4M2EtWmjCir2wfMBxtHtTjvg5PxAJitXSQhNMV9odTMk
+    oracle                           3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            2ypz5gkfQAyNLMv6vsxbqoJVKkxCtALuR8Bb3qdD4CZq
+    vault_authority                  ALEqBMfb59FaRBj4u3vyiRf4R36952Rp3JVuaeTqTzoT
+    vault_token_account              Ft7UWAPkF9vRMUBmL2Y2CUtdDp9ifXn42AtyZjaUdkCN
+    creator_fee_vault                H3aCSX7Lmp3WKJG6QoR9S1Eoy4SX9g5ENCSso3zbxtHc
+    creator_fee_vault_token_account  HazsTXsjbUpUAmeCAeBHtDCxzEk98q9TUTXKZNcBoDGq
+    usdc_mint                        EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+    token_program                    TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+    associated_token_program         ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 3Vt1LKPXvzZd4xDaBshR…
+  simulation err={"InstructionError":[0,{"Custom":6025}]} units=30797
+  anchor error: Unauthorized (6025): Unauthorized action
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: ResolveEventUsdc
+    | Program log: AnchorError thrown in programs/balr-market-rs/src/instructions/resolve_event_usdc.rs:46. Error Code: Unauthorized. Error Number: 6025. Error Message: Unauthorized action.
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 30797 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp failed: custom program error: 0x1789
+
+== B resolve_event, oracle = Panta admin[0] (unsigned)
+  resolve_event_usdc(yes_wins=false), data=501339b19c14b14000, fee payer 664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    oracle                           664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            2ypz5gkfQAyNLMv6vsxbqoJVKkxCtALuR8Bb3qdD4CZq
+    vault_authority                  ALEqBMfb59FaRBj4u3vyiRf4R36952Rp3JVuaeTqTzoT
+    vault_token_account              Ft7UWAPkF9vRMUBmL2Y2CUtdDp9ifXn42AtyZjaUdkCN
+    creator_fee_vault                H3aCSX7Lmp3WKJG6QoR9S1Eoy4SX9g5ENCSso3zbxtHc
+    creator_fee_vault_token_account  HazsTXsjbUpUAmeCAeBHtDCxzEk98q9TUTXKZNcBoDGq
+    usdc_mint                        EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+    token_program                    TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+    associated_token_program         ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 3Vt1LKPXvzZd4xDaBshR…
+  simulation err={"InstructionError":[0,{"Custom":6097}]} units=30970
+  anchor error: OracleResultNotSubmitted (6097): Oracle has not submitted the initial result for this event yet
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: ResolveEventUsdc
+    | Program log: AnchorError thrown in programs/balr-market-rs/src/instructions/resolve_event_usdc.rs:137. Error Code: OracleResultNotSubmitted. Error Number: 6097. Error Message: Oracle has not submitted the initial result for this event yet.
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 30970 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp failed: custom program error: 0x17d1
+
+== C submit_oracle_result, oracle = Panta admin[0] (unsigned)
+  submit_oracle_result_usdc(yes_wins=false), data=f51d9b111e600dca00, fee payer 664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    oracle                           664h8sZvGwUx4hfqWYrewwvC7wenbKPTCFQTKZx5ghbR
+    market_config                    8mJjfx7SuWwS4yfVZXtqC2cvzxr3TQHsCgKyjpuDWKAP
+    event                            2ypz5gkfQAyNLMv6vsxbqoJVKkxCtALuR8Bb3qdD4CZq
+    vault_authority                  ALEqBMfb59FaRBj4u3vyiRf4R36952Rp3JVuaeTqTzoT
+    vault_token_account              Ft7UWAPkF9vRMUBmL2Y2CUtdDp9ifXn42AtyZjaUdkCN
+    creator_fee_vault                H3aCSX7Lmp3WKJG6QoR9S1Eoy4SX9g5ENCSso3zbxtHc
+    creator_fee_vault_token_account  HazsTXsjbUpUAmeCAeBHtDCxzEk98q9TUTXKZNcBoDGq
+    usdc_mint                        EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+    token_program                    TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+    associated_token_program         ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL
+    system_program                   11111111111111111111111111111111
+  vault account discovered from tx 3Vt1LKPXvzZd4xDaBshR…
+  simulation err=null units=33759
+  anchor error: none
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp invoke [1]
+    | Program log: Instruction: SubmitOracleResultUsdc
+    | Program data: KUyfa2QGqIcdanfUlckA6AOjpEKDHGRUdmDlQCDWsSYPo/EZ5mPwtEuWg2MA0eODm5p+NGYezkoto0OJL+OAmPr7gUI4uxAkAA==
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp consumed 33759 of 200000 compute units
+    | Program 6gM5afTQBq5VZCfgpGqcsqzfWd5maLSCKWtGjbEobZMp success
