@@ -213,14 +213,14 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Saring is a conflict-blind jury for prediction-market disputes, built on Solana with Arcium multi-party computation. The conflict check happens inside MPC, so the filter never becomes a public list.</p>
 <ol class="steps">
 <li><strong>Silent exclusion.</strong> Inside Arcium MPC, each juror's ballot is checked against positions in the disputed market. Jurors holding a position are excluded from the tally.</li>
-<li><strong>Nobody learns the jury.</strong> Not the parties, not the operators, not other jurors. Who sat and who was excluded both stay secret, so there is no one to target.</li>
-<li><strong>Bribe receipts are worthless.</strong> Ballots can be overwritten until the deadline, and only the last one counts. A juror can show a briber a vote and then change it.</li>
-<li><strong>Minimal output.</strong> The only thing revealed is <code>(yes, no, excluded_count)</code>.</li>
+<li><strong>The chain never sees the jury.</strong> Juror ids, trader ids and ballots go on chain only as ciphertexts, and the MPC never reveals which jurors were excluded. (In the current MVP the court authority seats the jurors and relays the positions, so it knows both lists.)</li>
+<li><strong>Bribe receipts are worthless.</strong> Each seat has a secret ballot key held inside MPC. A ballot counts only with the seat's current key, and a ballot can rotate the key, so a key handed to a briber after rotation is worthless and the briber can't tell. Forged ballots with guessed keys are ignored inside MPC.</li>
+<li><strong>Minimal output.</strong> The only thing revealed is <code>(yes, no, excluded, incomplete)</code>.</li>
 </ol>
-<div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Saring builds on that idea: it also filters conflicted jurors, and does it without revealing who the jurors are.</div>
+<div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Saring builds on that idea: it also filters conflicted jurors, and the chain never sees who the jurors are or which ones were dropped.</div>
 
 <footer>
-Data and scripts: <code>data/conflict-report/</code> (<code>conflict_report.py</code>, <code>out/summary.json</code>). Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.
+Data and scripts: <code>conflict-report/</code> (<code>conflict_report.py</code>, <code>out/summary.json</code>). Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.
 </footer>
 </main>
 <script type="application/json" id="data">{data_json}</script>
