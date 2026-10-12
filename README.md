@@ -175,6 +175,14 @@ conflict-report/                Conflict Report pipeline (Python) and site sourc
 docs/                           published Conflict Report (GitHub Pages)
 ```
 
+## Docs
+
+- [ARCHITECTURE.md](ARCHITECTURE.md): components, encrypted state slot map, PDAs, instructions, lock state machine, sequence diagrams
+- [THREAT_MODEL.md](THREAT_MODEL.md): actors, trust assumptions, STRIDE threats, bribery / receipt-freeness argument, privacy leakage
+- [SECURITY.md](SECURITY.md): how to report a vulnerability, supported versions, review history, known limitations
+- [AUDIT_SCOPE.md](AUDIT_SCOPE.md): in-scope files, invariants, build/test, deployed addresses, `circuits-v3` hashes
+- CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+
 ## Limitations (MVP) and roadmap
 
 | Limitation today | Why it matters | Plan |

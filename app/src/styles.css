@@ -284,3 +284,25 @@ tr.you td { background: rgba(241, 207, 142, 0.06); }
 .kind.mpc { color: var(--lilac); border-color: rgba(187, 166, 255, 0.4); }
 .kind.key { color: var(--gold); border-color: rgba(241, 207, 142, 0.4); }
 @media (max-width: 1020px) { .side { position: static; } }
+
+/* market picker + Panta card */
+.picker { padding: 18px 20px; margin-bottom: 40px; display: grid; gap: 10px; }
+.picker-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+.picker select {
+  width: 100%; min-height: 44px; padding: 0 12px; border-radius: 12px; font: 600 0.9rem var(--sans);
+  color: var(--ink); background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line-strong);
+}
+.picker select option { background: var(--plum-2); color: var(--ink); }
+.picker select:disabled { opacity: 0.55; cursor: not-allowed; }
+.picker .pill { margin-left: 8px; vertical-align: middle; }
+.case-copy { display: grid; gap: 12px; }
+.secret { padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(187, 166, 255, 0.35); background: rgba(187, 166, 255, 0.07); }
+.panta-card { padding: 20px 22px; margin-bottom: 20px; display: grid; gap: 12px; }
+.panta-card h3 { margin: 0; }
+.panta-card .tl-links { margin: 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); gap: 8px; margin: 0; }
+.facts div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; min-width: 0; }
+.facts .wide { grid-column: 1 / -1; }
+.facts dt { font-size: 0.74rem; color: var(--dim); }
+.facts dd { margin: 0; font-weight: 600; font-size: 0.9rem; overflow-wrap: anywhere; }
+.tl-hint { margin-bottom: 14px; }

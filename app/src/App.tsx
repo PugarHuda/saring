@@ -13,20 +13,25 @@ import {
   fetchMxePublicKey,
   finalBallots,
   isMpc,
+  listDisputableMarkets,
   loadBurner,
   loadScenario,
   makeClient,
+  MAX_HOLDERS,
   newComputationOffset,
   newCourtId,
+  PANTA_MARKET,
   queueStep,
   pantaMarketUrl,
   readBet,
   readVerdict,
   type Choice,
+  type MarketOption,
   type Scenario,
   type ScriptStep,
   type Verdict,
 } from "./court";
+import { walletPositions } from "./pantaApi";
 
 // three.js is heavy: load it after first paint so the page is usable immediately.
 const Blob = lazy(() => import("./Blob"));
@@ -53,34 +58,51 @@ const STATUS_LABEL: Record<Status, string> = {
   failed: "Failed",
 };
 
+// Panta's API returns some numbers as strings ("31.00"); null/"" means not reported.
+const num = (v: unknown) => (v === null || v === undefined || v === "" ? null : Number(v));
+const usdc = (v: unknown) => (num(v) === null ? "n/a" : `$${num(v)!.toLocaleString("en-US", { maximumFractionDigits: 2 })}`);
+const cents = (v: unknown) => `${Math.round(num(v)! * 100)}¢`;
+const PANTA = "https://panta.market";
+// ponytail: a stalled proxy request would leave a loading line forever; give up after 60 s so "Try again" shows.
+const withTimeout = <T,>(p: Promise<T>, ms = 60_000) =>
+  Promise.race([p, new Promise<never>((_, no) => setTimeout(() => no(new Error("timed out, the RPC is busy")), ms))]);
+
 const REPORT = "https://pugarhuda.github.io/saring/";
 const REPO = "https://github.com/PugarHuda/saring";
-const RUN_COST = 0.08; // SOL, plus the bet if any
+const RUN_COST = 0.1; // SOL; a bet adds 0.01 (the run itself is ~0.105 with one)
+const FAUCET_SOL = 0.15; // matches GRANT in app/api/faucet.js
+const FAUCET_ENOUGH = 0.12; // the faucet refuses wallets holding this much (ENOUGH in app/api/faucet.js)
 const FAUCET_COOLDOWN_MS = 10 * 60_000; // matches app/api/faucet.js
-const LAST_KEY = "saring.last.v1";
+// Program v3.1: courts saved under older keys can't be read any more, so they're simply ignored.
+const lastKey = (burner: string) => `saring.last.v3.1.${burner}`;
+const faucetKey = (burner: string) => `saring.faucetUntil.${burner}`;
 
 /** External link: always a new tab, no referrer. */
 const Ext = (p: AnchorHTMLAttributes<HTMLAnchorElement>) => <a target="_blank" rel="noreferrer" {...p} />;
 
 /** The last finished run, so a reload still shows its verdict and explorer links. */
 interface Last {
+  market: string;
+  /** Court account address (devnet), for the record. */
+  court: string;
   courtId: number;
   choice: Choice;
   verdict: Verdict;
   bet: Bet;
   steps: Pick<StepState, "status" | "queueSig" | "finalizeSig">[];
 }
-function loadLast(): Last | null {
+/** Keyed by burner pubkey: a saved verdict from another burner is never shown. */
+function loadLast(burner: string): Last | null {
   try {
-    return JSON.parse(localStorage.getItem(LAST_KEY) ?? "null");
+    return JSON.parse(localStorage.getItem(lastKey(burner)) ?? "null");
   } catch {
     return null;
   }
 }
-function saveLast(l: Last | null) {
+function saveLast(burner: string, l: Last | null) {
   try {
-    if (l) localStorage.setItem(LAST_KEY, JSON.stringify(l));
-    else localStorage.removeItem(LAST_KEY);
+    if (l) localStorage.setItem(lastKey(burner), JSON.stringify(l));
+    else localStorage.removeItem(lastKey(burner));
   } catch {
     /* storage blocked: the result just won't survive a reload */
   }
@@ -101,11 +123,13 @@ function tallies(sc: Scenario) {
 }
 
 /** Mirrors the program's claim(): ties, incomplete verdicts and empty winning pools refund. */
-function payout(v: Verdict, b: NonNullable<Bet>) {
+function payout(v: Verdict, b: NonNullable<Bet>): { kind: "refund" | "win" | "lose"; amount: number } {
   const yesWins = v.yes > v.no;
   const winPool = yesWins ? b.yesPool : b.noPool;
-  if (v.incomplete || v.yes === v.no || winPool === 0) return b.amount;
-  return b.yes === yesWins ? Math.floor((b.amount * (b.yesPool + b.noPool)) / winPool) : 0;
+  if (v.incomplete || v.yes === v.no || winPool === 0) return { kind: "refund", amount: b.amount };
+  return b.yes === yesWins
+    ? { kind: "win", amount: Math.floor((b.amount * (b.yesPool + b.noPool)) / winPool) }
+    : { kind: "lose", amount: b.amount };
 }
 
 // Every figure here is copied from the Conflict Report (docs/index.html).
@@ -119,7 +143,8 @@ const STATS = [
 export default function App() {
   const burner = useMemo(loadBurner, []);
   const client = useMemo(() => makeClient(burner), [burner]);
-  const last = useMemo(loadLast, []);
+  const me = burner.publicKey.toBase58();
+  const last = useMemo(() => loadLast(me), [me]);
 
   const [balance, setBalance] = useState<number | null>(null);
   const [programLive, setProgramLive] = useState<boolean | null>(null);
@@ -135,9 +160,27 @@ export default function App() {
   const [bet, setBet] = useState<Bet>(null);
   const [notice, setNotice] = useState("");
   const [faucetBusy, setFaucetBusy] = useState(false);
+  // Cooldown end, persisted so a reload doesn't invite a retry the server will refuse.
+  const [faucetUntil, setFaucetUntil] = useState(() => {
+    try {
+      return Number(localStorage.getItem(faucetKey(me))) || 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [now, setNow] = useState(Date.now);
   const [copied, setCopied] = useState(false);
   const [godView, setGodView] = useState(false);
   const verdictRef = useRef<HTMLElement>(null);
+  // Default: the demo market, or the market of this burner's saved run so its verdict shows again.
+  const [market, setMarket] = useState(last?.market ?? PANTA_MARKET);
+  const marketRef = useRef(market);
+  const [options, setOptions] = useState<MarketOption[] | null>(null);
+  const [optionsErr, setOptionsErr] = useState("");
+  const optionsAsked = useRef(false);
+  // Panta API's view of each juror wallet: market ids it lists, or "error". Cached across markets.
+  const [apiPos, setApiPos] = useState<Record<string, string[] | "error">>({});
+  const apiPosRef = useRef(apiPos);
 
   const setStepStates = (s: StepState[]) => {
     stepsRef.current = s;
@@ -157,20 +200,88 @@ export default function App() {
 
   const loadCase = useCallback(() => {
     setScenarioErr("");
-    loadScenario(burner.publicKey, choiceRef.current)
+    const m = marketRef.current;
+    withTimeout(loadScenario(burner.publicKey, choiceRef.current, m))
       .then((sc) => {
-        // Restore the last finished run if it matches this script.
-        if (last && last.steps.length === sc.steps.length) {
+        if (m !== marketRef.current) return; // the visitor picked another market meanwhile
+        // Restore the last finished run if it matches this market and script.
+        const last = loadLast(me);
+        if (last && last.market === m && last.steps.length === sc.steps.length) {
           setStepStates(last.steps.map((s) => ({ ...s })));
           setCourtId(last.courtId);
           setVerdict(last.verdict);
           setBet(last.bet);
+          // A court the current program can't read (e.g. made before v3.1) is dropped silently.
+          readVerdict(client, last.courtId).catch(() => {
+            if (loadLast(me)?.courtId !== last.courtId) return;
+            saveLast(me, null);
+            setStepStates(fresh(sc.steps));
+            setCourtId(null);
+            setVerdict(null);
+            setBet(null);
+          });
         } else setStepStates(fresh(sc.steps));
         setScenario(sc);
       })
-      .catch((e) => setScenarioErr(e instanceof Error ? e.message : String(e)));
-  }, [burner, last]);
+      .catch((e) => m === marketRef.current && setScenarioErr(e instanceof Error ? e.message : String(e)));
+  }, [burner, client, me]);
   useEffect(loadCase, [loadCase]);
+
+  // The market list costs a mainnet scan, so it waits until the first case has loaded.
+  const loadOptions = useCallback(() => {
+    optionsAsked.current = true;
+    setOptionsErr("");
+    withTimeout(listDisputableMarkets())
+      .then(setOptions)
+      .catch((e) => setOptionsErr(e instanceof Error ? e.message : String(e)));
+  }, []);
+  useEffect(() => {
+    if (scenario && !optionsAsked.current) loadOptions();
+  }, [scenario, loadOptions]);
+
+  function pickMarket(id: string) {
+    if (running || id === marketRef.current) return;
+    marketRef.current = id;
+    setMarket(id);
+    setScenario(null);
+    setStepStates([]);
+    setCourtId(null);
+    setVerdict(null);
+    setBet(null);
+    setNotice("");
+    loadCase();
+  }
+
+  // Tick the faucet cooldown label while it runs.
+  useEffect(() => {
+    if (faucetUntil <= now) return;
+    const id = setTimeout(() => setNow(Date.now()), Math.min(30_000, faucetUntil - now));
+    return () => clearTimeout(id);
+  }, [faucetUntil, now]);
+
+  // God view cross-check: ask Panta's indexer about each juror, one at a time, cached.
+  const jurors = scenario?.jurors;
+  useEffect(() => {
+    if (!godView || !jurors) return;
+    let stop = false;
+    (async () => {
+      for (const j of jurors) {
+        if (stop) return;
+        if (j.you || Array.isArray(apiPosRef.current[j.wallet])) continue; // errors retry on the next toggle
+        let v: string[] | "error";
+        try {
+          v = (await withTimeout(walletPositions(j.wallet), 20_000)).positions.map((p) => p.marketId);
+        } catch {
+          v = "error";
+        }
+        apiPosRef.current = { ...apiPosRef.current, [j.wallet]: v };
+        setApiPos(apiPosRef.current);
+      }
+    })();
+    return () => {
+      stop = true;
+    };
+  }, [godView, jurors]);
 
   useEffect(() => {
     refreshBalance();
@@ -215,12 +326,20 @@ export default function App() {
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-      setNotice(`Received ${j.sol ?? 0.12} devnet SOL. You can run the dispute.`);
+      setNotice(`Received ${j.sol ?? FAUCET_SOL} devnet SOL. You can run the dispute.`);
     } catch (e) {
       setNotice(`The faucet said: ${(e as Error).message}. You can also use faucet.solana.com with the address above.`);
     }
     // The server rate-limits for 10 minutes either way; don't let the button invite retries.
-    setTimeout(() => setFaucetBusy(false), FAUCET_COOLDOWN_MS);
+    const until = Date.now() + FAUCET_COOLDOWN_MS;
+    try {
+      localStorage.setItem(faucetKey(me), String(until));
+    } catch {
+      /* storage blocked: the cooldown just won't survive a reload */
+    }
+    setFaucetUntil(until);
+    setNow(Date.now());
+    setFaucetBusy(false);
     refreshBalance();
   }
 
@@ -265,7 +384,9 @@ export default function App() {
       const b = choiceRef.current.bet !== null ? await readBet(client, id) : null;
       setVerdict(v);
       setBet(b);
-      saveLast({
+      saveLast(me, {
+        market: marketRef.current,
+        court: courtPda(burner.publicKey, id).toBase58(),
         courtId: id,
         choice: choiceRef.current,
         verdict: v,
@@ -296,7 +417,7 @@ export default function App() {
     setVerdict(null);
     setBet(null);
     setNotice("");
-    saveLast(null);
+    saveLast(me, null);
   }
 
   const done = steps.filter((s) => s.status === "finalized").length;
@@ -304,11 +425,33 @@ export default function App() {
   const current = steps.findIndex((s) => s.status === "sending" || s.status === "queued");
   const need = RUN_COST + (choice.bet !== null ? 0.01 : 0);
   const lowFunds = balance !== null && balance < need && done < SCRIPT.length;
+  const coolMin = Math.ceil((faucetUntil - now) / 60_000);
+  const faucetWhy =
+    coolMin > 0
+      ? `Available again in ${coolMin} min`
+      : balance !== null && balance >= FAUCET_ENOUGH
+        ? "This wallet already has enough"
+        : "";
   const t = scenario ? tallies(scenario) : null;
   const conflicted = scenario?.jurors.filter((j) => j.conflicted).length ?? 0;
   const resolved = !!verdict?.resolved;
   const shown = resolved ? verdict! : t?.expected;
   const outcome = resolved ? (verdict!.incomplete ? "VOID" : word(verdict!.yes, verdict!.no)) : null;
+
+  /** Chain (source of truth) vs what Panta's indexer lists for this juror in this market. */
+  function crossCheck(j: Scenario["jurors"][number]) {
+    if (j.you) return <span className="muted">n/a: your bet is on devnet</span>;
+    const v = apiPos[j.wallet];
+    if (v === undefined) return <span className="muted">Checking…</span>;
+    if (v === "error") return <span className="muted">API unavailable</span>;
+    const api = v.includes(scenario!.market);
+    const chain = j.conflicted;
+    return (
+      <span className={`tag ${chain === api ? "" : "sealed"}`}>
+        chain: {chain ? "yes" : "no"} · API: {api ? "yes" : chain ? "not indexed" : "no"}
+      </span>
+    );
+  }
 
   return (
     <div className="frame">
@@ -380,6 +523,49 @@ export default function App() {
         </section>
 
         <section id="case" className="block" aria-labelledby="case-h">
+          <div className="glass picker">
+            <div className="picker-top">
+              <label htmlFor="market-pick" className="field-label">
+                Pick a Panta market to replay as a dispute
+              </label>
+              <Ext className="fine" href={PANTA}>
+                Powered by Panta
+              </Ext>
+            </div>
+            <select
+              id="market-pick"
+              value={market}
+              disabled={running}
+              aria-describedby="market-pick-hint"
+              onChange={(e) => pickMarket(e.target.value)}
+            >
+              {(options ?? []).some((o) => o.marketId === market) ? null : (
+                <option value={market}>{scenario?.question ?? (market === PANTA_MARKET ? "Demo market" : short(market))}</option>
+              )}
+              {options?.map((o) => (
+                <option key={o.marketId} value={o.marketId}>
+                  {`${o.title.length > 60 ? `${o.title.slice(0, 59)}…` : o.title} · ${o.holders} holders · ${
+                    o.panta ? `${o.panta.phase}/${o.panta.status} · ${usdc(o.panta.volumeUsdc)}` : "API details n/a"
+                  }${o.marketId === PANTA_MARKET ? " · demo" : ""}`}
+                </option>
+              ))}
+            </select>
+            <p id="market-pick-hint" className="fine" role="status">
+              {running
+                ? "Locked while a dispute is running."
+                : optionsErr
+                  ? "Could not list Panta markets right now. "
+                  : options
+                    ? `${options.length} markets fit the court (3–${MAX_HOLDERS} holders). Holder counts come from Panta’s program on mainnet; phase, status and volume from the Panta API.`
+                    : "Listing Panta markets that fit the court…"}
+              {optionsErr && !running && (
+                <button type="button" className="pill ghost sm" onClick={loadOptions}>
+                  Try again
+                </button>
+              )}
+            </p>
+          </div>
+
           <div className="block-head">
             <h2 id="case-h">
               {scenario
@@ -387,15 +573,22 @@ export default function App() {
                 : "One real market, one jury"}
             </h2>
             {scenario ? (
-              <p>
-                The disputed Panta market asks{" "}
-                <Ext href={pantaMarketUrl(scenario.market)}>
-                  <strong>“{scenario.question}”</strong>
-                </Ext>{" "}
-                {scenario.holderCount} wallets have a position in it ({scenario.openHolderCount} still open), read from
-                Solana mainnet via Panta’s program. Five jurors are real Panta traders whose ballots are scripted, since
-                we don’t hold their keys. The sixth is you. On chain every juror id, position and ballot is a ciphertext.
-              </p>
+              <div className="case-copy">
+                <p>
+                  <strong>We replay a real Panta market as if it were disputed.</strong> The market asks{" "}
+                  <Ext href={pantaMarketUrl(scenario.market)}>
+                    <strong>“{scenario.question}”</strong>
+                  </Ext>{" "}
+                  {scenario.holderCount} wallets have a position in it ({scenario.openHolderCount} still open), read from
+                  Solana mainnet via Panta’s program. Five jurors are real Panta traders whose ballots are scripted, since
+                  we don’t hold their keys. The sixth is you.
+                </p>
+                <p className="secret">
+                  <strong>What is secret:</strong> Panta positions are public on chain — Saring keeps the jury secret,
+                  and keeps holder ids encrypted inside the court so the same court works for venues with private
+                  positions.
+                </p>
+              </div>
             ) : (
               <p role="status">
                 {scenarioErr ? (
@@ -409,11 +602,79 @@ export default function App() {
                     </button>
                   </>
                 ) : (
-                  "Reading the disputed Panta market and its holders from Solana mainnet…"
+                  "Reading the Panta market and its holders from Solana mainnet…"
                 )}
               </p>
             )}
           </div>
+
+          {scenario && (
+            <article className="glass panta-card" aria-labelledby="panta-h">
+              <div className="picker-top">
+                <h3 id="panta-h">Panta market</h3>
+                <p className="tl-links">
+                  <Ext href={pantaMarketUrl(scenario.market)}>Explorer (mainnet) {short(scenario.market)}</Ext>
+                  <Ext href={PANTA}>panta.market</Ext>
+                </p>
+              </div>
+              {scenario.panta ? (
+                <dl className="facts">
+                  <div className="wide">
+                    <dt>Title</dt>
+                    <dd>{scenario.question}</dd>
+                  </div>
+                  <div>
+                    <dt>Category</dt>
+                    <dd>{scenario.panta.category ?? "n/a"}</dd>
+                  </div>
+                  <div>
+                    <dt>Phase / status</dt>
+                    <dd>
+                      {scenario.panta.phase} / {scenario.panta.status}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Resolved</dt>
+                    <dd>{scenario.panta.resolved ? "Yes" : "No"}</dd>
+                  </div>
+                  <div>
+                    <dt>Volume (USDC)</dt>
+                    <dd>{usdc(scenario.panta.volumeUsdc)}</dd>
+                  </div>
+                  {num(scenario.panta.yesPrice) !== null && num(scenario.panta.noPrice) !== null && (
+                    <div>
+                      <dt>YES / NO price</dt>
+                      <dd>
+                        {cents(scenario.panta.yesPrice)} / {cents(scenario.panta.noPrice)}
+                      </dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt>Resolution time</dt>
+                    <dd>
+                      {num(scenario.panta.resolutionTime) === null
+                        ? "n/a"
+                        : new Date(num(scenario.panta.resolutionTime)! * 1000).toLocaleString()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Oracle</dt>
+                    <dd>{scenario.panta.oracle ?? "n/a"}</dd>
+                  </div>
+                  <div>
+                    <dt>Sent to UMA</dt>
+                    <dd>{scenario.panta.sentToUma == null ? "n/a" : scenario.panta.sentToUma ? "Yes" : "No"}</dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="fine">
+                  The Panta API returned no details for this market right now. The on-chain read above is the source of
+                  truth.
+                </p>
+              )}
+              <p className="fine">Panta escalates disputes to UMA — the voters our Conflict Report measured.</p>
+            </article>
+          )}
 
           <div className="case-grid">
             <div className="glass roster">
@@ -429,9 +690,10 @@ export default function App() {
                   God view
                 </button>
                 <span className="fine">
+                  <strong>Explainer only — the chain never sees this.</strong>{" "}
                   {godView
-                    ? "Showing who holds this market. The chain never sees this; only MPC compares the lists."
-                    : "Reveal who holds this market. The chain never sees it."}
+                    ? "Showing who holds this market (only MPC compares the lists), cross-checked against the Panta API. Chain is the source of truth."
+                    : "Reveal who holds this market."}
                 </span>
               </div>
               <table>
@@ -441,6 +703,7 @@ export default function App() {
                     <th scope="col">Juror wallet</th>
                     <th scope="col">Conflict</th>
                     <th scope="col">Counted ballot</th>
+                    {godView && <th scope="col">Panta API</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -475,6 +738,7 @@ export default function App() {
                                 </span>
                               )}
                             </td>
+                            {godView && <td>{crossCheck(j)}</td>}
                           </tr>
                         );
                       })
@@ -483,6 +747,7 @@ export default function App() {
                           <td>········</td>
                           <td>···</td>
                           <td>···</td>
+                          {godView && <td>···</td>}
                         </tr>
                       ))}
                 </tbody>
@@ -539,8 +804,12 @@ export default function App() {
                     {resolved && bet && (
                       <p className="payout">
                         You bet {sol(bet.amount)} on {bet.yes ? "YES" : "NO"}. Pools: YES {sol(bet.yesPool)}, NO{" "}
-                        {sol(bet.noPool)}. Payout {sol(payout(verdict!, bet))}
-                        {bet.claimed ? ", claimed." : ", not claimed yet."}
+                        {sol(bet.noPool)}.{" "}
+                        {(() => {
+                          const p = payout(verdict!, bet);
+                          if (p.kind === "lose") return `Lost ${sol(p.amount)}.`;
+                          return `${p.kind === "refund" ? "Refunded" : "Payout"} ${sol(p.amount)}${bet.claimed ? ", claimed." : ", not claimed yet."}`;
+                        })()}
                       </p>
                     )}
                     <p className="fine">
@@ -615,7 +884,7 @@ export default function App() {
               <aside className="glass wallet" aria-label="Burner wallet">
                 <h3>Burner wallet</h3>
                 <p className="fine">
-                  Stored in this browser. Get devnet SOL gives this wallet 0.12 SOL, enough for one run (~0.08 SOL).
+                  Stored in this browser. Get devnet SOL gives this wallet {FAUCET_SOL} SOL, enough for one run (~0.10 SOL).
                 </p>
                 <code className="addr">{burner.publicKey.toBase58()}</code>
                 <p className="balance">
@@ -629,9 +898,17 @@ export default function App() {
                   <button type="button" className="pill ghost sm" onClick={copyAddress}>
                     {copied ? "Copied" : "Copy address"}
                   </button>
-                  <button type="button" className="pill ghost sm" onClick={airdrop} disabled={faucetBusy}>
+                  <button type="button" className="pill ghost sm" onClick={airdrop}
+                    disabled={faucetBusy || !!faucetWhy}
+                    aria-describedby={faucetWhy ? "faucet-why" : undefined}
+                  >
                     Get devnet SOL
                   </button>
+                  {faucetWhy && !faucetBusy && (
+                    <span id="faucet-why" className="fine">
+                      {faucetWhy}
+                    </span>
+                  )}
                 </div>
                 <Ext className="fine" href="https://faucet.solana.com">
                   Or use faucet.solana.com
@@ -663,11 +940,10 @@ export default function App() {
                     Court account on Explorer
                   </Ext>
                 )}
-                {notice && (
-                  <p className="notice" role="status">
-                    {notice}
-                  </p>
-                )}
+                {/* Always mounted so screen readers announce changes. */}
+                <p className={notice ? "notice" : "sr-only"} role="status" aria-live="polite">
+                  {notice}
+                </p>
                 <div
                   className="meter"
                   role="progressbar"
@@ -686,6 +962,11 @@ export default function App() {
                 {current >= 0 ? `${SCRIPT[current].title}: ${STATUS_LABEL[steps[current].status]}` : ""}
               </p>
               {!scenario && <p className="glass tl-card fine">The steps appear once the Panta market is read from mainnet.</p>}
+              <p className="fine tl-hint">
+                On explorer you will also see failed duplicate callbacks (error 6204 AlreadyCallbackedComputation): Arx
+                nodes race to deliver each result and the program accepts only the first. Our links point to the one
+                that succeeded.
+              </p>
               <ol className="timeline">
                 {SCRIPT.map((s, i) => {
                   const st = steps[i];

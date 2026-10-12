@@ -4,6 +4,18 @@ Hosted at https://saring-silk.vercel.app.
 
 Runs one dispute from the browser against Solana devnet and the Arcium devnet cluster (offset 456). The case is a real Panta market read from Solana mainnet: 5 scripted jurors (3 real holders of the market, 2 real Panta traders without a position) plus the visitor as juror #6.
 
+This is a replay: we take a real Panta market and run it as if it were disputed (the demo market was never actually disputed). Panta positions are public on chain; Saring keeps the jury secret and keeps holder ids encrypted inside the court, so the same court works for venues with private positions.
+
+## Panta API
+
+`src/pantaApi.ts` talks to the Panta REST API through `api/panta.js` (key stays server-side). The page uses it three ways:
+
+- **Market picker** ("Pick a Panta market to replay as a dispute"): Panta's catalog joined with holder counts read on chain, filtered to markets that fit the court (3–47 holders). Picking one reloads the case; locked while a run is in progress.
+- **Panta market card**: title, category, phase/status, resolved, volume, YES/NO price, resolution time, oracle and `sentToUma` (Panta escalates disputes to UMA, the voters the Conflict Report measured).
+- **God view cross-check**: for each juror, whether Panta's indexer lists a position in this market. The indexer sometimes misses positions that exist on chain; those show as "chain: yes · API: not indexed". Chain is the source of truth.
+
+On explorer you will also see failed duplicate callbacks (error 6204 `AlreadyCallbackedComputation`): Arx nodes race to deliver each result and the program accepts only the first. The page links the one that succeeded.
+
 Before running, the visitor picks their own ballot (YES/NO) and whether to also bet 0.01 SOL on the court's market. Betting gives them a position, so MPC silently drops their ballot and `excluded` goes up by one. The page shows the expected tally until the chain verdict arrives.
 
 ## Steps (25 without a bet, 28 with one)
@@ -17,7 +29,7 @@ Before running, the visitor picks their own ballot (YES/NO) and whether to also 
 7. Resolve: MPC drops conflicted jurors and publishes `yes / no / excluded / incomplete` (MPC)
 8. Optional: claim the bet (transaction). An incomplete verdict or a tie refunds.
 
-MPC steps link the queue transaction and the successful callback; plain transactions link once. The last finished run (court id, verdict, links) is kept in `localStorage`, so a reload still shows it.
+MPC steps link the queue transaction and the successful callback; plain transactions link once. The last finished run (market, court id and address, verdict, links) is kept in `localStorage` under the burner's pubkey, so a reload still shows it; a saved court the current program (v3.1) can't read is dropped silently.
 
 ## Run
 
@@ -33,7 +45,7 @@ Requirements: the program `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy` is depl
 
 ## Wallet and faucet
 
-The page creates a burner keypair and stores it in `localStorage` (one per origin). "Get devnet SOL" calls `api/faucet.js`, which sends 0.12 SOL (enough for one run, which costs about 0.08 SOL) to a burner holding less than 0.1 SOL, once per 10 minutes per IP and address. https://faucet.solana.com works too.
+The page creates a burner keypair and stores it in `localStorage` (one per origin). "Get devnet SOL" calls `api/faucet.js`, which sends 0.15 SOL (enough for one run, which costs about 0.10 SOL, ~0.105 with a bet) to a burner holding less than 0.12 SOL, once per 10 minutes per IP and address. The page keeps the cooldown end in `localStorage` and shows why the button is disabled. https://faucet.solana.com works too.
 
 If a step fails, "Retry from the failed step" continues the same court. A step whose queue transaction already landed is only re-awaited, never re-sent. "Start a new court" begins again with a fresh court id and fresh keys.
 
