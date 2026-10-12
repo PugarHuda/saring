@@ -114,14 +114,20 @@ export default function App() {
       .catch(() => setProgramLive(null));
   }, [client, refreshBalance]);
 
+  // Our own devnet faucet (app/api/faucet.js): enough SOL for one run.
   async function airdrop() {
-    setNotice("Requesting 1 devnet SOL…");
+    setNotice("Requesting devnet SOL…");
     try {
-      const sig = await client.connection.requestAirdrop(burner.publicKey, LAMPORTS_PER_SOL);
-      await client.connection.confirmTransaction(sig, "confirmed");
-      setNotice("Airdrop received.");
-    } catch {
-      setNotice("The devnet faucet refused (it is often rate-limited). Use faucet.solana.com with the address above.");
+      const r = await fetch("/api/faucet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: burner.publicKey.toBase58() }),
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error);
+      setNotice("Devnet SOL received. You can run the dispute.");
+    } catch (e) {
+      setNotice(`The faucet refused: ${(e as Error).message}. Use faucet.solana.com with the address above.`);
     }
     refreshBalance();
   }
@@ -449,7 +455,7 @@ export default function App() {
                   {copied ? "Copied" : "Copy address"}
                 </button>
                 <button type="button" className="pill ghost sm" onClick={airdrop}>
-                  Airdrop 1 SOL
+                  Get devnet SOL
                 </button>
               </div>
               <a className="fine" href="https://faucet.solana.com" target="_blank" rel="noreferrer">
