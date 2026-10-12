@@ -54,6 +54,6 @@ These are documented, not fixed. Details and residual risk are in [THREAT_MODEL.
 | `excluded` count leaks information for tiny juries | Low–Medium | L9, T-18 |
 | `awaitStep` picks the callback signature heuristically (UI link only) | Info | L10, T-27 |
 | Rate limits are per serverless instance, not global | Low | L11, T-25, T-26 |
-| **Open question:** a late callback after `reset_pending` can cause a lost update | Medium (to confirm) | T-8 |
-| **Open question:** resolve during an in-flight cast; nonce/ciphertext consistency depends on when Arcium reads `.account()` args | Medium (to confirm) | T-9 |
+| Late callback after `reset_pending` can cause a lost update | Medium | T-8: **fixed in v3.2** (callbacks ignored unless they come from the computation holding the lock), on branch `v3.2-pending-deploy`, deploying when devnet SOL for the upgrade buffer is available |
+| `resolve` during an in-flight cast may read ciphertexts that do not match the queued nonce | Medium | T-9: **fixed in v3.2** (resolve takes the lock), same branch; in the live demo resolve is only queued after every ballot has finalized |
 | An aborted `init_court` leaves the court unusable (`ready=0`) with no re-init path | Low | T-15 |
