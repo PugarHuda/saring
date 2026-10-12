@@ -1,0 +1,313 @@
+{
+  "at": "2026-10-12T13:51:57.571Z",
+  "source": "https://api.hyperliquid.xyz/info",
+  "question": {
+    "question": 391,
+    "name": "template:awardWinner",
+    "description": "award:Ballon d'Or|awardingBody:France Football|field:Soccer|period:2026|resolutionDeadline:20261105-2359",
+    "fallbackOutcome": 8656,
+    "namedOutcomes": [
+      8657,
+      8658,
+      8659,
+      8660,
+      8661,
+      8662,
+      8663,
+      8664
+    ],
+    "settledNamedOutcomes": []
+  },
+  "outcomes": [
+    {
+      "outcome": 8656,
+      "name": "template fallback",
+      "description": "other",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8657,
+      "name": "template:awardCandidate",
+      "description": "candidate:Harry Kane|subject:Harry Kane (Bayern Munich, England)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8664,
+      "name": "template:awardCandidate",
+      "description": "candidate:Lionel Messi |subject:Lionel Messi (Inter Miami, Argentina)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8661,
+      "name": "template:awardCandidate",
+      "description": "candidate:Jude Bellingham |subject:Jude Bellingham (Real Madrid, England)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8659,
+      "name": "template:awardCandidate",
+      "description": "candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8663,
+      "name": "template:awardCandidate",
+      "description": "candidate:Erling Haaland|subject:Erling Haaland (Manchester City, Norway)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8662,
+      "name": "template:awardCandidate",
+      "description": "candidate:Ousmane Dembele |subject:Ousmane Dembele (Paris Saint-Germain, France)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8660,
+      "name": "template:awardCandidate",
+      "description": "candidate:Kylian Mbappe |subject:Kylian Mbappe (Real Madrid, France)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    {
+      "outcome": 8658,
+      "name": "template:awardOther",
+      "description": "",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    }
+  ],
+  "holders": [
+    {
+      "address": "0xdddc276efab2c53f7e715d8c6dd547e207cda6a3",
+      "balances": {
+        "+86571": "13.0",
+        "+86590": "632.0"
+      }
+    },
+    {
+      "address": "0xe6b8c86d8df8742030a1c320195ce6900d9ef6d9",
+      "balances": {
+        "+86570": "64.0",
+        "+86571": "141.0",
+        "+86590": "82.0",
+        "+86591": "60.0"
+      }
+    },
+    {
+      "address": "0x09caf3e988a7a43fbf7b5ff895dce0d2a29359f5",
+      "balances": {
+        "+86571": "123.0",
+        "+86590": "262.0",
+        "+86591": "262.0",
+        "+86601": "26.0",
+        "+86641": "23.0"
+      }
+    },
+    {
+      "address": "0xc8b5b0ea995b12da364bb216652302a5161bcd85",
+      "balances": {
+        "+86571": "22.0",
+        "+86591": "82.0"
+      }
+    },
+    {
+      "address": "0x9ee280b9ab8a33a88cfba45f1b184d79bf552c3d",
+      "balances": {
+        "+86591": "111.0"
+      }
+    },
+    {
+      "address": "0x4cae795b7c43cbbdef4a0423470cd3b45f52dc6f",
+      "balances": {
+        "+86570": "3.0"
+      }
+    },
+    {
+      "address": "0xba4042b4f53706b1064925ef58dddc5c5a05f626",
+      "balances": {
+        "+86570": "1312.0",
+        "+86571": "285.0",
+        "+86590": "532.0",
+        "+86591": "587.0",
+        "+86600": "65.0",
+        "+86640": "234.0"
+      }
+    },
+    {
+      "address": "0x27343233ae52bc46d85138bdaf566d6a1960f947",
+      "balances": {
+        "+86571": "75.0",
+        "+86591": "890.0",
+        "+86601": "4132.0",
+        "+86641": "154.0"
+      }
+    },
+    {
+      "address": "0xd3a8ef4625795308367efd20c520aa03af6ebff9",
+      "balances": {
+        "+86560": "337.0"
+      }
+    },
+    {
+      "address": "0xac11f0e7b4e21b4871a6d34e0532da67e84a52b7",
+      "balances": {
+        "+86570": "28.0",
+        "+86581": "11.0",
+        "+86601": "12.0",
+        "+86621": "8.0",
+        "+86641": "20.0"
+      }
+    },
+    {
+      "address": "0x3f99ec6fa14849edae22b4b4142590da9d592800",
+      "balances": {
+        "+86560": "23.0"
+      }
+    },
+    {
+      "address": "0x2316584c0b64d807a95cb675557c940e7629b482",
+      "balances": {
+        "+86580": "65.0",
+        "+86610": "70.0",
+        "+86620": "65.0",
+        "+86630": "65.0",
+        "+86640": "20.0"
+      }
+    },
+    {
+      "address": "0x735708fbcdfc61ccc0dab294ce98c981b6054561",
+      "balances": {
+        "+86580": "295.0",
+        "+86610": "252.0",
+        "+86620": "303.0",
+        "+86630": "249.0",
+        "+86640": "101.0"
+      }
+    },
+    {
+      "address": "0x1354dd74f44653e97aaaecdd7a88861111dbcd51",
+      "balances": {
+        "+86591": "450.0"
+      }
+    },
+    {
+      "address": "0xa1b70d3db68f87f884abbe5e964b6f761d0df1b1",
+      "balances": {
+        "+86600": "178.0"
+      }
+    },
+    {
+      "address": "0x9e62fe799c3d7555417fcc765b707f418f292ced",
+      "balances": {
+        "+86571": "85.0",
+        "+86590": "551.0",
+        "+86601": "337.0",
+        "+86641": "307.0"
+      }
+    },
+    {
+      "address": "0xcfe1d1a3d50e0e5656aa3fb5325e78537620b27d",
+      "balances": {
+        "+86570": "16.0",
+        "+86580": "97.0",
+        "+86590": "39.0"
+      }
+    },
+    {
+      "address": "0xecd227b51328faba79c951da9f5e582387b7f89f",
+      "balances": {
+        "+86581": "86.0"
+      }
+    }
+  ],
+  "candidates": 31,
+  "trades": 160
+}

@@ -1,0 +1,29 @@
+question #391: award:Ballon d'Or|awardingBody:France Football|field:Soccer|period:2026|resolutionDeadline:20261105-2359
+  outcome 8656 other sides Yes=#86560 No=#86561
+  outcome 8657 candidate:Harry Kane|subject:Harry Kane (Bayern Munich, England) sides Yes=#86570 No=#86571
+  outcome 8664 candidate:Lionel Messi |subject:Lionel Messi (Inter Miami, Argentina) sides Yes=#86640 No=#86641
+  outcome 8661 candidate:Jude Bellingham |subject:Jude Bellingham (Real Madrid, England) sides Yes=#86610 No=#86611
+  outcome 8659 candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain) sides Yes=#86590 No=#86591
+  outcome 8663 candidate:Erling Haaland|subject:Erling Haaland (Manchester City, Norway) sides Yes=#86630 No=#86631
+  outcome 8662 candidate:Ousmane Dembele |subject:Ousmane Dembele (Paris Saint-Germain, France) sides Yes=#86620 No=#86621
+  outcome 8660 candidate:Kylian Mbappe |subject:Kylian Mbappe (Real Madrid, France) sides Yes=#86600 No=#86601
+  outcome 8658  sides Yes=#86580 No=#86581
+160 recent trades, 31 distinct counterparties, 18 confirmed holders (non-zero "+enc" in spotClearinghouseState):
+  0xdddc276efab2c53f7e715d8c6dd547e207cda6a3 id=3569054392 {"+86571":"13.0","+86590":"632.0"}
+  0xe6b8c86d8df8742030a1c320195ce6900d9ef6d9 id=2812997862 {"+86570":"64.0","+86571":"141.0","+86590":"82.0","+86591":"60.0"}
+  0x09caf3e988a7a43fbf7b5ff895dce0d2a29359f5 id=2291451340 {"+86571":"123.0","+86590":"262.0","+86591":"262.0","+86601":"26.0","+86641":"23.0"}
+  0xc8b5b0ea995b12da364bb216652302a5161bcd85 id=2533587963 {"+86571":"22.0","+86591":"82.0"}
+  0x9ee280b9ab8a33a88cfba45f1b184d79bf552c3d id=2272036626 {"+86591":"111.0"}
+  0x4cae795b7c43cbbdef4a0423470cd3b45f52dc6f id=769405657 {"+86570":"3.0"}
+  0xba4042b4f53706b1064925ef58dddc5c5a05f626 id=2086386887 {"+86570":"1312.0","+86571":"285.0","+86590":"532.0","+86591":"587.0","+86600":"65.0","+86640":"234.0"}
+  0x27343233ae52bc46d85138bdaf566d6a1960f947 id=769431725 {"+86571":"75.0","+86591":"890.0","+86601":"4132.0","+86641":"154.0"}
+  0xd3a8ef4625795308367efd20c520aa03af6ebff9 id=1416834281 {"+86560":"337.0"}
+  0xac11f0e7b4e21b4871a6d34e0532da67e84a52b7 id=956411474 {"+86570":"28.0","+86581":"11.0","+86601":"12.0","+86621":"8.0","+86641":"20.0"}
+  0x3f99ec6fa14849edae22b4b4142590da9d592800 id=1301788772 {"+86560":"23.0"}
+  0x2316584c0b64d807a95cb675557c940e7629b482 id=2762434016 {"+86580":"65.0","+86610":"70.0","+86620":"65.0","+86630":"65.0","+86640":"20.0"}
+  0x735708fbcdfc61ccc0dab294ce98c981b6054561 id=1676866339 {"+86580":"295.0","+86610":"252.0","+86620":"303.0","+86630":"249.0","+86640":"101.0"}
+  0x1354dd74f44653e97aaaecdd7a88861111dbcd51 id=214238744 {"+86591":"450.0"}
+  0xa1b70d3db68f87f884abbe5e964b6f761d0df1b1 id=1010099086 {"+86600":"178.0"}
+  0x9e62fe799c3d7555417fcc765b707f418f292ced id=2249442854 {"+86571":"85.0","+86590":"551.0","+86601":"337.0","+86641":"307.0"}
+  0xcfe1d1a3d50e0e5656aa3fb5325e78537620b27d id=830525419 {"+86570":"16.0","+86580":"97.0","+86590":"39.0"}
+  0xecd227b51328faba79c951da9f5e582387b7f89f id=1910112672 {"+86581":"86.0"}

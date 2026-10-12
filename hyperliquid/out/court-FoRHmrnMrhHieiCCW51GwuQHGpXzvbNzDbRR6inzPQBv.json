@@ -1,0 +1,284 @@
+{
+  "at": "2026-10-12T13:54:13.405Z",
+  "hyperliquid": {
+    "info": "https://api.hyperliquid.xyz/info",
+    "question": {
+      "question": 391,
+      "name": "template:awardWinner",
+      "description": "award:Ballon d'Or|awardingBody:France Football|field:Soccer|period:2026|resolutionDeadline:20261105-2359",
+      "fallbackOutcome": 8656,
+      "namedOutcomes": [
+        8657,
+        8658,
+        8659,
+        8660,
+        8661,
+        8662,
+        8663,
+        8664
+      ],
+      "settledNamedOutcomes": []
+    },
+    "target": {
+      "outcome": 8659,
+      "name": "template:awardCandidate",
+      "description": "candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain)",
+      "sideSpecs": [
+        {
+          "name": "Yes"
+        },
+        {
+          "name": "No"
+        }
+      ],
+      "quoteToken": "USDC",
+      "venue": "out",
+      "deployerFeeScale": "1.0"
+    },
+    "holders": [
+      {
+        "address": "0x3bf39e4677efb07a775437b5e4bd6acf12906858",
+        "balances": {
+          "+86590": "104.0",
+          "+86591": "42.0"
+        }
+      },
+      {
+        "address": "0xdddc276efab2c53f7e715d8c6dd547e207cda6a3",
+        "balances": {
+          "+86571": "13.0",
+          "+86590": "419.0"
+        }
+      },
+      {
+        "address": "0xe6b8c86d8df8742030a1c320195ce6900d9ef6d9",
+        "balances": {
+          "+86570": "64.0",
+          "+86571": "141.0",
+          "+86590": "82.0",
+          "+86591": "60.0"
+        }
+      },
+      {
+        "address": "0x09caf3e988a7a43fbf7b5ff895dce0d2a29359f5",
+        "balances": {
+          "+86571": "123.0",
+          "+86590": "262.0",
+          "+86591": "304.0",
+          "+86601": "26.0",
+          "+86641": "23.0"
+        }
+      },
+      {
+        "address": "0xc8b5b0ea995b12da364bb216652302a5161bcd85",
+        "balances": {
+          "+86571": "22.0"
+        }
+      },
+      {
+        "address": "0x4cae795b7c43cbbdef4a0423470cd3b45f52dc6f",
+        "balances": {
+          "+86570": "3.0"
+        }
+      },
+      {
+        "address": "0xba4042b4f53706b1064925ef58dddc5c5a05f626",
+        "balances": {
+          "+86570": "1312.0",
+          "+86571": "285.0",
+          "+86590": "532.0",
+          "+86591": "587.0",
+          "+86600": "65.0",
+          "+86640": "234.0"
+        }
+      },
+      {
+        "address": "0x27343233ae52bc46d85138bdaf566d6a1960f947",
+        "balances": {
+          "+86571": "75.0",
+          "+86591": "890.0",
+          "+86601": "4132.0",
+          "+86641": "154.0"
+        }
+      },
+      {
+        "address": "0xd3a8ef4625795308367efd20c520aa03af6ebff9",
+        "balances": {
+          "+86560": "337.0"
+        }
+      },
+      {
+        "address": "0xac11f0e7b4e21b4871a6d34e0532da67e84a52b7",
+        "balances": {
+          "+86570": "28.0",
+          "+86581": "11.0",
+          "+86601": "12.0",
+          "+86621": "8.0",
+          "+86641": "20.0"
+        }
+      },
+      {
+        "address": "0x3f99ec6fa14849edae22b4b4142590da9d592800",
+        "balances": {
+          "+86560": "23.0"
+        }
+      },
+      {
+        "address": "0x2316584c0b64d807a95cb675557c940e7629b482",
+        "balances": {
+          "+86580": "65.0",
+          "+86610": "70.0",
+          "+86620": "65.0",
+          "+86630": "65.0",
+          "+86640": "20.0"
+        }
+      },
+      {
+        "address": "0x735708fbcdfc61ccc0dab294ce98c981b6054561",
+        "balances": {
+          "+86580": "295.0",
+          "+86610": "252.0",
+          "+86620": "303.0",
+          "+86630": "249.0",
+          "+86640": "101.0"
+        }
+      },
+      {
+        "address": "0x06b79146f1e54ef4e1ab9b1fe2cc4b4576cc33f1",
+        "balances": {
+          "+86570": "251.0",
+          "+86571": "250.0",
+          "+86590": "250.0",
+          "+86591": "250.0"
+        }
+      },
+      {
+        "address": "0xa1b70d3db68f87f884abbe5e964b6f761d0df1b1",
+        "balances": {
+          "+86600": "178.0"
+        }
+      },
+      {
+        "address": "0x9e62fe799c3d7555417fcc765b707f418f292ced",
+        "balances": {
+          "+86571": "85.0",
+          "+86590": "551.0",
+          "+86601": "337.0",
+          "+86641": "307.0"
+        }
+      },
+      {
+        "address": "0xcfe1d1a3d50e0e5656aa3fb5325e78537620b27d",
+        "balances": {
+          "+86570": "16.0",
+          "+86580": "97.0",
+          "+86590": "39.0"
+        }
+      },
+      {
+        "address": "0xecd227b51328faba79c951da9f5e582387b7f89f",
+        "balances": {
+          "+86581": "86.0"
+        }
+      }
+    ],
+    "candidates": 31,
+    "trades": 160
+  },
+  "court": "FoRHmrnMrhHieiCCW51GwuQHGpXzvbNzDbRR6inzPQBv",
+  "courtId": 299183354,
+  "label": "hl:out:q391:o8659",
+  "jurors": [
+    {
+      "label": "juror A (real HL holder)",
+      "address": "0x27343233ae52bc46d85138bdaf566d6a1960f947",
+      "yes": true,
+      "holds": {
+        "+86571": "75.0",
+        "+86591": "890.0",
+        "+86601": "4132.0",
+        "+86641": "154.0"
+      },
+      "jurorId": 769431725
+    },
+    {
+      "label": "juror B (clean, confirmed 0 outcome balance)",
+      "address": "0xc4df78e0a48a1934a7596b4c86644ff20828950d",
+      "yes": false,
+      "holds": {},
+      "jurorId": 665060247
+    },
+    {
+      "label": "juror C (clean, confirmed 0 outcome balance)",
+      "address": "0xd53c2523f8323bfdba2a389aff0f6440517392f2",
+      "yes": false,
+      "holds": {},
+      "jurorId": 1233641487
+    }
+  ],
+  "mirroredIds": [
+    3098735939,
+    3569054392,
+    2812997862,
+    2291451340,
+    2533587963,
+    769405657,
+    2086386887,
+    769431725,
+    1416834281,
+    956411474,
+    1301788772,
+    2762434016,
+    1676866339,
+    585836629,
+    1010099086,
+    2249442854,
+    830525419,
+    1910112672
+  ],
+  "txs": {
+    "open": "https://explorer.solana.com/tx/rRLyzgG87SdTxynbe3RBPTPXuTjch4B1ktuoaAnLEx67cpKpVqzUCLxXgkU8bCRinc2bvsC9GjD98husDLjmCr4?cluster=devnet",
+    "seat 0x27343233ae52bc46d85138bdaf566d6a1960f947": "https://explorer.solana.com/tx/2oBdevDhQx7ywtnAi28LptKMACyLBgVVhHTp3z7EEs6erhaFqsQJqiCADUUTjMkN1GEqc37GFuRXmj9mfhAsXeFt?cluster=devnet",
+    "seat 0xc4df78e0a48a1934a7596b4c86644ff20828950d": "https://explorer.solana.com/tx/3P2DrvACX8mY34ZkspdDwMFocyw7jNC3dhaACZohRnzB6nkJmGD9mDTfo1u2PwTq3Mn3zWjs8FQ8MXM3UHQuLHat?cluster=devnet",
+    "seat 0xd53c2523f8323bfdba2a389aff0f6440517392f2": "https://explorer.solana.com/tx/24SskiqLyAAvAXUT9M6WraHfbZ4ggvMP7woQHFuSD161fEtmxCBQk9jBxYvx7aKkY9J54oKYGB6VXSqMhEfHfHyZ?cluster=devnet",
+    "mirror batch 1": "https://explorer.solana.com/tx/3fjYXcoq1oz2gFQZWDEkZVVnJ9oZvKZ59FmMDen7eGag5udxr3jTXqKsfAKz7PwCKg8vArh5ejngFMxDCdgXG2Sf?cluster=devnet",
+    "mirror batch 2": "https://explorer.solana.com/tx/5rgvpf2V3ihnbA6Pv7wkDGzMbP4mFwZzvmUarFmLgDqP6kH8ex7JxVpC2jEv1uxF5cgEenYWWEF4uFRmnyqtPNqS?cluster=devnet",
+    "mirror batch 3": "https://explorer.solana.com/tx/4V7679KiW1aFzyWsGiv9J1GdbVeg5kReQz87MGxEzbfAGWMdEU28bECogst91QSEuuaDBjGbWp5mopmKcTwg79NC?cluster=devnet",
+    "cast 0x27343233ae52bc46d85138bdaf566d6a1960f947": "https://explorer.solana.com/tx/4S41fSacDLgbH59PQ2h4xQ4orHfwHWc3T8hVGfmcoC6o2LB1ap27i6fhUMNcKtTjD6rw2CEigF2BfawgoeVpc1kc?cluster=devnet",
+    "cast 0xc4df78e0a48a1934a7596b4c86644ff20828950d": "https://explorer.solana.com/tx/43PpKyeKXqfK3mxFvaZqR1Gqg8WjX64R6qg2NEd3L92sSpLZ3bXCPwFsuG3NcgKY9JPQ5VjR9izAZhYgAZVLykJj?cluster=devnet",
+    "cast 0xd53c2523f8323bfdba2a389aff0f6440517392f2": "https://explorer.solana.com/tx/4HFkiAQ3yZcxHefUmtFZTUiJKRiCUWRfK7TopJJ8nmHpuh1BQF8Qkx34Zwi6MJJsRyqNWNC4UCiCLtGxSgwDueNo?cluster=devnet",
+    "resolve": "https://explorer.solana.com/tx/5vskW3KgJ9WYKgkzy8773i3tF7aFpUwqvviLNYodNyAjm8oCkNCVwKz7wF5nfNSw3BN31t8uCjTU6xZCHNFgGfNX?cluster=devnet"
+  },
+  "verdict": {
+    "yes": 0,
+    "no": 2,
+    "excluded": 1,
+    "incomplete": false,
+    "outcome": "NO"
+  },
+  "settlement": {
+    "submitted": false,
+    "reason": "requires the deployer's (or a settleOutcome sub-deployer's) key for this venue",
+    "settleFraction": "0",
+    "action": {
+      "type": "outcomeDeploy",
+      "venue": "out",
+      "operation": {
+        "settleOutcome": {
+          "outcome": 8659,
+          "settleFraction": "0",
+          "details": "",
+          "nameAndDescription": [
+            "template:awardCandidate",
+            "candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain)"
+          ],
+          "sideNames": [
+            "Yes",
+            "No"
+          ]
+        }
+      }
+    }
+  },
+  "devnetSolSpent": 0.052973345
+}

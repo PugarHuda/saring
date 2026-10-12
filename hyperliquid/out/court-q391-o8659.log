@@ -1,0 +1,36 @@
+devnet payer balance 1.7816 SOL
+HL #391 award:Ballon d'Or|awardingBody:France Football|field:Soccer|period:2026|resolutionDeadline:20261105-2359
+target outcome 8659: candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain)
+18 confirmed holders (of 31 trade counterparties)
+court FoRHmrnMrhHieiCCW51GwuQHGpXzvbNzDbRR6inzPQBv (id 299183354) label "hl:out:q391:o8659" https://explorer.solana.com/tx/rRLyzgG87SdTxynbe3RBPTPXuTjch4B1ktuoaAnLEx67cpKpVqzUCLxXgkU8bCRinc2bvsC9GjD98husDLjmCr4?cluster=devnet
+seated juror A (real HL holder) 0x27343233ae52bc46d85138bdaf566d6a1960f947 id=769431725 https://explorer.solana.com/tx/2oBdevDhQx7ywtnAi28LptKMACyLBgVVhHTp3z7EEs6erhaFqsQJqiCADUUTjMkN1GEqc37GFuRXmj9mfhAsXeFt?cluster=devnet
+seated juror B (clean, confirmed 0 outcome balance) 0xc4df78e0a48a1934a7596b4c86644ff20828950d id=665060247 https://explorer.solana.com/tx/3P2DrvACX8mY34ZkspdDwMFocyw7jNC3dhaACZohRnzB6nkJmGD9mDTfo1u2PwTq3Mn3zWjs8FQ8MXM3UHQuLHat?cluster=devnet
+seated juror C (clean, confirmed 0 outcome balance) 0xd53c2523f8323bfdba2a389aff0f6440517392f2 id=1233641487 https://explorer.solana.com/tx/24SskiqLyAAvAXUT9M6WraHfbZ4ggvMP7woQHFuSD161fEtmxCBQk9jBxYvx7aKkY9J54oKYGB6VXSqMhEfHfHyZ?cluster=devnet
+mirrored holders batch 1 (encrypted) https://explorer.solana.com/tx/3fjYXcoq1oz2gFQZWDEkZVVnJ9oZvKZ59FmMDen7eGag5udxr3jTXqKsfAKz7PwCKg8vArh5ejngFMxDCdgXG2Sf?cluster=devnet
+mirrored holders batch 2 (encrypted) https://explorer.solana.com/tx/5rgvpf2V3ihnbA6Pv7wkDGzMbP4mFwZzvmUarFmLgDqP6kH8ex7JxVpC2jEv1uxF5cgEenYWWEF4uFRmnyqtPNqS?cluster=devnet
+mirrored holders batch 3 (encrypted) https://explorer.solana.com/tx/4V7679KiW1aFzyWsGiv9J1GdbVeg5kReQz87MGxEzbfAGWMdEU28bECogst91QSEuuaDBjGbWp5mopmKcTwg79NC?cluster=devnet
+cast juror A (real HL holder) YES https://explorer.solana.com/tx/4S41fSacDLgbH59PQ2h4xQ4orHfwHWc3T8hVGfmcoC6o2LB1ap27i6fhUMNcKtTjD6rw2CEigF2BfawgoeVpc1kc?cluster=devnet
+cast juror B (clean, confirmed 0 outcome balance) NO https://explorer.solana.com/tx/43PpKyeKXqfK3mxFvaZqR1Gqg8WjX64R6qg2NEd3L92sSpLZ3bXCPwFsuG3NcgKY9JPQ5VjR9izAZhYgAZVLykJj?cluster=devnet
+cast juror C (clean, confirmed 0 outcome balance) NO https://explorer.solana.com/tx/4HFkiAQ3yZcxHefUmtFZTUiJKRiCUWRfK7TopJJ8nmHpuh1BQF8Qkx34Zwi6MJJsRyqNWNC4UCiCLtGxSgwDueNo?cluster=devnet
+verdict { yes: 0, no: 2, excluded: 1, incomplete: false, outcome: 'NO' } https://explorer.solana.com/tx/5vskW3KgJ9WYKgkzy8773i3tF7aFpUwqvviLNYodNyAjm8oCkNCVwKz7wF5nfNSw3BN31t8uCjTU6xZCHNFgGfNX?cluster=devnet
+HyperCore settlement (NOT SUBMITTED: requires the deployer's settleOutcome permission for venue "out"):
+{
+  "type": "outcomeDeploy",
+  "venue": "out",
+  "operation": {
+    "settleOutcome": {
+      "outcome": 8659,
+      "settleFraction": "0",
+      "details": "",
+      "nameAndDescription": [
+        "template:awardCandidate",
+        "candidate:Lamine Yamal|subject:Lamine Yamal (FC Barcelona, Spain)"
+      ],
+      "sideNames": [
+        "Yes",
+        "No"
+      ]
+    }
+  }
+}
+devnet SOL spent 0.05297

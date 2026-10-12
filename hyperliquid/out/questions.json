@@ -1,0 +1,474 @@
+{
+  "at": "2026-10-12T13:51:49.412Z",
+  "source": "https://api.hyperliquid.xyz/info",
+  "questions": [
+    {
+      "question": 411,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:RB Leipzig|participantB:PSV Eindhoven|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10823,
+      "namedOutcomes": [
+        10824,
+        10825,
+        10826
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 391,
+      "name": "template:awardWinner",
+      "description": "award:Ballon d'Or|awardingBody:France Football|field:Soccer|period:2026|resolutionDeadline:20261105-2359",
+      "fallbackOutcome": 8656,
+      "namedOutcomes": [
+        8657,
+        8658,
+        8659,
+        8660,
+        8661,
+        8662,
+        8663,
+        8664
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 198,
+      "name": "template:sportsTournamentWinner",
+      "description": "competition:English Premier League|officialSource:English Premier League|resolutionDeadline:20270605-1200|season:2026/2027|sport:football/soccer",
+      "fallbackOutcome": 1472,
+      "namedOutcomes": [
+        1473,
+        1474,
+        1475,
+        1476,
+        1477,
+        1478
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 199,
+      "name": "template:sportsTournamentWinner",
+      "description": "competition:UEFA Champions League|officialSource:UEFA|resolutionDeadline:20270612-1200|season:2026/2027|sport:football/soccer",
+      "fallbackOutcome": 1479,
+      "namedOutcomes": [
+        1480,
+        1481,
+        1482,
+        1483,
+        1484,
+        1485
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 200,
+      "name": "template:sportsTournamentWinner",
+      "description": "competition:USA National Football League (NFL)|officialSource:USA National Football League (NFL)|resolutionDeadline:20270221-1200|season:2027|sport:football",
+      "fallbackOutcome": 1486,
+      "namedOutcomes": [
+        1487,
+        1488,
+        1489,
+        1490,
+        1491,
+        1492
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 289,
+      "name": "template:policyRateDecision",
+      "description": "decisionDeadline:20261209-2300|decisionLabel:October 2026|institution:Federal Reserve's Open Market Committee|officialSource:Federal Reserve's Open Market Committee|policyMeasure:The upper bound target range of the federal funds rate|scheduledDecision:20261028-1800",
+      "fallbackOutcome": 3599,
+      "namedOutcomes": [
+        3600,
+        3601,
+        3602
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 420,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Slovan Bratislava|participantB:VfB Stuttgart|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11124,
+      "namedOutcomes": [
+        11125,
+        11126,
+        11127
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 409,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Inter Milan|participantB:Club Brugge|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10815,
+      "namedOutcomes": [
+        10816,
+        10817,
+        10818
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 422,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Manchester City|participantB:Paris Saint Germain|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Match 2",
+      "fallbackOutcome": 11136,
+      "namedOutcomes": [
+        11137,
+        11138,
+        11139
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 400,
+      "name": "template:sportsContestResult",
+      "description": "competition:English Premier League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:English Premier League|participantA:Coventry City|participantB:Newcastle United|resolutionDeadline:20261013-1900|scheduledStart:20261012-1900|season:2026/27|sport:Soccer|stage:Matchday 6",
+      "fallbackOutcome": 9068,
+      "namedOutcomes": [
+        9069,
+        9070,
+        9071
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 410,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Villarreal CF|participantB:Napoli|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10819,
+      "namedOutcomes": [
+        10820,
+        10821,
+        10822
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 331,
+      "name": "template:policyRateDecision",
+      "description": "decisionDeadline:20261104-1800|decisionLabel:October 2026 FOMC|institution:Federal Reserve|officialSource:federalreserve.gov|policyMeasure:the upper bound of the federal funds rate target range|scheduledDecision:20261028-1800",
+      "fallbackOutcome": 4885,
+      "namedOutcomes": [
+        4886,
+        4887,
+        4888
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 250,
+      "name": "template:sportsTournamentWinner",
+      "description": "competition:MLB Championship|officialSource:MLB|resolutionDeadline:20261110-0000|season:2026|sport:baseball",
+      "fallbackOutcome": 2549,
+      "namedOutcomes": [
+        2550,
+        2551,
+        2552,
+        2553,
+        2554,
+        2555,
+        2556,
+        2557
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 413,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Galatasaray|participantB:FC Barcelona|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10831,
+      "namedOutcomes": [
+        10832,
+        10833,
+        10834
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 394,
+      "name": "template:sportsContestResult",
+      "description": "competition:Spanish La Liga|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Spanish La Liga|participantA:Levante|participantB:Sevilla FC|resolutionDeadline:20261013-1900|scheduledStart:20261012-1900|season:2026/27|sport:Soccer|stage:Matchday 8",
+      "fallbackOutcome": 9040,
+      "namedOutcomes": [
+        9041,
+        9042,
+        9043
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 418,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:FK Bodo/Glimt|participantB:Borussia Dortmund|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11116,
+      "namedOutcomes": [
+        11117,
+        11118,
+        11119
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 421,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Aston Villa|participantB:Fenerbahce|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11128,
+      "namedOutcomes": [
+        11129,
+        11130,
+        11131
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 412,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Arsenal|participantB:LOSC Lille|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10827,
+      "namedOutcomes": [
+        10828,
+        10829,
+        10830
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 423,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:AS Roma|participantB:Real Madrid|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11140,
+      "namedOutcomes": [
+        11141,
+        11142,
+        11143
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 408,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Viking|participantB:FC Bayern Munich|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10811,
+      "namedOutcomes": [
+        10812,
+        10813,
+        10814
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 419,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:FC Shakhtar Donetsk|participantB:AEK Athens|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11120,
+      "namedOutcomes": [
+        11121,
+        11122,
+        11123
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 405,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:RC Lens|participantB:Sporting CP|resolutionDeadline:20261014-1645|scheduledStart:20261013-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10796,
+      "namedOutcomes": [
+        10797,
+        10798,
+        10799
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 406,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Sabah Baku|participantB:SK Slavia Praha|resolutionDeadline:20261014-1645|scheduledStart:20261013-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10803,
+      "namedOutcomes": [
+        10804,
+        10805,
+        10806
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 407,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Atletico Madrid|participantB:Manchester United|resolutionDeadline:20261014-1900|scheduledStart:20261013-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 10807,
+      "namedOutcomes": [
+        10808,
+        10809,
+        10810
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 417,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Real Betis|participantB:FC Porto|resolutionDeadline:20261015-1900|scheduledStart:20261014-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11112,
+      "namedOutcomes": [
+        11113,
+        11114,
+        11115
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 415,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:LASK Linz|participantB:Liverpool|resolutionDeadline:20261015-1645|scheduledStart:20261014-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11104,
+      "namedOutcomes": [
+        11105,
+        11106,
+        11107
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 416,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Champions League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Feyenoord|participantB:Como|resolutionDeadline:20261015-1645|scheduledStart:20261014-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11108,
+      "namedOutcomes": [
+        11109,
+        11110,
+        11111
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 424,
+      "name": "Recurring",
+      "description": "class:priceBucket|underlying:BTC|expiry:20261013-0600|priceThresholds:82308,85667|period:1d",
+      "fallbackOutcome": 11387,
+      "namedOutcomes": [
+        11388,
+        11389,
+        11390
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 425,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Lyon|participantB:Crystal Palace|resolutionDeadline:20261016-1645|scheduledStart:20261015-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11465,
+      "namedOutcomes": [
+        11466,
+        11467,
+        11468
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 426,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:SCU Torreense|participantB:Sunderland|resolutionDeadline:20261016-1645|scheduledStart:20261015-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11469,
+      "namedOutcomes": [
+        11470,
+        11471,
+        11472
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 427,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Bournemouth AFC|participantB:Sturm Graz|resolutionDeadline:20261016-1900|scheduledStart:20261015-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11473,
+      "namedOutcomes": [
+        11474,
+        11475,
+        11476
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 428,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Red Bull Salzburg|participantB:AC Milan|resolutionDeadline:20261016-1645|scheduledStart:20261015-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11477,
+      "namedOutcomes": [
+        11478,
+        11479,
+        11480
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 429,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Union Saint-Gilloise|participantB:Real Sociedad|resolutionDeadline:20261016-1645|scheduledStart:20261015-1645|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11481,
+      "namedOutcomes": [
+        11482,
+        11483,
+        11484
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 430,
+      "name": "template:sportsTournamentWinner",
+      "description": "competition:NBA |officialSource:National Basketball Association|resolutionDeadline:20270630-2359|season:2026/2027|sport:Basketball",
+      "fallbackOutcome": 11491,
+      "namedOutcomes": [
+        11492,
+        11493,
+        11494,
+        11495,
+        11496,
+        11497,
+        11498,
+        11499
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 431,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:RC Celta|participantB:Juventus|resolutionDeadline:20261016-1900|scheduledStart:20261015-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11500,
+      "namedOutcomes": [
+        11501,
+        11502,
+        11503
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 432,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:TSG Hoffenheim|participantB:Besiktas JK|resolutionDeadline:20261016-1900|scheduledStart:20261015-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11520,
+      "namedOutcomes": [
+        11521,
+        11522,
+        11523
+      ],
+      "settledNamedOutcomes": []
+    },
+    {
+      "question": 433,
+      "name": "template:sportsContestResult",
+      "description": "competition:UEFA Europa League|contestType:Match|countedPlay:regulation time, 90 minutes plus stoppage time|officialSource:Union of European Football Associations|participantA:Benfica|participantB:Celtic FC|resolutionDeadline:20261016-1900|scheduledStart:20261015-1900|season:2026/27|sport:Soccer|stage:Matchday 2",
+      "fallbackOutcome": 11528,
+      "namedOutcomes": [
+        11529,
+        11530,
+        11531
+      ],
+      "settledNamedOutcomes": []
+    }
+  ]
+}
