@@ -139,7 +139,7 @@ Each instruction waits for its MPC computation to finalize, so a run takes sever
 All five v3 computation definitions are initialized. Verified v3 runs on devnet:
 
 - **Browser, production app:** the visitor voted NO and bet NO. Verdict yes=0 no=2 excluded=4 incomplete=false (the visitor's own ballot was dropped as a conflict), and the 0.01 SOL bet was paid out and claimed.
-- **CLI, scripted scenario** (stale-key bribe, forged overwrite, market claim): yes=0 no=2 excluded=3, and the NO bettor was paid the 0.03 SOL pool. [CONFIRM CLI RUN]
+- **CLI, scripted scenario** (stale-key bribe, forged overwrite, market claim): yes=0 no=2 excluded=3, and the NO bettor was paid the 0.03 SOL pool. (court AyL12VgeDcf5PNrBEujyptgJ7V9MSwYyr8Eftuc7vMPk; payout 0.029995 SOL after fee; vault emptied)
 
 To run the same Panta scenario against devnet (a fresh court id each run, so re-runs don't collide):
 

@@ -85,6 +85,7 @@ pub mod blindcourt {
         let court = &mut ctx.accounts.court_acc;
         court.bump = ctx.bumps.court_acc;
         court.pending = true;
+        court.pending_slot = Clock::get()?.slot;
         court.id = id;
         court.authority = ctx.accounts.payer.key();
         court.market = market;
@@ -115,11 +116,12 @@ pub mod blindcourt {
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(InitCourtV3Output { field_0 }) => field_0,
-            Err(_) => return Err(ErrorCode::AbortedComputation.into()),
+            Err(_) => return aborted(&mut ctx.accounts.court_acc),
         };
         ctx.accounts.court_acc.state = o.ciphertexts;
         ctx.accounts.court_acc.nonce = o.nonce;
         ctx.accounts.court_acc.pending = false;
+        ctx.accounts.court_acc.ready = true;
         Ok(())
     }
 
@@ -169,7 +171,7 @@ pub mod blindcourt {
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(AddJurorV3Output { field_0 }) => field_0,
-            Err(_) => return Err(ErrorCode::AbortedComputation.into()),
+            Err(_) => return aborted(&mut ctx.accounts.court_acc),
         };
         ctx.accounts.court_acc.state = o.ciphertexts;
         ctx.accounts.court_acc.nonce = o.nonce;
@@ -227,7 +229,7 @@ pub mod blindcourt {
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(RecordPositionsV3Output { field_0 }) => field_0,
-            Err(_) => return Err(ErrorCode::AbortedComputation.into()),
+            Err(_) => return aborted(&mut ctx.accounts.court_acc),
         };
         ctx.accounts.court_acc.state = o.ciphertexts;
         ctx.accounts.court_acc.nonce = o.nonce;
@@ -285,7 +287,7 @@ pub mod blindcourt {
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(CastV3Output { field_0 }) => field_0,
-            Err(_) => return Err(ErrorCode::AbortedComputation.into()),
+            Err(_) => return aborted(&mut ctx.accounts.court_acc),
         };
         ctx.accounts.court_acc.state = o.ciphertexts;
         ctx.accounts.court_acc.nonce = o.nonce;
@@ -300,7 +302,13 @@ pub mod blindcourt {
             ctx.accounts.payer.key() == ctx.accounts.court_acc.authority,
             ErrorCode::InvalidAuthority
         );
-        lock(&mut ctx.accounts.court_acc)?;
+        // Resolve reads the state but never writes it, so it doesn't need the
+        // shared lock: a stream of junk ballots can't hold it off. Once queued,
+        // `resolving` stops new seats, positions, ballots and bets.
+        let court = &mut ctx.accounts.court_acc;
+        require!(court.ready, ErrorCode::NotReady);
+        require!(!court.resolved && !court.resolving, ErrorCode::AlreadyResolved);
+        court.resolving = true;
         let args = ArgBuilder::new()
             .plaintext_u128(ctx.accounts.court_acc.nonce)
             .account(ctx.accounts.court_acc.key(), STATE_OFFSET, STATE_BYTES)
@@ -330,11 +338,15 @@ pub mod blindcourt {
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(ResolveV3Output { field_0 }) => field_0,
-            Err(_) => return Err(ErrorCode::AbortedComputation.into()),
+            Err(_) => {
+                ctx.accounts.court_acc.resolving = false;
+                emit!(ComputationAbortedEvent { court: ctx.accounts.court_acc.key() });
+                return Ok(());
+            }
         };
         let court = &mut ctx.accounts.court_acc;
         require!(!court.resolved, ErrorCode::AlreadyResolved);
-        court.pending = false;
+        court.resolving = false;
         court.resolved = true;
         court.yes = o.field_0;
         court.no = o.field_1;
@@ -353,7 +365,12 @@ pub mod blindcourt {
     /// Releases the lock after an aborted computation (its callback never cleared it).
     /// Authority only.
     pub fn reset_pending(ctx: Context<ResetPending>, _id: u32) -> Result<()> {
-        ctx.accounts.court_acc.pending = false;
+        let court = &mut ctx.accounts.court_acc;
+        require!(
+            Clock::get()?.slot > court.pending_slot + RESET_AFTER_SLOTS,
+            ErrorCode::ComputationPending
+        );
+        court.pending = false;
         Ok(())
     }
 
@@ -361,6 +378,19 @@ pub mod blindcourt {
 
     /// Opens a YES/NO pari-mutuel market that settles on `court`'s verdict.
     pub fn create_market(ctx: Context<CreateMarket>) -> Result<()> {
+        // The vault keeps a rent-exempt reserve forever, so small first bets and
+        // the last winner's claim (which leaves rounding dust) never fail on rent.
+        let reserve = Rent::get()?.minimum_balance(0);
+        anchor_lang::system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.key(),
+                anchor_lang::system_program::Transfer {
+                    from: ctx.accounts.payer.to_account_info(),
+                    to: ctx.accounts.vault.to_account_info(),
+                },
+            ),
+            reserve,
+        )?;
         let m = &mut ctx.accounts.market;
         m.court_acc = ctx.accounts.court_acc.key();
         m.bump = ctx.bumps.market;
@@ -372,10 +402,18 @@ pub mod blindcourt {
     /// Bets are public; the court authority mirrors bettors into the court with
     /// `record_positions`, so a bettor who also sits on the jury is excluded.
     pub fn bet(ctx: Context<Bet>, yes: bool, lamports: u64) -> Result<()> {
-        require!(!ctx.accounts.court_acc.resolved, ErrorCode::AlreadyResolved);
-        require!(lamports > 0, ErrorCode::ZeroStake);
+        let court = &ctx.accounts.court_acc;
+        require!(!court.resolved && !court.resolving, ErrorCode::AlreadyResolved);
+        require!(lamports >= MIN_STAKE, ErrorCode::ZeroStake);
         let b = &mut ctx.accounts.bet;
         require!(b.amount == 0 || b.yes == yes, ErrorCode::SideMismatch);
+        if b.amount == 0 {
+            // Capped so bettors plus mirrored holders fit the court's 48 slots:
+            // otherwise a swarm of dust bettors could overflow it and force a refund.
+            let m = &mut ctx.accounts.market;
+            require!(m.bettors < MAX_BETTORS, ErrorCode::TooManyBettors);
+            m.bettors += 1;
+        }
         anchor_lang::system_program::transfer(
             CpiContext::new(
                 ctx.accounts.system_program.key(),
@@ -443,11 +481,28 @@ pub mod blindcourt {
 
 /// Takes the one-computation-at-a-time lock (see crate docs).
 fn lock(court: &mut CourtAccount) -> Result<()> {
-    require!(!court.resolved, ErrorCode::AlreadyResolved);
+    require!(court.ready, ErrorCode::NotReady);
+    require!(!court.resolved && !court.resolving, ErrorCode::AlreadyResolved);
     require!(!court.pending, ErrorCode::ComputationPending);
     court.pending = true;
+    court.pending_slot = Clock::get()?.slot;
     Ok(())
 }
+
+/// An aborted computation leaves the state untouched; release the lock so the
+/// court isn't stuck waiting for an authority reset.
+fn aborted(court: &mut Account<CourtAccount>) -> Result<()> {
+    court.pending = false;
+    emit!(ComputationAbortedEvent { court: court.key() });
+    Ok(())
+}
+
+/// ~2 minutes of slots before the authority may force-release a stuck lock.
+const RESET_AFTER_SLOTS: u64 = 300;
+/// Smallest stake (0.001 SOL): makes swarming the market with bettors costly.
+const MIN_STAKE: u64 = 1_000_000;
+/// Distinct bettors per market; with the market's own holders they must fit 48 slots.
+const MAX_BETTORS: u8 = 6;
 
 const MAX_MARKET_LEN: usize = 64;
 
@@ -873,7 +928,7 @@ pub struct CreateMarket<'info> {
     )]
     pub market: Account<'info, MarketAccount>,
     /// CHECK: lamport-only vault PDA owned by the system program; signs payouts via seeds.
-    #[account(seeds = [b"vault", market.key().as_ref()], bump)]
+    #[account(mut, seeds = [b"vault", market.key().as_ref()], bump)]
     pub vault: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
@@ -935,6 +990,12 @@ pub struct CourtAccount {
     pub pending: bool,
     /// A slot overflowed, so the conflict check may be incomplete; markets refund.
     pub incomplete: bool,
+    /// `init_court` landed; until then the state is not a valid ciphertext.
+    pub ready: bool,
+    /// Resolve is queued: no new seats, positions, ballots or bets.
+    pub resolving: bool,
+    /// Slot when the lock was taken (for `reset_pending`).
+    pub pending_slot: u64,
 }
 
 #[account]
@@ -945,6 +1006,7 @@ pub struct MarketAccount {
     pub no_pool: u64,
     pub bump: u8,
     pub vault_bump: u8,
+    pub bettors: u8,
 }
 
 #[account]
@@ -974,7 +1036,7 @@ pub enum ErrorCode {
     MarketTooLong,
     #[msg("Court not resolved yet")]
     NotResolved,
-    #[msg("Stake must be positive")]
+    #[msg("Stake below the 0.001 SOL minimum")]
     ZeroStake,
     #[msg("A bettor can only add to the side they already backed")]
     SideMismatch,
@@ -984,6 +1046,15 @@ pub enum ErrorCode {
     WrongCourt,
     #[msg("Arithmetic overflow")]
     Overflow,
+    #[msg("Court is not initialized yet")]
+    NotReady,
+    #[msg("Market already has the maximum number of bettors")]
+    TooManyBettors,
+}
+
+#[event]
+pub struct ComputationAbortedEvent {
+    pub court: Pubkey,
 }
 
 #[event]

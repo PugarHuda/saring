@@ -881,6 +881,7 @@
         },
         {
           "name": "vault",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1757,6 +1758,19 @@
       ]
     },
     {
+      "name": "ComputationAbortedEvent",
+      "discriminator": [
+        231,
+        232,
+        186,
+        217,
+        82,
+        162,
+        86,
+        202
+      ]
+    },
+    {
       "name": "VerdictEvent",
       "discriminator": [
         165,
@@ -1809,7 +1823,7 @@
     {
       "code": 6007,
       "name": "ZeroStake",
-      "msg": "Stake must be positive"
+      "msg": "Stake below the 0.001 SOL minimum"
     },
     {
       "code": 6008,
@@ -1830,6 +1844,16 @@
       "code": 6011,
       "name": "Overflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6012,
+      "name": "NotReady",
+      "msg": "Court is not initialized yet"
+    },
+    {
+      "code": 6013,
+      "name": "TooManyBettors",
+      "msg": "Market already has the maximum number of bettors"
     }
   ],
   "types": [
@@ -2220,6 +2244,18 @@
       }
     },
     {
+      "name": "ComputationAbortedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "court",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
       "name": "ComputationDefinitionAccount",
       "docs": [
         "An account representing a [ComputationDefinition] in a MXE."
@@ -2394,6 +2430,27 @@
               "A slot overflowed, so the conflict check may be incomplete; markets refund."
             ],
             "type": "bool"
+          },
+          {
+            "name": "ready",
+            "docs": [
+              "`init_court` landed; until then the state is not a valid ciphertext."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "resolving",
+            "docs": [
+              "Resolve is queued: no new seats, positions, ballots or bets."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "pending_slot",
+            "docs": [
+              "Slot when the lock was taken (for `reset_pending`)."
+            ],
+            "type": "u64"
           }
         ]
       }
@@ -2692,6 +2749,10 @@
           },
           {
             "name": "vault_bump",
+            "type": "u8"
+          },
+          {
+            "name": "bettors",
             "type": "u8"
           }
         ]

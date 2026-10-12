@@ -4,8 +4,8 @@
 // so the transfer is built by hand and signed with node:crypto's Ed25519.
 import { createPrivateKey, sign } from "node:crypto";
 
-const GRANT = 120_000_000n; // 0.12 SOL; one run costs ~0.08 SOL
-const ENOUGH = 100_000_000; // 0.1 SOL
+const GRANT = 150_000_000n; // 0.15 SOL; one run costs ~0.10 SOL (~0.105 with a bet)
+const ENOUGH = 120_000_000; // 0.12 SOL
 const SYSTEM_PROGRAM = new Uint8Array(32);
 
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -61,21 +61,32 @@ const inFlight = new Set(); // addresses being funded right now
 export default async function handler(req, res) {
   const ip = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim() || "unknown";
   let address;
+  let mine = false;
   try {
     address = (typeof req.body === "string" ? JSON.parse(req.body) : req.body)?.address;
+    if (typeof address !== "string" || address.length > 64) return res.status(400).json({ error: "invalid address" });
     const now = Date.now();
     for (const k of [ip, address]) {
-      if (k && now - (lastGrant.get(k) ?? 0) < COOLDOWN_MS) return res.status(429).json({ error: "please wait a few minutes before asking again" });
+      if (now - (lastGrant.get(k) ?? 0) < COOLDOWN_MS) return res.status(429).json({ error: "please wait 10 minutes before asking again" });
     }
     if (inFlight.has(address)) return res.status(429).json({ error: "already funding this wallet" });
+    // Claim the slots before the first await, so concurrent requests can't slip past.
     inFlight.add(address);
+    mine = true;
+    lastGrant.set(ip, now);
+    lastGrant.set(address, now);
     const out = await grant(req, address);
-    if (out.status === 200) for (const k of [ip, address]) lastGrant.set(k, Date.now());
+    if (out.status !== 200) {
+      lastGrant.delete(ip);
+      lastGrant.delete(address);
+    }
     return res.status(out.status).json(out.body);
   } catch {
+    lastGrant.delete(ip);
+    if (typeof address === "string") lastGrant.delete(address);
     return res.status(502).json({ error: "faucet temporarily unavailable" });
   } finally {
-    inFlight.delete(address);
+    if (mine) inFlight.delete(address);
   }
 }
 

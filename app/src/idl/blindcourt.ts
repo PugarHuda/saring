@@ -887,6 +887,7 @@ export type Blindcourt = {
         },
         {
           "name": "vault",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1763,6 +1764,19 @@ export type Blindcourt = {
       ]
     },
     {
+      "name": "computationAbortedEvent",
+      "discriminator": [
+        231,
+        232,
+        186,
+        217,
+        82,
+        162,
+        86,
+        202
+      ]
+    },
+    {
       "name": "verdictEvent",
       "discriminator": [
         165,
@@ -1815,7 +1829,7 @@ export type Blindcourt = {
     {
       "code": 6007,
       "name": "zeroStake",
-      "msg": "Stake must be positive"
+      "msg": "Stake below the 0.001 SOL minimum"
     },
     {
       "code": 6008,
@@ -1836,6 +1850,16 @@ export type Blindcourt = {
       "code": 6011,
       "name": "overflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6012,
+      "name": "notReady",
+      "msg": "Court is not initialized yet"
+    },
+    {
+      "code": 6013,
+      "name": "tooManyBettors",
+      "msg": "Market already has the maximum number of bettors"
     }
   ],
   "types": [
@@ -2226,6 +2250,18 @@ export type Blindcourt = {
       }
     },
     {
+      "name": "computationAbortedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "court",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
       "name": "computationDefinitionAccount",
       "docs": [
         "An account representing a [ComputationDefinition] in a MXE."
@@ -2400,6 +2436,27 @@ export type Blindcourt = {
               "A slot overflowed, so the conflict check may be incomplete; markets refund."
             ],
             "type": "bool"
+          },
+          {
+            "name": "ready",
+            "docs": [
+              "`init_court` landed; until then the state is not a valid ciphertext."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "resolving",
+            "docs": [
+              "Resolve is queued: no new seats, positions, ballots or bets."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "pendingSlot",
+            "docs": [
+              "Slot when the lock was taken (for `reset_pending`)."
+            ],
+            "type": "u64"
           }
         ]
       }
@@ -2698,6 +2755,10 @@ export type Blindcourt = {
           },
           {
             "name": "vaultBump",
+            "type": "u8"
+          },
+          {
+            "name": "bettors",
             "type": "u8"
           }
         ]

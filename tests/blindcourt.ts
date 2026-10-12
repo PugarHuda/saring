@@ -71,12 +71,30 @@ describe("Blindcourt", () => {
     ),
   });
 
+  // Sends and confirms by polling over HTTP (Anchor's .rpc() confirms over a
+  // websocket, which can hang without a timeout on some RPC providers).
+  async function send(builder: any, signers: anchor.web3.Keypair[] = [], payer = owner) {
+    const tx: anchor.web3.Transaction = await builder.transaction();
+    const { blockhash, lastValidBlockHeight } = await provider.connection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = payer.publicKey;
+    tx.sign(...[payer, ...signers.filter((k) => !k.publicKey.equals(payer.publicKey))]);
+    const raw = tx.serialize();
+    const sig = await provider.connection.sendRawTransaction(raw, { skipPreflight: true });
+    while ((await provider.connection.getBlockHeight("confirmed")) <= lastValidBlockHeight) {
+      const st = (await provider.connection.getSignatureStatuses([sig])).value[0];
+      if (st?.err) throw new Error(`tx ${sig} failed: ${JSON.stringify(st.err)}`);
+      if (st?.confirmationStatus === "confirmed" || st?.confirmationStatus === "finalized") return sig;
+      await provider.connection.sendRawTransaction(raw, { skipPreflight: true }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+    throw new Error(`tx ${sig} expired`);
+  }
+
   // Sends one queued instruction and waits for its MPC callback.
   async function run(circuit: string, build: (offset: anchor.BN) => any) {
     const offset = new anchor.BN(randomBytes(8), "hex");
-    await build(offset)
-      .accountsPartial(queueAccounts(circuit, offset))
-      .rpc({ skipPreflight: true, commitment: "confirmed" });
+    await send(build(offset).accountsPartial(queueAccounts(circuit, offset)));
     await awaitComputationFinalization(provider, offset, program.programId, "confirmed", 300_000);
   }
 
@@ -124,16 +142,14 @@ describe("Blindcourt", () => {
     // A market that settles on this court; its bettors are mirrored into the court too.
     const [marketPDA] = PublicKey.findProgramAddressSync([Buffer.from("market"), courtPDA.toBuffer()], program.programId);
     const [vaultPDA] = PublicKey.findProgramAddressSync([Buffer.from("vault"), marketPDA.toBuffer()], program.programId);
-    await program.methods.createMarket().accountsPartial({ courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
-      .rpc({ commitment: "confirmed" });
+    await send(program.methods.createMarket().accountsPartial({ courtAcc: courtPDA, market: marketPDA, vault: vaultPDA }));
     const rival = anchor.web3.Keypair.generate();
-    await provider.sendAndConfirm(new anchor.web3.Transaction().add(anchor.web3.SystemProgram.transfer({
+    await send({ transaction: async () => new anchor.web3.Transaction().add(anchor.web3.SystemProgram.transfer({
       fromPubkey: owner.publicKey, toPubkey: rival.publicKey, lamports: 30_000_000,
-    })), [], { commitment: "confirmed" });
+    })) });
     const bet = (who: anchor.web3.Keypair, yes: boolean, lamports: number) =>
-      program.methods.bet(yes, new anchor.BN(lamports))
-        .accountsPartial({ bettor: who.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
-        .signers([who]).rpc({ commitment: "confirmed" });
+      send(program.methods.bet(yes, new anchor.BN(lamports))
+        .accountsPartial({ bettor: who.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA }), [who], who);
     await bet(owner, false, 20_000_000); // 0.02 SOL on NO
     await bet(rival, true, 10_000_000); // 0.01 SOL on YES
     console.log("market opened: 0.02 SOL on NO, 0.01 SOL on YES");
@@ -182,18 +198,17 @@ describe("Blindcourt", () => {
 
     // Settlement: NO won, so the NO bettor takes the whole 0.03 SOL pool.
     const before = await provider.connection.getBalance(owner.publicKey);
-    await program.methods.claim()
-      .accountsPartial({ bettor: owner.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
-      .rpc({ commitment: "confirmed" });
+    await send(program.methods.claim()
+      .accountsPartial({ bettor: owner.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA }));
     const gained = (await provider.connection.getBalance(owner.publicKey)) - before;
     console.log(`claim paid ${gained / 1e9} SOL (minus fee) to the NO bettor`);
     expect(gained).to.be.greaterThan(29_000_000);
-    await program.methods.claim()
-      .accountsPartial({ bettor: rival.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
-      .signers([rival]).rpc({ commitment: "confirmed" });
+    await send(program.methods.claim()
+      .accountsPartial({ bettor: rival.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA }), [rival], rival);
+    // The vault keeps only its rent-exempt reserve after every claim.
     const bal = await provider.connection.getBalance(vaultPDA);
-    expect(bal).to.equal(0);
-    console.log("losing bettor claimed 0; vault empty");
+    expect(bal).to.equal(await provider.connection.getMinimumBalanceForRentExemption(0));
+    console.log("losing bettor claimed 0; vault holds only its rent reserve");
   });
 
   async function initCompDef(circuit: string) {

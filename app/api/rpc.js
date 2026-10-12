@@ -30,10 +30,31 @@ function allowed(net, call) {
   return READ.has(call.method) || (net === "devnet" && DEVNET_WRITE.has(call.method));
 }
 
+// Browsers on other sites can't spend our quota; scripts are rate-limited per IP.
+const ALLOWED_ORIGIN = /^https:\/\/(saring-silk|saring-[a-z0-9-]+-hudas-projects-[a-z0-9]+)\.vercel\.app$|^http:\/\/localhost(:\d+)?$/;
+// ponytail: per-instance counter; move to a shared KV store if the proxy gets abused at scale.
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 900; // a dispute run polls hard (~300/min peak); leave headroom
+const hits = new Map(); // ip -> { start, n }
+
+function overLimit(ip) {
+  const now = Date.now();
+  const h = hits.get(ip);
+  if (!h || now - h.start > WINDOW_MS) {
+    hits.set(ip, { start: now, n: 1 });
+    return false;
+  }
+  return ++h.n > MAX_PER_WINDOW;
+}
+
 export default async function handler(req, res) {
   try {
     const net = req.query.net === "mainnet" ? "mainnet" : "devnet";
     if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+    const origin = req.headers.origin;
+    if (origin && !ALLOWED_ORIGIN.test(origin)) return res.status(403).json({ error: "origin not allowed" });
+    const ip = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim() || "unknown";
+    if (overLimit(ip)) return res.status(429).json({ jsonrpc: "2.0", id: null, error: { code: 429, message: "rate limited, slow down" } });
     const key = process.env.HELIUS_KEY;
     if (!key) return res.status(500).json({ error: "RPC not configured" });
 

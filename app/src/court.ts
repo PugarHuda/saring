@@ -16,6 +16,7 @@ import {
   x25519,
 } from "@arcium-hq/client";
 import { DEMO_MARKET, allTraders, identityId, marketHolders, marketQuestion } from "../../panta/panta";
+import { listMarkets, marketDetail, type PantaMarket } from "./pantaApi";
 import idl from "./idl/blindcourt.json";
 import type { Blindcourt } from "./idl/blindcourt";
 
@@ -119,6 +120,8 @@ export const DEFAULT_CHOICE: Choice = { vote: false, bet: null };
 
 export interface Scenario {
   market: string;
+  /** Panta's catalog row for the market (title, phase, volume, oracle, UMA flag); null if the API is unavailable. */
+  panta: PantaMarket | null;
   question: string;
   holderCount: number;
   openHolderCount: number;
@@ -139,14 +142,16 @@ export const newKey = () => new DataView(rand(4).buffer).getUint32(0) >>> 1 || 1
  * of this market, 2 are real Panta traders who are not; the 6th juror is the
  * visitor (their burner), who picks their own key and ballot.
  */
-export async function loadScenario(you: PublicKey, choice: Choice = DEFAULT_CHOICE): Promise<Scenario> {
+export async function loadScenario(you: PublicKey, choice: Choice = DEFAULT_CHOICE, market = DEMO_MARKET): Promise<Scenario> {
   const mainnet = new Connection(MAINNET_RPC_URL, "confirmed");
-  const [question, holders, traders] = await Promise.all([
-    marketQuestion(mainnet, DEMO_MARKET),
-    marketHolders(mainnet, DEMO_MARKET),
+  const [question, holders, traders, panta] = await Promise.all([
+    marketQuestion(mainnet, market),
+    marketHolders(mainnet, market),
     allTraders(mainnet),
+    marketDetail(market).catch(() => null),
   ]);
-  const outsiders = [...traders.keys()].filter((w) => !traders.get(w)!.has(DEMO_MARKET));
+  if (holders.length > MAX_HOLDERS) throw new Error(`This market has ${holders.length} holders; the court has room for ${MAX_HOLDERS}.`);
+  const outsiders = [...traders.keys()].filter((w) => !traders.get(w)!.has(market));
   const conflictedWallets = holders.filter((h) => h.yes + h.no > 0n).slice(0, 3).map((h) => h.owner);
   const scripted: Juror[] = await Promise.all(
     [...conflictedWallets.map((w) => [w, true] as const), ...outsiders.slice(0, 2).map((w) => [w, false] as const)].map(
@@ -154,9 +159,11 @@ export async function loadScenario(you: PublicKey, choice: Choice = DEFAULT_CHOI
     )
   );
   const me = you.toBase58();
+  if (conflictedWallets.length < 3) throw new Error("Pick a market with at least 3 open positions.");
   const sc: Scenario = {
-    market: DEMO_MARKET,
-    question,
+    market,
+    panta,
+    question: panta?.title || question,
     holderCount: holders.length,
     openHolderCount: holders.filter((h) => h.yes + h.no > 0n).length,
     otherTraderCount: outsiders.length,
@@ -166,6 +173,34 @@ export async function loadScenario(you: PublicKey, choice: Choice = DEFAULT_CHOI
   };
   sc.steps = buildSteps(sc, choice);
   return sc;
+}
+
+/** Holder slots in the court (48) minus the market's 6 bettor slots (MAX_BETTORS on chain). */
+export const MAX_HOLDERS = 42;
+
+export interface MarketOption {
+  marketId: string;
+  title: string;
+  holders: number;
+  panta: PantaMarket | null;
+}
+
+/**
+ * Markets a visitor can dispute: Panta's catalog (API) joined with holder counts
+ * read from Panta's program on chain; only markets that fit the court.
+ */
+export async function listDisputableMarkets(): Promise<MarketOption[]> {
+  const mainnet = new Connection(MAINNET_RPC_URL, "confirmed");
+  const [catalog, traders] = await Promise.all([listMarkets().catch(() => [] as PantaMarket[]), allTraders(mainnet)]);
+  const holders = new Map<string, number>();
+  for (const markets of traders.values()) for (const m of markets) holders.set(m, (holders.get(m) ?? 0) + 1);
+  const fromApi = catalog
+    .filter((m) => m.title && (holders.get(m.marketId) ?? 0) >= 3 && (holders.get(m.marketId) ?? 0) <= MAX_HOLDERS)
+    .map((m) => ({ marketId: m.marketId, title: m.title, holders: holders.get(m.marketId)!, panta: m }));
+  const demo = fromApi.some((m) => m.marketId === DEMO_MARKET)
+    ? []
+    : [{ marketId: DEMO_MARKET, title: await marketQuestion(mainnet, DEMO_MARKET), holders: holders.get(DEMO_MARKET) ?? 0, panta: null }];
+  return [...demo, ...fromApi].sort((a, b) => b.holders - a.holders);
 }
 
 /** Rebuilds the run for the visitor's choice (fresh secret keys every time). */
