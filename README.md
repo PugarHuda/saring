@@ -140,7 +140,7 @@ The wallet needs about 0.5 devnet SOL. The public devnet RPC rate-limits polling
 
 ## Web app
 
-`app/` is a Vite + React + three.js front end. It reads the same Panta market from mainnet, shows the Conflict Report numbers, and runs the dispute step by step on devnet from a burner wallet, with an explorer link for every transaction. By default each juror's conflict status shows as "Encrypted". A "god view" toggle reveals which jurors hold the market, which the chain never sees. Run it with `cd app && yarn install && yarn dev`. See [`app/README.md`](app/README.md) for RPC settings. Hosted URL: **[TODO]**.
+`app/` is a Vite + React + three.js front end. It reads the same Panta market from mainnet, shows the Conflict Report numbers, and runs the dispute step by step on devnet from a burner wallet, with an explorer link for every transaction. By default each juror's conflict status shows as "Encrypted". A "god view" toggle reveals which jurors hold the market, which the chain never sees. Run it with `cd app && yarn install && yarn dev`. See [`app/README.md`](app/README.md) for RPC settings. Hosted URL: **https://saring-silk.vercel.app**.
 
 ## Layout
 
