@@ -413,7 +413,10 @@ export async function awaitStep(c: Client, offset: BN): Promise<string> {
 }
 
 export async function readVerdict(c: Client, courtId: number) {
-  const acc = await c.program.account.courtAccount.fetch(courtPda(c.authority, courtId));
+  const info = await c.program.provider.connection.getAccountInfo(courtPda(c.authority, courtId));
+  if (!info) throw new Error("court account not found");
+  // Pad: courts created before v3.2 may end before the appended 32-byte pendingComputation.
+  const acc = c.program.coder.accounts.decode("CourtAccount", Buffer.concat([info.data, Buffer.alloc(32)]));
   return { resolved: acc.resolved, yes: acc.yes, no: acc.no, excluded: acc.excluded, incomplete: acc.incomplete };
 }
 export type Verdict = Awaited<ReturnType<typeof readVerdict>>;

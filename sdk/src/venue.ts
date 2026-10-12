@@ -42,7 +42,9 @@ const coder = new BorshAccountsCoder(idl as any);
 
 /** Decodes a CourtAccount from raw account data (checks the Anchor discriminator). */
 export function decodeCourt(data: Buffer): CourtAccount {
-  return coder.decode("CourtAccount", data);
+  // Courts created before v3.2 may end before the appended 32-byte `pendingComputation`.
+  // Zero padding reads it as the default key; newer courts ignore the extra bytes.
+  return coder.decode("CourtAccount", Buffer.concat([data, Buffer.alloc(32)]));
 }
 
 /**

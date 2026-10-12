@@ -1,14 +1,14 @@
 # Audit scope
 
-Target: **Saring v3.1**, commit `0fd102e`, deployed on Solana devnet. Read [ARCHITECTURE.md](ARCHITECTURE.md) first, then [THREAT_MODEL.md](THREAT_MODEL.md). Earlier findings are in [SECURITY.md](SECURITY.md).
+Target: **Saring v3.2** (v3.1 `0fd102e` plus the T-8/T-9 lock fixes), deployed on Solana devnet ([upgrade tx](https://explorer.solana.com/tx/5LMxzKfd4wah6PXzLAEZhkcB7nbPV18vseZHhM6vdon9kLqHJRBxg3p7Txbk5MYGaJqZ1bmQ4aWTxpkEPJdLV4dY?cluster=devnet)). Read [ARCHITECTURE.md](ARCHITECTURE.md) first, then [THREAT_MODEL.md](THREAT_MODEL.md). Earlier findings are in [SECURITY.md](SECURITY.md).
 
 ## In scope
 
-Line counts are from `wc -l` at `0fd102e`.
+Line counts are from `wc -l` at v3.2.
 
 | File | Lines | What it is | Priority |
 |---|---:|---|---|
-| `programs/blindcourt/src/lib.rs` | 1087 | Anchor program: court PDA, 5 queue ixs + 5 verified callbacks, lock state machine, `reset_pending`, pari-mutuel market (`create_market` / `bet` / `claim`) | **P0** |
+| `programs/blindcourt/src/lib.rs` | 1154 | Anchor program: court PDA, 5 queue ixs + 5 verified callbacks, lock state machine, `reset_pending`, pari-mutuel market (`create_market` / `bet` / `claim`) | **P0** |
 | `encrypted-ixs/src/lib.rs` | 154 | Arcis circuits `init_court_v3`, `add_juror_v3`, `record_positions_v3`, `cast_v3`, `resolve_v3` | **P0** |
 | `app/api/rpc.js` | 80 | JSON-RPC proxy (allowlist, Origin, rate limit) holding the Helius key | P1 |
 | `app/api/faucet.js` | 127 | Devnet faucet, hand-built Ed25519-signed transfer | P1 |
@@ -34,8 +34,8 @@ Program (`lib.rs`):
 2. **Payout bound.** `Σ payouts ≤ yes_pool + no_pool`. Refund case: every bettor gets exactly `amount`. Win case: `⌊amount·total / winning_pool⌋`, losers 0. No `claim` can succeed twice for one bet (`claimed`).
 3. **Pool accounting.** `yes_pool = Σ amount over bets with yes`, and the same for `no_pool`. A bet never changes side. `bettors ≤ 6` and equals the number of distinct `BetAccount`s. Every stake is ≥ 1 000 000 lamports.
 4. **At most one verdict.** `resolved` goes `false → true` once. `yes/no/excluded/incomplete` are written only in the successful `resolve_v3_callback`, and never again.
-5. **Freeze after resolve.** `resolving ∨ resolved ⇒` no new `add_juror` / `record_positions` / `cast` / `resolve` / `bet` can be **queued**. (A callback for a cast queued *before* resolve can still rewrite `state`/`nonce`. Confirm this can't affect the verdict: THREAT_MODEL T-9.)
-6. **Single writer.** While `pending`, no second mutating computation can be queued. Every mutating callback clears `pending`, success or abort. Check `reset_pending` (T-8).
+5. **Freeze after resolve.** `resolving ∨ resolved ⇒` no new `add_juror` / `record_positions` / `cast` / `resolve` / `bet` can be **queued**. (v3.2: `resolve` takes the lock, so no cast callback can be in flight when it is queued: THREAT_MODEL T-9.)
+6. **Single writer.** While `pending`, no second mutating computation can be queued. Every mutating callback clears `pending`, success or abort. A callback writes only if `is_current()` (it is the computation stored in `pending_computation`), so a computation released by `reset_pending` can't write (T-8).
 7. **Readiness.** `ready = false ⇒` no queue except the initial `init_court_v3`. `ready` only becomes true in a verified `init_court_v3_callback`.
 8. **Authority.** Only `court.authority` can `add_juror`, `record_positions`, `resolve` and `reset_pending` (PDA seeds derived from the signer, plus `has_one`).
 9. **Callback authenticity.** No callback writes state, nonce or verdict without `verify_output` succeeding against the court's cluster and computation accounts.
@@ -53,8 +53,8 @@ Circuits (`encrypted-ixs/src/lib.rs`):
 
 ## Questions we would like answered
 
-- T-8: can a late callback after `reset_pending` overwrite a newer state? Should callbacks check the queued `computation_offset`?
-- T-9: does Arcium read `ArgBuilder::account` data when the computation is queued or when it runs? If at run time, can `resolve` (which takes no lock) pair an old nonce with new ciphertexts?
+- T-8/T-9 (fixed in v3.2): is `is_current()` (lock held and `pending_computation == computation_account`) sufficient for every callback, including aborts?
+- `pending_computation` was appended in v3.2. Pre-v3.2 courts are 32 bytes shorter; `read_tail_pubkey` decodes them with a default key (read-only paths only). Any path that writes an old court?
 - Is `Rent::minimum_balance(0)` the right reserve for a system-owned, zero-data vault under current rent rules?
 - `create_market` can be called by anyone for any court. Any griefing beyond paying the reserve?
 

@@ -1,0 +1,26 @@
+operator 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ balance 11.573484948 SOL (devnet)
+Panta market 3wdVRLDiMeuWRjGcFq2FZgAyCLhswTwNSKEHgNFRSZNB: "Will @debar be the outright winner of the NectarFi Frontier Traders Competition?"
+42 holders on mainnet; jurors: 4FG2…w9Pb (holder), DZ3p…QqpQ, Gtif…2HZE (traders elsewhere)
+court 3W2eB4oTgGYhpyUq5NuoeHqFhmTbhGdcK2Tb1gfs81FR (id 106640641)
+  init_court_v3                queue 5DHk2aYmiMMp7LX6…  callback 2d6JrJ1yyHxRFVC2…  (+5s)
+  add_juror_v3 4FG2…w9Pb       queue 4coH4gSitB8BohoX…  callback i4yFKC1Pzmnp8GPZ…  (+10s)
+  add_juror_v3 DZ3p…QqpQ       queue 24ekvdQVXtXTT2V4…  callback 7vWmkvzEfxg6s6Vx…  (+15s)
+  add_juror_v3 Gtif…2HZE       queue 4wmcW6EeqgDvyY7X…  callback R452xhpHwh7rFQZv…  (+21s)
+  record_positions_v3 #1       queue 44PwXezTydDTcgyd…  callback 4xgptBXjoamU8PaS…  (+61s)
+  record_positions_v3 #2       queue 4tTWZjemAjrHrbxV…  callback 5tLand9rcmqAyU4S…  (+61s)
+  record_positions_v3 #3       queue 2Hwmq1nAgp1KZgsC…  callback 5cS7Ea6BTUbf2mD9…  (+61s)
+  record_positions_v3 #4       queue 4SbT2zucsH9T9JAw…  callback 3Y5QfmDGjojjteH4…  (+61s)
+  record_positions_v3 #5       queue 4WP1L8dGJwR1DvtK…  callback 5KZGk5M62256u5ww…  (+61s)
+  record_positions_v3 #6       queue 5ThayxGiv7t5c2dK…  callback 2YArgXWc2YKqxSDk…  (+61s)
+  record_positions_v3 #7       queue 5vZS2woT9ycEjMPM…  callback 3T4UcxEH8KmHn46K…  (+61s)
+  mirrored 42 holders in 7 encrypted batches
+  cast YES 4FG2…w9Pb (holder)  queue 5W3MThBU88mDq1JT…  callback avyHaymdtgEu84Jn…  (+66s)
+  cast NO  DZ3p…QqpQ           queue mZeS5KBiSLCLapGm…  callback 2CQ3U2MzAMnb9rxV…  (+72s)
+  cast YES Gtif…2HZE WRONG KEY queue unRrnsFLTJjPLqj9…  callback 3cWNEYmhjBbnxoCY…  (+77s)
+  market 95TrUc4N3JNSRdCbGN9aWhHvJRdmsEWjudAH77heMWM4 created (4oko5XEM4xvDCF7k…), bet 0.001 SOL on NO (3zMx2a8Ex85zff2w…)
+  resolve_v3                   queue 4JKDSfLQUYP1Rvfp…  callback 2cAqVmmuQgTjaVnN…  (+123s)
+verdict (venue.ts): yes=0 no=1 excluded=1 incomplete=false outcome=NO
+verdictToYesWins -> false
+  claim 5ENrUPBhLaY3ZoSK… paid 1000000 lamports (fee added back)
+done in 125s; devnet SOL spent: 0.0663
+wrote sdk/out/court.json

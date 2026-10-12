@@ -1026,7 +1026,19 @@ pub struct CourtAccount {
     /// Slot when the lock was taken (for `reset_pending`).
     pub pending_slot: u64,
     /// Computation account that holds the lock; other callbacks are ignored.
+    /// Appended in v3.2. Pre-v3.2 courts were sized without it, and a long
+    /// `market` leaves fewer than 32 spare bytes, so a missing key reads as default.
+    #[borsh(deserialize_with = "read_tail_pubkey")]
     pub pending_computation: Pubkey,
+}
+
+/// Reads a trailing pubkey, or `Pubkey::default()` if the account ends first.
+/// Old courts stay readable (claim, verdict reads); writing one still needs the full size.
+fn read_tail_pubkey<R: std::io::Read>(reader: &mut R) -> std::io::Result<Pubkey> {
+    use std::io::Read;
+    let mut buf = Vec::with_capacity(32);
+    reader.take(32).read_to_end(&mut buf)?;
+    Ok(<[u8; 32]>::try_from(buf.as_slice()).map(Pubkey::from).unwrap_or_default())
 }
 
 #[account]
@@ -1115,4 +1127,28 @@ pub struct ClaimEvent {
     pub market: Pubkey,
     pub bettor: Pubkey,
     pub payout: u64,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pre_v3_2_court_still_decodes() {
+        let c = CourtAccount {
+            bump: 1, state: [[7; 32]; STATE_LEN], nonce: 9, id: 3, authority: Pubkey::new_unique(),
+            market: "m".repeat(64), resolved: true, yes: 2, no: 1, excluded: 0, pending: false,
+            incomplete: false, ready: true, resolving: false, pending_slot: 5,
+            pending_computation: Pubkey::new_unique(),
+        };
+        let mut data = Vec::new();
+        c.try_serialize(&mut data).unwrap();
+        // v3.2 layout round-trips.
+        let full = CourtAccount::try_deserialize(&mut data.as_slice()).unwrap();
+        assert_eq!(full.pending_computation, c.pending_computation);
+        // A pre-v3.2 court (no trailing key) reads with a default key and intact fields.
+        let old = CourtAccount::try_deserialize(&mut &data[..data.len() - 32]).unwrap();
+        assert_eq!(old.pending_computation, Pubkey::default());
+        assert!(old.resolved && old.yes == 2 && old.no == 1 && old.market == c.market);
+    }
 }

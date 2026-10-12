@@ -3,7 +3,7 @@
 Saring (code name `blindcourt`) is a conflict-blind jury for prediction-market disputes. It has three layers:
 
 1. **Arcis circuits** (`encrypted-ixs/src/lib.rs`), which run inside an Arcium MXE (multi-party computation).
-2. **An Anchor program** (`programs/blindcourt/src/lib.rs`, v3.1) on Solana. It owns each court's encrypted state, queues the circuits, verifies their callbacks, and settles a small pari-mutuel market on the verdict.
+2. **An Anchor program** (`programs/blindcourt/src/lib.rs`, v3.2) on Solana. It owns each court's encrypted state, queues the circuits, verifies their callbacks, and settles a small pari-mutuel market on the verdict.
 3. **Off-chain clients**: the e2e test (`tests/blindcourt.ts`), the web app (`app/src/court.ts`), three Vercel functions (`app/api/*.js`), and the Panta reader (`panta/panta.ts`).
 
 Deployed: program `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy` on Solana devnet, Arcium 0.15.0 MXE on devnet cluster offset 456. See [AUDIT_SCOPE.md](AUDIT_SCOPE.md) for versions and hashes, [THREAT_MODEL.md](THREAT_MODEL.md) for the adversary analysis and [SECURITY.md](SECURITY.md) for the review history.

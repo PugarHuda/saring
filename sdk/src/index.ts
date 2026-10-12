@@ -23,7 +23,7 @@ import {
 } from "@arcium-hq/client";
 import idl from "./idl/blindcourt.json";
 import type { Blindcourt } from "./idl/blindcourt";
-import { SARING_PROGRAM_ID, toVerdict, type Verdict } from "./venue";
+import { SARING_PROGRAM_ID, readCourtVerdict, type Verdict } from "./venue";
 
 export * from "./venue";
 export type { Blindcourt };
@@ -181,7 +181,7 @@ export class SaringClient {
   // ---------- verdict ----------
 
   async readVerdict(court: PublicKey): Promise<Verdict> {
-    return toVerdict(await this.program.account.courtAccount.fetch(court, "confirmed"));
+    return readCourtVerdict(this.connection, court, this.program.programId);
   }
 
   /** Polls until the court is resolved. */

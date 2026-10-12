@@ -208,7 +208,8 @@ interface Question { question: number; description: string; fallbackOutcome: num
 async function readCourt(addr: string) {
   const info = await new Connection(RPC_URL, "confirmed").getAccountInfo(new PublicKey(addr));
   if (!info) throw new Error("court account not found on devnet");
-  const c = new BorshAccountsCoder(idl as Idl).decode("CourtAccount", info.data);
+  // Pad: courts created before v3.2 may end before the appended 32-byte pendingComputation.
+  const c = new BorshAccountsCoder(idl as Idl).decode("CourtAccount", Buffer.concat([info.data, Buffer.alloc(32)]));
   return { resolved: !!c.resolved, yes: Number(c.yes), no: Number(c.no), excluded: Number(c.excluded), incomplete: !!c.incomplete };
 }
 

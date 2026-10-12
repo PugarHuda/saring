@@ -2457,6 +2457,15 @@ export type Blindcourt = {
               "Slot when the lock was taken (for `reset_pending`)."
             ],
             "type": "u64"
+          },
+          {
+            "name": "pendingComputation",
+            "docs": [
+              "Computation account that holds the lock; other callbacks are ignored.",
+              "Appended in v3.2. Pre-v3.2 courts were sized without it, and a long",
+              "`market` leaves fewer than 32 spare bytes, so a missing key reads as default."
+            ],
+            "type": "pubkey"
           }
         ]
       }

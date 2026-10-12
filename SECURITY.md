@@ -10,7 +10,8 @@ Email **hudapugar@gmail.com** with the subject `[saring security]`. Include the 
 
 | Version | Commit | Where | Supported |
 |---|---|---|---|
-| v3.1 (program + `*_v3` circuits, release `circuits-v3`) | `0fd102e` | devnet `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`, Arcium cluster offset 456 | yes |
+| v3.2 (lock fixes T-8, T-9; same circuits) | `main` | devnet `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy` ([upgrade tx](https://explorer.solana.com/tx/5LMxzKfd4wah6PXzLAEZhkcB7nbPV18vseZHhM6vdon9kLqHJRBxg3p7Txbk5MYGaJqZ1bmQ4aWTxpkEPJdLV4dY?cluster=devnet)), Arcium cluster offset 456 | yes |
+| v3.1 (program + `*_v3` circuits, release `circuits-v3`) | `0fd102e` | upgraded in place by v3.2 | no |
 | v3 | `9bb99c3` | upgraded in place by v3.1 | no |
 | pre-v3 (unkeyed ballots, no lock) | before `9bb99c3` | replaced | no |
 
@@ -54,6 +55,6 @@ These are documented, not fixed. Details and residual risk are in [THREAT_MODEL.
 | `excluded` count leaks information for tiny juries | Low–Medium | L9, T-18 |
 | `awaitStep` picks the callback signature heuristically (UI link only) | Info | L10, T-27 |
 | Rate limits are per serverless instance, not global | Low | L11, T-25, T-26 |
-| Late callback after `reset_pending` can cause a lost update | Medium | T-8: **fixed in v3.2** (callbacks ignored unless they come from the computation holding the lock), on branch `v3.2-pending-deploy`, deploying when devnet SOL for the upgrade buffer is available |
-| `resolve` during an in-flight cast may read ciphertexts that do not match the queued nonce | Medium | T-9: **fixed in v3.2** (resolve takes the lock), same branch; in the live demo resolve is only queued after every ballot has finalized |
+| Late callback after `reset_pending` can cause a lost update | Medium | T-8: **fixed in v3.2** (callbacks ignored unless they come from the computation holding the lock), live on devnet ([upgrade tx](https://explorer.solana.com/tx/5LMxzKfd4wah6PXzLAEZhkcB7nbPV18vseZHhM6vdon9kLqHJRBxg3p7Txbk5MYGaJqZ1bmQ4aWTxpkEPJdLV4dY?cluster=devnet)) |
+| `resolve` during an in-flight cast may read ciphertexts that do not match the queued nonce | Medium | T-9: **fixed in v3.2** (resolve takes the lock), live on devnet, fresh court [`3W2e…81FR`](https://explorer.solana.com/address/3W2eB4oTgGYhpyUq5NuoeHqFhmTbhGdcK2Tb1gfs81FR?cluster=devnet) (resolve [queue](https://explorer.solana.com/tx/4JKDSfLQUYP1Rvfpbk1sWvnvnJA5pYisPo5sNzD51qRWieMHXJTntCzV5WVK5rrmY9vBSRoSDkGHM1G23ukbrERT?cluster=devnet) / [callback](https://explorer.solana.com/tx/2cAqVmmuQgTjaVnNxgQWu2YpshKBRCFE2ieQgFsSkmipsaKu5dDv7XZWiMQmQfoBRsFeQigCu9uy5aKxexyCE2Nf?cluster=devnet)) |
 | An aborted `init_court` leaves the court unusable (`ready=0`) with no re-init path | Low | T-15 |

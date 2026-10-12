@@ -8,7 +8,7 @@
 
 Built for Colosseum's Crypto World's Fair (Sep 14 to Oct 12, 2026). MIT-licensed. Code identifiers still use the working name `blindcourt`.
 
-- **Live on Solana devnet (v3):** program [`3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`](https://explorer.solana.com/address/3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy?cluster=devnet), Arcium 0.15.0 MXE on devnet cluster offset 456 (see [Devnet](#devnet)).
+- **Live on Solana devnet (v3.2, T-8/T-9 lock fixes, [upgrade tx](https://explorer.solana.com/tx/5LMxzKfd4wah6PXzLAEZhkcB7nbPV18vseZHhM6vdon9kLqHJRBxg3p7Txbk5MYGaJqZ1bmQ4aWTxpkEPJdLV4dY?cluster=devnet)):** program [`3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`](https://explorer.solana.com/address/3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy?cluster=devnet), Arcium 0.15.0 MXE on devnet cluster offset 456 (see [Devnet](#devnet)).
 - **Try it:** https://saring-silk.vercel.app. You sit on the jury as juror #6 with your own secret ballot key, cast your own ballot, and can bet 0.01 SOL to watch MPC drop your ballot.
 - **Real Panta data:** the demo dispute is a real [Panta](https://panta.market) market. Its holders are read from Panta's program on Solana mainnet (see [Panta integration](#panta-integration)).
 - **Conflict Report:** https://pugarhuda.github.io/saring/
@@ -147,7 +147,7 @@ Each instruction waits for its MPC computation to finalize, so a run takes sever
 
 | | |
 |---|---|
-| Program | [`3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`](https://explorer.solana.com/address/3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy?cluster=devnet), upgraded in place to v3 (built with `opt-level = "z"`, 614 KB) |
+| Program | [`3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`](https://explorer.solana.com/address/3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy?cluster=devnet), upgraded in place to v3.2 ([upgrade tx](https://explorer.solana.com/tx/5LMxzKfd4wah6PXzLAEZhkcB7nbPV18vseZHhM6vdon9kLqHJRBxg3p7Txbk5MYGaJqZ1bmQ4aWTxpkEPJdLV4dY?cluster=devnet); v3 built with `opt-level = "z"`, 614 KB) |
 | Arcium MXE | devnet cluster offset **456**, Arcium 0.15.0 |
 | Original deploy tx | [`4bANmR3H…vdLDcV36`](https://explorer.solana.com/tx/4bANmR3HSzStMSo8z54RSBkh2YKDdQZPRT7kcfjYSLo6JWtvoXAshVwU8zWqQDFEQGLJc4Fmt6Lvqu5EvdLDcV36?cluster=devnet) |
 | MXE init tx | [`dCSh4xpn…6iHtd`](https://explorer.solana.com/tx/dCSh4xpnt1FtZPwu4sSDezwBgVmre3hSqXYPJAxV84oQ3nSzHM23Y4tuieSXmqStGqAZys1xji1XVhrEwY6iHtd?cluster=devnet) |
