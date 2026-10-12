@@ -76,3 +76,39 @@ tie/incomplete verdict yields no action (re-run or escalate).
 - Holder discovery covers recent-trade counterparties only; the court holds at most 42 mirrored positions.
 - One relayer key would hold the settle permission in production: it settles what the MPC verdict says,
   and the deployer can revoke it.
+
+## Permissionless fallback on HyperEVM (`hyperevm/`, `fallback.ts`)
+
+If the HIP-4 settle grant or the 100 HYPE stake (`README-testnet-settle.md`) never comes through, this path still
+puts the verdict on Hyperliquid testnet and acts on HyperCore, with no permission from anyone. It needs about 0.02 faucet HYPE on
+`0x71Ea…` (HyperEVM, chain 998). The faucet is https://faucet.quicknode.com/hyperliquid/testnet, and it uses a human bot-check.
+
+`hyperevm/src/SaringHyperCourt.sol`:
+- `open(outcome, court, inQuestion)` binds a HIP-4 outcome id to a Saring court.
+- `dispute(outcome, claimYes)` takes a HYPE bond and bridges it to **the contract's own HyperCore spot account**:
+  native HYPE sent to `0x2222…2222` credits `msg.sender` on Core. The disputer must already exist on Core
+  (precompile `0x…0810`), so the refund cannot get stuck.
+- `settle(outcome, verdict, sig)` takes the same EIP-712 `Verdict` the relayer signs for `tempo/`.
+  `settleWithVaa(outcome, vaa)` takes a guardian-signed VAA from the `saring_wormhole` emitter instead, so no Saring key
+  is involved. Wormhole core is live on HyperEVM testnet at `0xBB73cB66C26740F31d1FabDC6b7A46a038A300dd`
+  (guardian set 0, Wormhole chain 47). The contract reuses `wormhole/contracts/SaringWormhole.sol` unchanged.
+- On settlement the contract stamps the HyperCore L1 block (`0x…0809`) and the HYPE oracle price (`0x…0807`, perp 135).
+  It checks its Core HYPE balance (`spotBalance` `0x…0801`, token 1105). If the disputer was right, or the
+  verdict is void, it returns the bond **on HyperCore** through CoreWriter `0x3333…3333` action 6 `spotSend(disputer, 1105, wei)`.
+  Otherwise the bond stays on the contract's Core account for juror rewards. Juror payout is not built yet.
+- `settleFraction(outcome)` returns 1e18 for YES and 0 for NO. A tie or an incomplete verdict returns 0.5e18 for a standalone
+  outcome and reverts for a question outcome, because question outcomes settle only to 0 or 1. A HIP-4 deployer's keeper copies
+  this value into `outcomeDeploy settleOutcome`.
+
+The spotBalance read precompile reverts for outcome-token encodings, so the contract does not read HIP-4 positions.
+It does read USDC/HYPE balances, the L1 block number, the oracle price and coreUserExists. All four were checked live against testnet with
+`cast call --override-code`.
+
+```
+cd hyperliquid/hyperevm && forge build && forge test   # 10 tests, incl. real VAA vs real Wormhole core on a HyperEVM testnet fork
+cd .. && npx tsx fallback.ts status | wait | run
+```
+`run` does the following. (1) It funds a separate disputer address, which bridges 0.001 HYPE to Core to create its account. (2) It deploys the contract and opens outcome 8659 for court
+`FoRH…zPQBv`. (3) The disputer posts a 0.01 HYPE bond claiming NO. (4) It reads the devnet verdict with `sdk/src/venue.ts`, signs it and settles. (5) It
+confirms the CoreWriter spotSend on HyperCore through `info spotClearinghouseState` of the disputer. (6) It settles demo outcome 0
+from the recorded VAA of court `24gQ…`. Tx links and the HyperCore before/after are written to `hyperevm/deployments/testnet.json`.

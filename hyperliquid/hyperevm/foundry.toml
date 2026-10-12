@@ -1,0 +1,12 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+libs = ["../../tempo/contracts/lib"]
+solc_version = "0.8.30"
+optimizer = true
+remappings = ["saring-wormhole/=../../wormhole/contracts/", "forge-std/=../../tempo/contracts/lib/forge-std/src/"]
+allow_paths = ["../../wormhole/contracts", "../../tempo/contracts/lib"]
+
+[rpc_endpoints]
+hyperevm_testnet = "https://rpc.hyperliquid-testnet.xyz/evm"
