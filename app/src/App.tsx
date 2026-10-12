@@ -31,7 +31,7 @@ import {
   type ScriptStep,
   type Verdict,
 } from "./court";
-import { walletPositions } from "./pantaApi";
+import { marketDetail, walletPositions } from "./pantaApi";
 import { PANTA_PROGRAM_ID, buildPantaSettle, simulatePantaSettle, verdictToYesWins, type PantaSettle, type SimResult } from "./pantaSettle";
 
 // three.js is heavy: load it after first paint so the page is usable immediately.
@@ -472,6 +472,7 @@ export default function App() {
         <nav aria-label="Sections" className="links">
           <a href="#case">The case</a>
           <a href="#run">Live demo</a>
+          <a href="#live">Live mainnet</a>
           <a href="#privacy">Privacy</a>
           <Ext href={REPORT}>Conflict Report</Ext>
         </nav>
@@ -1018,6 +1019,8 @@ export default function App() {
           </div>
         </section>
 
+        <PantaLive />
+
         <section id="privacy" className="block" aria-labelledby="privacy-h">
           <div className="block-head">
             <h2 id="privacy-h">What stays hidden, what gets published</h2>
@@ -1204,5 +1207,174 @@ function SettleOnPanta({ market, verdict, oracle }: { market: string; verdict: V
         </>
       )}
     </article>
+  );
+}
+
+// ---------- Live: Panta on mainnet, via Solami (app/api/panta-live.js) ----------
+
+interface LiveItem {
+  id: string;
+  kind: string;
+  t: number;
+  market: string;
+  src: "rpc" | "grpc";
+  walletShort?: string;
+  side?: string | null;
+  sig?: string;
+}
+interface LiveMetrics {
+  txsScanned: number;
+  windowFrom: number | null;
+  newPositions24h: number;
+  newPositions7d: number;
+  uniqueWallets7d: number;
+  marketsTouched7d: number;
+  disputes: number;
+  resolutions: number;
+  liveUpdates: number;
+}
+type LivePhase = "idle" | "backfill" | "connecting" | "live" | "reconnecting" | "offline";
+
+const LIVE_URL: string = import.meta.env.VITE_PANTA_LIVE_URL || "/api/panta-live";
+const KIND_LABEL: Record<string, string> = {
+  "new-position": "New position",
+  trade: "Trade",
+  "position-account": "Position changed",
+  dispute: "Dispute",
+  resolution: "Resolved",
+  "oracle-result": "Oracle result",
+  "dispute-settled": "Dispute settled",
+};
+const PHASE_LABEL: Record<LivePhase, string> = {
+  idle: "Connects when this section is on screen",
+  backfill: "Backfilling through Solami RPC",
+  connecting: "Opening the Solami gRPC stream",
+  live: "Live: Solami Yellowstone gRPC",
+  reconnecting: "Reconnecting",
+  offline: "Offline",
+};
+const titleCache = new Map<string, Promise<string | null>>(); // Panta API market titles, once per market
+const liveTime = (t: number) =>
+  new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+function PantaLive() {
+  const ref = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+  const [phase, setPhase] = useState<LivePhase>("idle");
+  const [detail, setDetail] = useState("");
+  const [items, setItems] = useState<LiveItem[]>([]);
+  const [metrics, setMetrics] = useState<LiveMetrics | null>(null);
+  const [titles, setTitles] = useState<Record<string, string>>({});
+
+  // Connect only while the section is (nearly) on screen.
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { rootMargin: "200px" });
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+    const es = new EventSource(LIVE_URL);
+    const on = <T,>(name: string, f: (d: T) => void) =>
+      es.addEventListener(name, (e) => f(JSON.parse((e as MessageEvent).data)));
+    on<{ phase: LivePhase; detail?: string }>("status", (d) => {
+      setPhase(d.phase);
+      setDetail(d.detail ?? "");
+    });
+    on<{ items: LiveItem[] }>("items", ({ items: add }) =>
+      setItems((cur) => {
+        const ids = new Set(cur.map((i) => i.id));
+        return [...cur, ...add.filter((i) => !ids.has(i.id))].sort((a, b) => b.t - a.t).slice(0, 120);
+      })
+    );
+    on<LiveMetrics>("metrics", setMetrics);
+    on("bye", () => setPhase("reconnecting"));
+    es.onerror = () => setPhase(es.readyState === EventSource.CLOSED ? "offline" : "reconnecting");
+    return () => es.close();
+  }, [inView]);
+
+  // Market titles from the Panta API, for the rows near the top.
+  useEffect(() => {
+    for (const m of new Set(items.slice(0, 40).map((i) => i.market))) {
+      if (titleCache.has(m)) continue;
+      const p = marketDetail(m).then((d) => d.title ?? null, () => null);
+      titleCache.set(m, p);
+      p.then((t) => t && setTitles((cur) => ({ ...cur, [m]: t })));
+    }
+  }, [items]);
+
+  const tiles: [string, number | undefined][] = [
+    ["New positions, 24h", metrics?.newPositions24h],
+    ["New positions, 7d", metrics?.newPositions7d],
+    ["Unique wallets, 7d", metrics?.uniqueWallets7d],
+    ["Markets touched, 7d", metrics?.marketsTouched7d],
+    ["Disputes", metrics?.disputes],
+    ["Resolutions", metrics?.resolutions],
+    ["Live updates (gRPC)", metrics?.liveUpdates],
+  ];
+
+  return (
+    <section id="live" className="block" aria-labelledby="live-h" ref={ref}>
+      <div className="block-head">
+        <h2 id="live-h">Live: Panta on Solana mainnet (via Solami)</h2>
+        <p>
+          Every row is read from mainnet through <strong>Solami</strong>: recent Panta transactions over Solami RPC, then
+          Panta’s transactions and position accounts as they land, over Solami’s Yellowstone gRPC stream.
+        </p>
+      </div>
+      <p className={`live-status ${phase}`} role="status">
+        <span className="dot" aria-hidden="true" />
+        {PHASE_LABEL[phase]}
+        {detail && <span className="muted">· {detail}</span>}
+      </p>
+      <ul className="live-tiles" aria-label="Panta metrics on mainnet">
+        {tiles.map(([label, n]) => (
+          <li key={label} className="glass">
+            <span className="n">{n ?? "–"}</span>
+            <span className="l">{label}</span>
+          </li>
+        ))}
+      </ul>
+      {metrics?.windowFrom && (
+        <p className="fine live-window">
+          Window: the last {metrics.txsScanned} successful Panta transactions (since {liveTime(metrics.windowFrom)}), plus
+          everything streamed since this section opened.
+        </p>
+      )}
+      <div className="glass live-feed" tabIndex={0} role="region" aria-label="Panta events, newest first">
+        {items.length === 0 ? (
+          <p className="muted live-empty">
+            {phase === "offline" ? "The live feed is unavailable right now." : "Loading Panta activity…"}
+          </p>
+        ) : (
+          <ol>
+            {items.map((i) => (
+              <li key={i.id} className={`live-row k-${i.kind}`}>
+                <time dateTime={new Date(i.t).toISOString()}>{liveTime(i.t)}</time>
+                <span className="tag">{KIND_LABEL[i.kind] ?? i.kind}</span>
+                <span className="live-what">
+                  <Ext href={pantaMarketUrl(i.market)}>{titles[i.market] ?? short(i.market)}</Ext>
+                  <span className="muted">
+                    {i.side && ` · ${i.side}`}
+                    {i.walletShort && ` · ${i.walletShort}`}
+                    {" · "}
+                    {i.sig ? (
+                      <Ext href={`https://explorer.solana.com/tx/${i.sig}`}>{i.src === "grpc" ? "gRPC" : "RPC"} tx</Ext>
+                    ) : (
+                      "gRPC account"
+                    )}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+      <p className="fine live-note">
+        Each new position here would be mirrored into an open Saring court; a dispute opens one automatically
+        (panta/watch.ts).
+      </p>
+    </section>
   );
 }

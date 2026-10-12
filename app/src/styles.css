@@ -321,3 +321,33 @@ tr.you td { background: rgba(241, 207, 142, 0.06); }
 .settle-result details summary { cursor: pointer; font-size: 0.86rem; color: var(--muted); min-height: 32px; display: flex; align-items: center; }
 .logs { margin: 6px 0 0; padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); font: 0.74rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow-y: auto; }
 .settle code { overflow-wrap: anywhere; }
+
+/* ---------- live: Panta on mainnet via Solami ---------- */
+.live-status { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-size: 0.88rem; font-weight: 600; margin: 0 0 18px; }
+.live-status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); flex: none; }
+.live-status.backfill .dot, .live-status.connecting .dot { background: var(--gold); }
+.live-status.live .dot { background: var(--ok); box-shadow: 0 0 0 4px rgba(143, 230, 184, 0.18); }
+.live-status.reconnecting .dot, .live-status.offline .dot { background: var(--bad); }
+.live-status .muted { font-weight: 400; }
+.live-tiles { list-style: none; margin: 0 0 12px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px; }
+.live-tiles li { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.live-tiles .n { font-weight: 700; font-size: 1.7rem; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.live-tiles .l { font-size: 0.8rem; color: var(--muted); }
+.live-window { margin-bottom: 16px; }
+.live-feed { max-height: 420px; overflow-y: auto; overscroll-behavior: contain; padding: 4px 0; }
+.live-feed ol { list-style: none; margin: 0; padding: 0; }
+.live-empty { padding: 18px; }
+.live-row { display: grid; grid-template-columns: 9.5em 9.5em minmax(0, 1fr); gap: 4px 12px; align-items: baseline; padding: 10px 18px; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+.live-row:last-child { border-bottom: 0; }
+.live-row time { color: var(--dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.live-row .tag { justify-self: start; white-space: nowrap; }
+.live-what { overflow-wrap: anywhere; }
+.live-row.k-new-position .tag { color: var(--ok); border-color: rgba(143, 230, 184, 0.4); }
+.live-row.k-dispute .tag { color: var(--bad); border-color: rgba(255, 157, 143, 0.45); }
+.live-row.k-resolution .tag, .live-row.k-dispute-settled .tag { color: var(--ice); border-color: rgba(159, 196, 255, 0.4); }
+.live-note { margin-top: 14px; }
+@media (max-width: 640px) {
+  .live-tiles { grid-template-columns: 1fr 1fr; }
+  .live-row { grid-template-columns: auto minmax(0, 1fr); padding: 10px 14px; }
+  .live-what { grid-column: 1 / -1; }
+}
