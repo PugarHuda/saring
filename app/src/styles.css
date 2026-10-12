@@ -113,7 +113,7 @@ h1 { font-weight: 700; font-size: clamp(2.5rem, 5.4vw, 4.6rem); line-height: 1.0
   box-shadow: 0 0 120px 20px rgba(120, 80, 240, 0.25);
   transform: scale(0.8);
 }
-.blob-canvas { opacity: 0; transition: opacity 1.2s ease; }
+.blob-canvas { opacity: 0; transition: opacity 1.2s ease; background: radial-gradient(closest-side, rgba(124, 77, 255, 0.3), rgba(70, 60, 200, 0.1) 70%, transparent); }
 .blob-canvas.ready { opacity: 1; }
 .blob-canvas canvas { width: 100% !important; height: 100% !important; display: block; }
 .stage:has(.blob-canvas.ready) .orb { opacity: 0; transition: opacity 1.2s; }

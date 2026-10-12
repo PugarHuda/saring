@@ -228,7 +228,7 @@ export default function App() {
             <h1 id="hero-h">Disputes decided by people with no stake in the outcome</h1>
             <p className="lede">
               Saring checks every juror against every market position inside Arcium MPC, drops the conflicted ones,
-              and publishes only the tally. Nobody, not even the court, learns who was dropped.
+              and publishes only the tally. The chain never learns who was dropped.
             </p>
             <div className="cta-row">
               <a className="pill big" href="#run">

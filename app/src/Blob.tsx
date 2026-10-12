@@ -29,32 +29,48 @@ float snoise(vec3 v){
 }
 uniform float uTime;
 vec3 warp(vec3 p){
-  float n=snoise(p*.62+vec3(uTime*.14,uTime*.09,0.))*.26+snoise(p*1.3-uTime*.07)*.05;
+  // Low-frequency, slow: a drop of liquid breathing, not a lumpy rock.
+  float n=snoise(p*.48+vec3(uTime*.11,uTime*.07,0.))*.2+snoise(p*.95-uTime*.05)*.045;
   return p+normalize(p)*n;
 }`;
 
-// A tiny studio of coloured light panels, baked into a PMREM env map: this is what the blob reflects.
+// Smooth HDR light dome baked into a PMREM env map. Gradients (not hard panels) so the
+// reflections read as liquid metal instead of colour patches. The camera looks down -z,
+// so the blob's centre reflects +z (kept dark indigo) and its silhouette reflects -z (gold).
+const DOME = /* glsl */ `
+varying vec3 vDir;
+float lobe(vec3 d, vec3 c, float k){ return exp((dot(d, normalize(c)) - 1.) * k); }
+void main(){
+  vec3 d = normalize(vDir);
+  vec3 col = vec3(.004, .003, .014);
+  col += vec3(.03, .05, .4)  * lobe(d, vec3(.6, -.15, .75), 4.) * 1.;     // deep indigo, front right
+  col += vec3(.1, .22, 1.)   * lobe(d, vec3(1., .3, -.2), 14.) * 2.5;    // blue edge, right
+  col += vec3(.35, .1, .9)   * lobe(d, vec3(.1, -1., .1), 6.) * 1.3;     // violet floor bounce
+  float back = smoothstep(.1, -.6, d.z);
+  col += vec3(1., .48, .1) * back * (.25 + .9 * smoothstep(.22, .0, abs(d.y - .12)));   // molten gold horizon behind
+  col += vec3(1., .55, .15) * lobe(d, vec3(-.7, .55, -.35), 26.) * 6.;    // gold key, upper left
+  col += vec3(1., .97, .92)  * lobe(d, vec3(-.55, -.55, -.7), 48.) * 26.; // white rim, lower left
+  col += vec3(1.)            * lobe(d, vec3(-.3, .85, .45), 140.) * 14.; // small hot specular
+  col += vec3(1., .7, .35)   * lobe(d, vec3(.6, .7, -.35), 50.) * 5.;    // warm glint, upper right
+  gl_FragColor = vec4(col, 1.);
+}`;
+
 function studio(renderer: THREE.WebGLRenderer) {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#0b0718");
-  const panel = (color: string, intensity: number, w: number, h: number, pos: [number, number, number]) => {
-    const m = new THREE.Mesh(
-      new THREE.PlaneGeometry(w, h),
-      new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide }),
-    );
-    m.position.set(...pos);
-    m.lookAt(0, 0, 0);
-    scene.add(m);
-  };
-  panel("#f2c879", 2.6, 9, 6, [-6, 4, 3]); // gold key, upper left
-  panel("#6fa8ff", 2.2, 7, 9, [6, -1, 2]); // blue fill, right
-  panel("#8b5cff", 2.0, 12, 5, [0, -6, 0]); // violet floor bounce
-  panel("#ffffff", 3.5, 1.6, 10, [3, 3, -6]); // white rim strip behind
-  panel("#ffffff", 2.5, 4, 1.2, [-1, 6, 4]); // soft top highlight
-  panel("#ff9ad5", 1.2, 5, 5, [-5, -3, -5]); // faint rose
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(10, 64, 32),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      vertexShader: "varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }",
+      fragmentShader: DOME,
+    }),
+  );
+  scene.add(dome);
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = pmrem.fromScene(scene, 0.03).texture;
+  const env = pmrem.fromScene(scene, 0.01).texture;
   pmrem.dispose();
+  dome.geometry.dispose();
+  (dome.material as THREE.Material).dispose();
   return env;
 }
 
@@ -71,6 +87,7 @@ export default function Blob() {
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.9;
     renderer.setClearColor(0x000000, 0);
     el.appendChild(renderer.domElement);
 
@@ -79,20 +96,29 @@ export default function Blob() {
     camera.position.set(0, 0, 6.2);
 
     const material = new THREE.MeshPhysicalMaterial({
-      color: "#45358f",
-      metalness: 0.72,
-      roughness: 0.1,
+      color: "#d8d2f0",
+      metalness: 1,
+      roughness: 0.035,
       clearcoat: 1,
-      clearcoatRoughness: 0.06,
-      iridescence: 1,
-      iridescenceIOR: 1.7,
-      iridescenceThicknessRange: [120, 1100],
+      clearcoatRoughness: 0.03,
+      // Thin, low-strength film: a hint of chromatic dispersion, not rainbow splotches.
+      iridescence: 0.35,
+      iridescenceIOR: 1.45,
+      iridescenceThicknessRange: [180, 420],
       envMap: studio(renderer),
-      envMapIntensity: 1.3,
+      envMapIntensity: 1,
     });
     const uniforms = { uTime: { value: 0 } };
     material.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = uniforms.uTime;
+      // Fresnel rim: gold around the silhouette, going white-hot toward the lower left.
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <opaque_fragment>",
+        `float fr = pow(1. - saturate(dot(normal, geometryViewDir)), 3.5);
+         float ll = saturate(dot(normalize(normal.xy + 1e-4), normalize(vec2(-.75, -.65))));
+         outgoingLight += mix(vec3(1., .5, .12) * .35, vec3(1., .95, .88) * 1.2, pow(ll, 4.)) * fr;
+         #include <opaque_fragment>`,
+      );
       shader.vertexShader = shader.vertexShader
         .replace("#include <common>", `#include <common>\n${NOISE}`)
         // Displace, then rebuild the normal from two nearby displaced points.
@@ -101,7 +127,7 @@ export default function Blob() {
           `vec3 bp=warp(position);
            vec3 tg=normalize(cross(normal,abs(normal.y)<.99?vec3(0.,1.,0.):vec3(1.,0.,0.)));
            vec3 bt=cross(normal,tg);
-           vec3 objectNormal=normalize(cross(warp(position+tg*.01)-bp,warp(position+bt*.01)-bp));
+           vec3 objectNormal=normalize(cross(warp(position+tg*.03)-bp,warp(position+bt*.03)-bp));
            #ifdef USE_TANGENT
            vec3 objectTangent=vec3(tangent.xyz);
            #endif`,
