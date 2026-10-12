@@ -10,7 +10,18 @@
 
 use anchor_lang::prelude::*;
 use arcium_anchor::prelude::*;
-use arcium_client::idl::arcium::types::CallbackAccount;
+use arcium_client::idl::arcium::types::{CallbackAccount, CircuitSource, OffChainCircuitSource};
+use arcium_macros::circuit_hash;
+
+/// Public host for the compiled `.arcis` circuits (GitHub release assets).
+const CIRCUIT_BASE_URL: &str = "https://github.com/PugarHuda/blindcourt/releases/download/circuits-v1/";
+
+fn offchain(name: &str, hash: [u8; 32]) -> CircuitSource {
+    CircuitSource::OffChain(OffChainCircuitSource {
+        source: format!("{CIRCUIT_BASE_URL}{name}.arcis"),
+        hash,
+    })
+}
 
 const COMP_DEF_OFFSET_INIT_COURT: u32 = comp_def_offset("init_court");
 const COMP_DEF_OFFSET_ADD_JUROR: u32 = comp_def_offset("add_juror");
@@ -29,24 +40,29 @@ declare_id!("3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy");
 pub mod blindcourt {
     use super::*;
 
+    // Circuits (~450 KB each) are fetched by Arx nodes from the GitHub release and
+    // checked against the hash compiled in here.
     pub fn init_init_court_comp_def(ctx: Context<InitInitCourtCompDef>) -> Result<()> {
-        init_computation_def(ctx.accounts, None)?;
+        init_computation_def(ctx.accounts, Some(offchain("init_court", circuit_hash!("init_court"))))?;
         Ok(())
     }
     pub fn init_add_juror_comp_def(ctx: Context<InitAddJurorCompDef>) -> Result<()> {
-        init_computation_def(ctx.accounts, None)?;
+        init_computation_def(ctx.accounts, Some(offchain("add_juror", circuit_hash!("add_juror"))))?;
         Ok(())
     }
     pub fn init_record_position_comp_def(ctx: Context<InitRecordPositionCompDef>) -> Result<()> {
-        init_computation_def(ctx.accounts, None)?;
+        init_computation_def(
+            ctx.accounts,
+            Some(offchain("record_position", circuit_hash!("record_position"))),
+        )?;
         Ok(())
     }
     pub fn init_cast_comp_def(ctx: Context<InitCastCompDef>) -> Result<()> {
-        init_computation_def(ctx.accounts, None)?;
+        init_computation_def(ctx.accounts, Some(offchain("cast", circuit_hash!("cast"))))?;
         Ok(())
     }
     pub fn init_resolve_comp_def(ctx: Context<InitResolveCompDef>) -> Result<()> {
-        init_computation_def(ctx.accounts, None)?;
+        init_computation_def(ctx.accounts, Some(offchain("resolve", circuit_hash!("resolve"))))?;
         Ok(())
     }
 

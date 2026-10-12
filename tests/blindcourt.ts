@@ -17,7 +17,6 @@ import {
   getCompDefAccOffset,
   getArciumAccountBaseSeed,
   getArciumProgramId,
-  uploadCircuit,
   RescueCipher,
   deserializeLE,
   getMXEAccAddress,
@@ -36,7 +35,8 @@ import * as os from "os";
 import { expect } from "chai";
 
 const CIRCUITS = ["init_court", "add_juror", "record_position", "cast", "resolve"];
-const COURT_ID = 1;
+// Fresh court per run so devnet re-runs don't collide with an existing PDA.
+const COURT_ID = Math.floor(Math.random() * 2 ** 31);
 
 describe("Blindcourt", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
@@ -140,6 +140,8 @@ describe("Blindcourt", () => {
       [getArciumAccountBaseSeed("ComputationDefinitionAccount"), program.programId.toBuffer(), offset],
       getArciumProgramId()
     )[0];
+    // Comp defs persist on-chain; skip ones already initialized (devnet re-runs).
+    if (await provider.connection.getAccountInfo(compDefPDA)) return;
     const mxeAccount = getMXEAccAddress(program.programId);
     const mxeAcc = await getArciumProgram(provider).account.mxeAccount.fetch(mxeAccount);
     const method = `init${circuit
@@ -156,7 +158,7 @@ describe("Blindcourt", () => {
       })
       .signers([owner])
       .rpc({ preflightCommitment: "confirmed", commitment: "confirmed" });
-    await uploadCircuit(provider, circuit, program.programId, fs.readFileSync(`build/${circuit}.arcis`), true);
+    // Circuit bytes are fetched by Arx nodes from the off-chain source set in the program.
   }
 });
 
