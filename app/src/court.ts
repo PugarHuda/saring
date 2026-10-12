@@ -416,7 +416,8 @@ export async function readVerdict(c: Client, courtId: number) {
   const info = await c.program.provider.connection.getAccountInfo(courtPda(c.authority, courtId));
   if (!info) throw new Error("court account not found");
   // Pad: courts created before v3.2 may end before the appended 32-byte pendingComputation.
-  const acc = c.program.coder.accounts.decode("CourtAccount", Buffer.concat([info.data, Buffer.alloc(32)]));
+  // Program's coder uses the camelCased IDL: "courtAccount", not "CourtAccount".
+  const acc = c.program.coder.accounts.decode("courtAccount",Buffer.concat([info.data, Buffer.alloc(32)]));
   return { resolved: acc.resolved, yes: acc.yes, no: acc.no, excluded: acc.excluded, incomplete: acc.incomplete };
 }
 export type Verdict = Awaited<ReturnType<typeof readVerdict>>;
