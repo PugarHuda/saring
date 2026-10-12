@@ -1,0 +1,14 @@
+{
+  "name": "@saring/base",
+  "private": true,
+  "description": "Saring as a Reality.eth v3 arbitrator on Base Sepolia, plus real Limitless holders on Base mainnet",
+  "scripts": {
+    "flow": "tsx flow.ts",
+    "holders": "tsx limitless-holders.ts",
+    "test:contracts": "cd contracts && forge test"
+  },
+  "dependencies": {
+    "tsx": "^4.23.15",
+    "viem": "^2.57.4"
+  }
+}

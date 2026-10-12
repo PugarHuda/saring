@@ -1,0 +1,35 @@
+{
+  "limitless": {
+    "slug": "bills-vs-rams-1791332408841",
+    "conditionId": "0x14b2172ffe80be6ee7ef522ea6f15cc036fcb18c2bc284f50c42dbfdec70ab32",
+    "ctf": "0xC9c98965297Bc527861c898329Ee280632B76e18",
+    "block": "52512197",
+    "holders": [
+      {
+        "address": "0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD",
+        "yes": "273000000",
+        "no": "0"
+      },
+      {
+        "address": "0xD9dAb863691eCa0726A917170da0F834011bE966",
+        "yes": "0",
+        "no": "267185100"
+      },
+      {
+        "address": "0xF94ef760884b0605E433853Aed17DA574160226E",
+        "yes": "148110",
+        "no": "5814900"
+      },
+      {
+        "address": "0x3Eda6446d3f458E8ce2b9C433C59D719E331fc28",
+        "yes": "0",
+        "no": "4937000"
+      },
+      {
+        "address": "0xc6382C0D832f165c0225d178aF0a1717adC00Fd4",
+        "yes": "4788890",
+        "no": "0"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+contracts/cache
+contracts/lib
+contracts/out
+node_modules
+out/*.fork.*

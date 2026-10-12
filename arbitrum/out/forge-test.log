@@ -1,0 +1,10 @@
+No files changed, compilation skipped
+Ran 6 tests for test/SaringEscalationManager.t.sol:SaringEscalationManagerTest
+[PASS] test_accessControl() (gas: 244505)
+[PASS] test_fork_realOOv3() (gas: 955357)
+[PASS] test_noVerdictPricesFalse_yesVerdictPricesTrue() (gas: 983698)
+[PASS] test_policyUnplugsDvm() (gas: 6487)
+[PASS] test_rejects() (gas: 801232)
+[PASS] test_tieAndIncompleteAreFalse() (gas: 841423)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 11.19s (11.21s CPU time)
+Ran 1 test suite in 11.19s (11.19s CPU time): 6 tests passed, 0 failed, 0 skipped (6 total tests)

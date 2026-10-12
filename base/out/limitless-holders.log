@@ -1,0 +1,11 @@
+
+=== 2026-10-12T14:02:19.230Z  ===
+Limitless market "Bills vs. Rams" (bills-vs-rams-1791332408841), automationType=manual, status=FUNDED, condition 0x14b2172ffe80be6ee7ef522ea6f15cc036fcb18c2bc284f50c42dbfdec70ab32
+exchange 0x05c748E2f4DcDe0ec9Fa8DDc40DE6b867f923fa5 -> getCtf() 0xC9c98965297Bc527861c898329Ee280632B76e18
+receipts of 7 fill txs listed by api.limitless.exchange: 42 transfers of this market's positions, 6 addresses touched
+holders at block 52512197 (CTF.balanceOfBatch, 6-decimal shares):
+  0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD  YES 273.00  NO 0.00  https://basescan.org/address/0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD
+  0xD9dAb863691eCa0726A917170da0F834011bE966  YES 0.00  NO 267.19  https://basescan.org/address/0xD9dAb863691eCa0726A917170da0F834011bE966
+  0xF94ef760884b0605E433853Aed17DA574160226E  YES 0.15  NO 5.81  https://basescan.org/address/0xF94ef760884b0605E433853Aed17DA574160226E
+  0x3Eda6446d3f458E8ce2b9C433C59D719E331fc28  YES 0.00  NO 4.94  https://basescan.org/address/0x3Eda6446d3f458E8ce2b9C433C59D719E331fc28
+  0xc6382C0D832f165c0225d178aF0a1717adC00Fd4  YES 4.79  NO 0.00  https://basescan.org/address/0xc6382C0D832f165c0225d178aF0a1717adC00Fd4

@@ -1,0 +1,13 @@
+{
+  "name": "@saring/arbitrum",
+  "private": true,
+  "description": "Saring as a UMA Optimistic Oracle V3 escalation manager on Arbitrum Sepolia",
+  "scripts": {
+    "flow": "tsx flow.ts",
+    "test:contracts": "cd contracts && forge test"
+  },
+  "dependencies": {
+    "tsx": "^4.23.15",
+    "viem": "^2.57.4"
+  }
+}

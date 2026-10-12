@@ -1,0 +1,9 @@
+No files changed, compilation skipped
+Ran 5 tests for test/SaringArbitrator.t.sol:SaringArbitratorTest
+[PASS] test_answerMapping() (gas: 37329)
+[PASS] test_fork_realRealityETH() (gas: 541113)
+[PASS] test_rejects() (gas: 456660)
+[PASS] test_ruleNo() (gas: 274961)
+[PASS] test_withdrawFees() (gas: 166504)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.59s (7.59s CPU time)
+Ran 1 test suite in 7.60s (7.59s CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)
