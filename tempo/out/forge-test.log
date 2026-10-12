@@ -1,0 +1,14 @@
+
+Ran 9 tests for test/SaringMarket.t.sol:SaringMarketTest
+[PASS] test_badSignature_reverts() (gas: 206072)
+[PASS] test_claimBeforeSettle_reverts() (gas: 144791)
+[PASS] test_doubleSettle_reverts() (gas: 234972)
+[PASS] test_emptyWinningSide_refunds() (gas: 257845)
+[PASS] test_highS_rejected() (gas: 46670)
+[PASS] test_incomplete_refunds() (gas: 336213)
+[PASS] test_noWins_paysProRata_andClosesBets() (gas: 603245)
+[PASS] test_tie_refunds() (gas: 387390)
+[PASS] test_zeroBet_reverts() (gas: 34939)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 6.15ms (15.31ms CPU time)
+
+Ran 1 test suite in 11.33ms (6.15ms CPU time): 9 tests passed, 0 failed, 0 skipped (9 total tests)

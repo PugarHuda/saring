@@ -1,0 +1,32 @@
+{
+  "fees": [
+    {
+      "court": "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb",
+      "tx": "0xfd2ecd44cbd7f47565e4cec1451ab74660303f752c6c4cb37ff9a3e698e37846",
+      "amount": "1.00 pathUSD"
+    }
+  ],
+  "scanFrom": 39254281,
+  "mppCourts": [
+    {
+      "question": "Tempo MPP demo: did @debar win NectarFi Frontier?",
+      "court": "Fy8oQL3Paip4HAZd2gVGCBrZWYGqTbgUZT3gP4BPpPek",
+      "courtId": 129631125,
+      "queueSig": "4ZcawvevHw7PRoejjvN2e1g9npEdTzLQsenScgHZt6RdtwcdtsZkcBNXfD7C1B7KH8fq7vy93Hvwhjt8fRW1jq83",
+      "callbackSig": "5XgJHaXPHwf4DS9xjoTGBi3pmubp5gqafrEzRY5BY42Dh4HNwXHFgHyKcMJcPSe7rWLWLJAEts8Pwpcou1WQHjci",
+      "paymentTx": "0xb8ec2dff1a5db3ef02b6425d086fe037a1f817a643a8f78868665e89afe680af"
+    }
+  ],
+  "market": "0x256eebad0930fe8e899b5e7c239130db50af0446",
+  "deployTx": "0x6f86607ddf98a9242e41c5861de55e7a09d295d85719291b296a3244ca74e837",
+  "marketCourt": "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb",
+  "bets": {
+    "A": "0x14fb519e96ad3cb58a2c93b48a7bb5bab9b0e8c7c7ca042ba18197860525d79e",
+    "B": "0x24a545f7c75afc27946365fefdb0493a772461a642278dc89857a3080f537d43"
+  },
+  "settleTx": "0x05a3e4459f2988318d887d027fd94047ffe3c630d6c7fc85b02b42992dd5340d",
+  "claims": {
+    "A": "reverts NothingToClaim",
+    "B": "0xaaded73b50f2665ea43d78dea69e814259b134fe6e391a295ab8360e4e21bd01"
+  }
+}

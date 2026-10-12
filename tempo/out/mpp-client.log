@@ -1,0 +1,7 @@
+
+=== 2026-10-12T09:39:19.682Z ===
+  faucet funded 0xE3A55abC3D8C1700afe6958e7328F6D61A05A7C6: 0x83a610ed25893acb13b45b409354aaecaa1d0af51fce581b91b5e33a160eb312, 0x536d24232b3b363388320d347b41c7246db9d6b1a12788dabd5aeded211b0127, 0x84740f9f4e3e1e0a361700e7d68759443135f2ab4475097902d9e930a4ffc5b7, 0xf90486b90f696de4f424daa23a44f4dcfcf39c427f6126dbdb85fb066db812a2, 0xa2a30bc68646a8d019148290ada5545078c939a1b80fd581df35561f0bd4a037
+unpaid request -> HTTP 402; WWW-Authenticate: Payment id="qUXL_nHI-X_HEbSQnCsfHYXHiw-fviN7m1jPkiCzIkI", realm="saring-courts", method="tempo", intent="charge", request="eyJhbW91bnQiOiI1MDAwMDAiLCJjdXJyZW5je...
+paid request -> HTTP 200 after 11s: {"court":"Fy8oQL3Paip4HAZd2gVGCBrZWYGqTbgUZT3gP4BPpPek","courtId":129631125,"queueSig":"4ZcawvevHw7PRoejjvN2e1g9npEdTzLQsenScgHZt6RdtwcdtsZkcBNXfD7C1B7KH8fq7vy93Hvwhjt8fRW1jq83","callbackSig":"5XgJHaXPHwf4DS9xjoTGBi3pmubp5gqafrEzRY5BY42Dh4HNwXHFgHyKcMJcPSe7rWLWLJAEts8Pwpcou1WQHjci"}
+Payment-Receipt: status=success method=tempo reference=0xb8ec2dff1a5db3ef02b6425d086fe037a1f817a643a8f78868665e89afe680af
+  https://explore.testnet.tempo.xyz/tx/0xb8ec2dff1a5db3ef02b6425d086fe037a1f817a643a8f78868665e89afe680af

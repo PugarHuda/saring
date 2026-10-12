@@ -1,0 +1,18 @@
+{
+  "name": "@saring/tempo",
+  "private": true,
+  "description": "Saring on Tempo: stablecoin dispute fees (TIP-20 memo), MPP pay-per-court, and a TIP-20 market settled by Saring verdicts",
+  "scripts": {
+    "fee": "tsx fee.ts",
+    "reconcile": "tsx reconcile.ts",
+    "mpp-server": "tsx mpp-server.ts",
+    "mpp-client": "tsx mpp-client.ts",
+    "market": "tsx market.ts",
+    "test:contracts": "cd contracts && forge test"
+  },
+  "dependencies": {
+    "mppx": "^0.13.4",
+    "tsx": "^4.23.15",
+    "viem": "^2.57.4"
+  }
+}
