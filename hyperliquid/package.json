@@ -1,0 +1,10 @@
+{
+  "name": "@saring/hyperliquid",
+  "private": true,
+  "description": "Saring verdicts settling HIP-4 outcome markets on Hyperliquid testnet",
+  "dependencies": {
+    "@nktkas/hyperliquid": "^0.33.3",
+    "tsx": "^4.23.15",
+    "viem": "^2.57.4"
+  }
+}
