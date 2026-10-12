@@ -27,7 +27,7 @@ async function main() {
 
   // --- deploy (gas in AlphaUSD; Tempo has no native token) ---
   const art = JSON.parse(fs.readFileSync(path.join(__dirname, "contracts/out/SaringMarket.sol/SaringMarket.json"), "utf8"));
-  const deployHash = await operator.deployContract({ abi: marketAbi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, relayer.account.address] });
+  const deployHash = await operator.deployContract({ abi: art.abi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, relayer.account.address, "0xa29E8c21924834E6249bCE1FD733f24eC492018c", "0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238"] }) // + Wormhole core, saring emitter: see wormhole/;
   const dr = await operator.waitForTransactionReceipt({ hash: deployHash });
   const market = dr.contractAddress as Address;
   if (dr.status !== "success" || !market) throw new Error(`deploy failed ${deployHash}`);

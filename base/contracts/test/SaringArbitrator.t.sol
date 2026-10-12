@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../src/SaringArbitrator.sol";
+import "saring-wormhole/SaringWormholeFixtures.sol";
 
 interface IRealityFull {
     function askQuestion(uint256 template_id, string memory question, address arbitrator, uint32 timeout, uint32 opening_ts, uint256 nonce) external payable returns (bytes32);
@@ -37,15 +38,15 @@ contract SaringArbitratorTest is Test {
 
     function setUp() public {
         mock = new MockReality();
-        arb = new SaringArbitrator(IRealityETH(address(mock)), vm.addr(RELAYER_PK), 0.001 ether);
+        arb = new SaringArbitrator(IRealityETH(address(mock)), vm.addr(RELAYER_PK), 0.001 ether, IWormhole(address(0)), bytes32(0));
         vm.deal(requester, 1 ether);
     }
 
-    function _v(uint8 yes, uint8 no, bool incomplete) internal pure returns (SaringArbitrator.Verdict memory) {
-        return SaringArbitrator.Verdict(COURT, yes, no, 1, incomplete, 510221975);
+    function _v(uint8 yes, uint8 no, bool incomplete) internal pure returns (SaringWormhole.Verdict memory) {
+        return SaringWormhole.Verdict(COURT, yes, no, 1, incomplete, 510221975);
     }
 
-    function _sig(SaringArbitrator a, SaringArbitrator.Verdict memory v, uint256 pk) internal view returns (uint8, bytes32, bytes32) {
+    function _sig(SaringArbitrator a, SaringWormhole.Verdict memory v, uint256 pk) internal view returns (uint8, bytes32, bytes32) {
         return vm.sign(pk, a.verdictDigest(v));
     }
 
@@ -121,7 +122,7 @@ contract SaringArbitratorTest is Test {
     function test_fork_realRealityETH() public {
         vm.createSelectFork("https://sepolia.base.org");
         IRealityFull reality = IRealityFull(0x86b653Dc9aa6d7311109276925927087573f91CB);
-        SaringArbitrator a = new SaringArbitrator(IRealityETH(address(reality)), vm.addr(RELAYER_PK), 0.001 ether);
+        SaringArbitrator a = new SaringArbitrator(IRealityETH(address(reality)), vm.addr(RELAYER_PK), 0.001 ether, IWormhole(address(0)), bytes32(0));
         address answerer = makeAddr("answerer");
         vm.deal(answerer, 1 ether);
         vm.deal(requester, 1 ether);
@@ -153,5 +154,65 @@ contract SaringArbitratorTest is Test {
         (answers[0], answers[1]) = (bytes32(0), YES);
         reality.claimWinnings(q, hh, addrs, bonds, answers);
         assertEq(reality.balanceOf(requester), bond);
+    }
+
+    // ---------------- Wormhole path: real recorded VAA, real core bridge (Base Sepolia fork) ----------------
+
+    function _forkArb(bytes32 emitter) internal returns (SaringArbitrator a) {
+        vm.createSelectFork("https://sepolia.base.org");
+        mock = new MockReality();
+        a = new SaringArbitrator(IRealityETH(address(mock)), address(0), 0.001 ether, IWormhole(SaringWormholeFixtures.CORE_BASE_SEPOLIA), emitter);
+        vm.deal(requester, 1 ether);
+        vm.prank(requester);
+        a.requestArbitration{value: 0.001 ether}(Q, 0);
+    }
+
+    /// Full Reality.eth flow ruled by the guardian-signed VAA alone (relayer = address(0): no Saring key at all).
+    function test_fork_vaa_realRealityETH() public {
+        vm.createSelectFork("https://sepolia.base.org");
+        IRealityFull reality = IRealityFull(0x86b653Dc9aa6d7311109276925927087573f91CB);
+        SaringArbitrator a = new SaringArbitrator(IRealityETH(address(reality)), address(0), 0.001 ether, IWormhole(SaringWormholeFixtures.CORE_BASE_SEPOLIA), SaringWormholeFixtures.EMITTER);
+        address answerer = makeAddr("answerer");
+        vm.deal(answerer, 1 ether);
+        vm.deal(requester, 1 ether);
+        bytes32 q = reality.askQuestion(0, unicode"Saring VAA fork test?␟other␟en", address(a), 3600, 0, 0);
+        vm.prank(answerer);
+        reality.submitAnswer{value: 0.01 ether}(q, YES, 0);
+        vm.prank(requester);
+        a.requestArbitration{value: 0.001 ether}(q, 0.01 ether);
+        a.bindCourt(q, SaringWormholeFixtures.COURT);
+
+        vm.prank(makeAddr("anyone"));
+        a.ruleWithVaa(q, SaringWormholeFixtures.VAA, bytes32(0), YES, answerer);
+        assertTrue(reality.isFinalized(q));
+        assertEq(reality.resultFor(q), bytes32(0)); // court 24gQ...YGb resolved NO
+        vm.expectRevert(SaringArbitrator.AlreadyRuled.selector);
+        a.ruleWithVaa(q, SaringWormholeFixtures.VAA, bytes32(0), YES, answerer);
+    }
+
+    function test_fork_vaa_tamperedPayload() public {
+        SaringArbitrator a = _forkArb(SaringWormholeFixtures.EMITTER);
+        a.bindCourt(Q, SaringWormholeFixtures.COURT);
+        bytes memory bad = SaringWormholeFixtures.tampered();
+        vm.expectRevert(abi.encodeWithSelector(SaringWormhole.BadVaa.selector, "VM signature invalid"));
+        a.ruleWithVaa(Q, bad, 0, YES, address(1));
+    }
+
+    function test_fork_vaa_wrongEmitter() public {
+        SaringArbitrator a = _forkArb(SaringWormholeFixtures.EMITTER);
+        a.bindCourt(Q, SaringWormholeFixtures.COURT);
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector); // genuine VAA, other Solana emitter
+        a.ruleWithVaa(Q, SaringWormholeFixtures.FOREIGN_VAA, 0, YES, address(1));
+        SaringArbitrator other = _forkArb(keccak256("other emitter"));
+        other.bindCourt(Q, SaringWormholeFixtures.COURT);
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector); // our VAA, contract expects another emitter
+        other.ruleWithVaa(Q, SaringWormholeFixtures.VAA, 0, YES, address(1));
+    }
+
+    function test_fork_vaa_wrongCourt() public {
+        SaringArbitrator a = _forkArb(SaringWormholeFixtures.EMITTER);
+        a.bindCourt(Q, COURT);
+        vm.expectRevert(SaringArbitrator.WrongCourt.selector);
+        a.ruleWithVaa(Q, SaringWormholeFixtures.VAA, 0, YES, address(1));
     }
 }

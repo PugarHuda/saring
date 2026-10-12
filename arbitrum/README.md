@@ -22,6 +22,19 @@ OOv3 `0x1037A21a30aEfF90c269b01c3933eB9a5285d9b8` (13.6 KB of code). The bond cu
 incomplete conflict check returns 0, so the assertion is false and the disputer takes the bonds. An OOv3 assertion can only be true or false, so
 "can't decide" counts as "not proven".
 
+## Wormhole path (no Saring key in the verdict)
+
+`SaringEscalationManager` also has `resolveWithVaa(assertionId, vaa)`. Anyone may submit a Wormhole VAA that the
+`saring_wormhole` program posted on Solana devnet after reading the resolved court on-chain. The contract checks the guardian
+signatures through the Arbitrum Sepolia core bridge `0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35`, the emitter (Solana, PDA
+`0x54c231ce…6238`), and the bound court. The constructor is now `(oo, relayer, wormhole, emitter)`. The EIP-712 `resolve()` is unchanged.
+**Live:** [`0x6ae4c89bb75291062b204e6ba9d43952786ec56c`](https://sepolia.arbiscan.io/address/0x6ae4c89bb75291062b204e6ba9d43952786ec56c) (Sourcify exact match). A new assertion was disputed and
+[resolved by VAA](https://sepolia.arbiscan.io/tx/0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587), then
+[settled](https://sepolia.arbiscan.io/tx/0xaaae5ed3e9edf4ab4995f034ceb79687a4c83dd79a3217f81ac17cd320c3c3df) false.
+The same contract also runs on Ethereum Sepolia against UMA's OOv3 there. See [`../wormhole/README.md`](../wormhole/README.md) for the trust model, all tx links and tests.
+Foundry is now 10/10, including fork tests with the real VAA for the positive case, a tampered payload, a wrong emitter and a wrong court.
+The older EIP-712 deployment `0xd96e40e3…` below is kept as history.
+
 ## Status
 
 - **Foundry: 6/6 pass** (`out/forge-test.log`). One of them, `test_fork_realOOv3`, forks Arbitrum Sepolia and runs the full
@@ -60,6 +73,7 @@ gas. It pays the dispute bond on the disputer's behalf, and OOv3 credits the `di
 
 ## Limits
 
+- *EIP-712 path only.* The Wormhole path above removes the relayer key; its own limits are listed in `../wormhole/README.md`.
 - Trust is the same as on Tempo: one relayer key signs, and one owner key binds court to assertion. Both actions are public on-chain, and the
   verdict is public on Solana, so anyone can catch a lie, but nothing prevents it. Removing that trust (for example k-of-n relayers, or ed25519 verification
   in Stylus) is future work.

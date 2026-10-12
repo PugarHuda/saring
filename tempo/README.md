@@ -11,6 +11,13 @@ Saring is a conflict-blind jury for prediction-market disputes. It runs on Solan
 | `relayer.ts` | Reads a resolved court on Solana (`sdk/src/venue.ts` `readCourtVerdict`, which rejects accounts the Saring program doesn't own), signs the EIP-712 Verdict, and submits `settle()` as a Tempo 0x76 transaction with gas paid in AlphaUSD. It refuses unresolved courts. | Tempo tx type 0x76, fee token |
 | `market.ts` | End to end: deploy, then two bettors each send **one atomic 0x76 batch tx (approve + bet)**, then relay the verdict, the winner claims, and the loser's claim and a late bet are both shown to revert. | batched calls in one Tempo tx |
 
+
+**Wormhole path.** `SaringMarket` now also has `settleWithVaa(vaa)`: any bettor can settle with a guardian-signed VAA from the
+`saring_wormhole` program on Solana, checked by Wormhole's Tempo testnet core `0xa29E8c21924834E6249bCE1FD733f24eC492018c`. No relayer key is involved.
+Live: market [`0x5780c7e5…f482`](https://explore.testnet.tempo.xyz/address/0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482),
+[settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc) giving outcome No. Details are in [`../wormhole/README.md`](../wormhole/README.md).
+The constructor is now `(token, relayer, wormhole, emitter)`.
+
 ## Live run on Moderato testnet (chain 42431), 2026-10-12
 
 Explorer: https://explore.testnet.tempo.xyz. Saring court used: `24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb` (Solana devnet, resolved **NO**: yes 0 / no 1 / excluded 1).

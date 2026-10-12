@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "saring-wormhole/SaringWormhole.sol";
+
 /// Minimal ERC-20 surface. TIP-20 tokens on Tempo (pathUSD, AlphaUSD, ...) implement it.
 interface IERC20 {
     function transfer(address to, uint256 amount) external returns (bool);
@@ -9,20 +11,12 @@ interface IERC20 {
 
 /// @title SaringMarket
 /// @notice YES/NO pari-mutuel markets in a TIP-20 stablecoin, one per Saring court.
-///         A market settles ONLY on a Saring verdict: an EIP-712 attestation of the
-///         court's on-chain tally (Solana devnet) signed by the Saring relayer key.
+///         A market settles ONLY on a Saring verdict of the court's on-chain tally (Solana devnet):
+///         either a Wormhole VAA (settleWithVaa: guardian-attested, no Saring key) or the legacy
+///         EIP-712 attestation signed by the Saring relayer key (settle).
 ///         Tie, incomplete conflict check, or an empty winning side => full refund.
-contract SaringMarket {
+contract SaringMarket is SaringWormhole {
     enum Outcome { Open, Yes, No, Refund }
-
-    struct Verdict {
-        bytes32 court;        // Saring court account pubkey (Solana, 32 bytes)
-        uint8 yes;
-        uint8 no;
-        uint8 excluded;       // ballots dropped inside MPC (juror holds a position)
-        bool incomplete;      // conflict check overflowed => void
-        uint64 resolvedSlot;  // Solana slot at which the relayer read the resolved court
-    }
 
     struct Market {
         uint256 yesPool;
@@ -55,7 +49,7 @@ contract SaringMarket {
     error NothingToClaim();
     error TransferFailed();
 
-    constructor(IERC20 token_, address relayer_) {
+    constructor(IERC20 token_, address relayer_, IWormhole wormhole_, bytes32 emitter_) SaringWormhole(wormhole_, emitter_) {
         token = token_;
         relayer = relayer_;
         DOMAIN_SEPARATOR = keccak256(
@@ -93,11 +87,21 @@ contract SaringMarket {
 
     /// Anyone may submit; only the relayer's signature counts. Closes betting for good.
     function settle(Verdict calldata v, uint8 sigV, bytes32 r, bytes32 s) external {
-        Market storage m = markets[v.court];
-        if (m.outcome != Outcome.Open) revert MarketClosed();
+        if (markets[v.court].outcome != Outcome.Open) revert MarketClosed();
         if (uint256(s) > HALF_N) revert BadSignature();
         address signer = ecrecover(verdictDigest(v), sigV, r, s);
         if (signer == address(0) || signer != relayer) revert BadSignature();
+        _settle(v);
+    }
+
+    /// Anyone may submit a Wormhole VAA of the court's verdict, posted on Solana by saring_wormhole.
+    function settleWithVaa(bytes calldata vaa) external {
+        _settle(verdictFromVaa(vaa));
+    }
+
+    function _settle(Verdict memory v) internal {
+        Market storage m = markets[v.court];
+        if (m.outcome != Outcome.Open) revert MarketClosed();
 
         Outcome o;
         if (v.incomplete || v.yes == v.no) o = Outcome.Refund;

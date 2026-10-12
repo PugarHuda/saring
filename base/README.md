@@ -41,6 +41,18 @@ So by default the script takes every fill tx hash that `api.limitless.exchange` 
 logs from those receipts on-chain (`base.drpc.org`). Holdings are then confirmed with `balanceOfBatch`. If you set `BASE_RPC=<archive rpc>`, the script does the
 full `getLogs` scan instead, which also catches transfers that happen outside Limitless.
 
+## Wormhole path (no Saring key in the verdict)
+
+`SaringArbitrator` also has `ruleWithVaa(questionId, vaa, lastHistoryHash, lastAnswer, lastAnswerer)`. Anyone may submit a Wormhole VAA
+that the `saring_wormhole` program posted on Solana devnet after reading the resolved court on-chain. The contract checks the guardian
+signatures through the Base Sepolia core bridge `0x79A1027a6A159502049F10906D333EC57E95F083`, the emitter (Solana, PDA `0x54c231ce…6238`),
+and the bound court. The constructor is now `(realitio, relayer, fee, wormhole, emitter)`. The EIP-712 `rule()` is unchanged.
+**Live:** [`0x384822075dc735ea7de0b8417c9b4403bb9d682a`](https://sepolia.basescan.org/address/0x384822075dc735ea7de0b8417c9b4403bb9d682a) (Sourcify exact match). A new question was answered YES, sent to arbitration,
+[ruled by VAA](https://sepolia.basescan.org/tx/0xf2a1ef9c6ab80fbd75a9cf298bee115d3eaf5d4a9608ccdcde86e5c8b37d01c9) (submitted by the disputer) to `resultFor = 0x0`, and the bond was
+[claimed](https://sepolia.basescan.org/tx/0x40615bedc3b8d84e7ce31b6d59e40a2e2b4298b5a207cf6f290f8f18efbe1750).
+See [`../wormhole/README.md`](../wormhole/README.md) for the trust model, all tx links and tests. Foundry is now 9/9, including fork tests with the
+real VAA for the positive case, a tampered payload, a wrong emitter and a wrong court. The older EIP-712 deployment `0xd96e40e3…` below is kept as history.
+
 ## Status of the arbitrator
 
 - **Foundry: 5/5 pass** (`out/forge-test.log`). One of them, `test_fork_realRealityETH`, forks Base Sepolia and runs the whole sequence against the
@@ -84,6 +96,7 @@ to the disputer for gas and the arbitration fee.
 
 ## Limits
 
+- *EIP-712 path only.* The Wormhole path above removes the relayer key; its own limits are listed in `../wormhole/README.md`.
 - Trust is the same as on Tempo: one relayer key signs the verdict, and one owner key binds the court to the question. Both actions are public, and the court's
   verdict on Solana is public, so a lie can be detected but not prevented.
 - `rule` must be given the question's latest history entry, as Reality.eth requires. `flow.ts` knows it because there is exactly one answer.

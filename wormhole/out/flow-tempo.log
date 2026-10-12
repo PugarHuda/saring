@@ -1,0 +1,12 @@
+
+=== 2026-10-12T15:36:45.561Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+  0xCffDaB023df861A8C72Ee2790c96242734d8FFf2 already funded (999999.997361 AlphaUSD)
+  0x4a725561cA68F49493319e77C04bE84D02b86011 already funded (999999.999362 AlphaUSD)
+  0x5a7F864163F40A41F6Eb4F9c9f0a3dA9C7Cc96a6 already funded (999999.999468 AlphaUSD)
+SaringMarket 0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482 (https://explore.testnet.tempo.xyz/address/0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482); wormhole 0xa29E8c21924834E6249bCE1FD733f24eC492018c, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+deployMarket: https://explore.testnet.tempo.xyz/tx/0xe05e8eb3415b466e0b7a8b8fbbd0cb2a09bf85586f48c860eee6e60a5b4f150c
+betA 3 pathUSD YES (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0x382a47b5ce71728aeaadd1a860f2b7f48bf03d6e9f68636f2800bde30c7e76e4
+betB 2 pathUSD NO (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0x99ff9ff52ea319ebbf5f540fba35b319513530550f121c460596f050651a0687
+settleWithVaa (sent by bettor B): https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc -> outcome No
+claimB: https://explore.testnet.tempo.xyz/tx/0xd8b751302525261128ade2af948ea98d1978fec8fc4d3777df4a8a8bfb916b0c status=success, pathUSD +5.000000

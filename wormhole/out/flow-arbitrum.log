@@ -1,0 +1,16 @@
+
+=== 2026-10-12T15:27:08.572Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.004966352186668 ETH
+deployEM: https://sepolia.arbiscan.io/tx/0x88bfc721f2a9af7fe906845f4376eb3bd939918090c21cb144f0db5063b86268
+SaringEscalationManager 0x6ae4c89bb75291062b204e6ba9d43952786ec56c (https://sepolia.arbiscan.io/address/0x6ae4c89bb75291062b204e6ba9d43952786ec56c); wormhole 0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+mintBondToken: https://sepolia.arbiscan.io/tx/0x12cf2fb62a4ad116b43f16026859a92dee8986637b94b8b6b3aab170ef7710f7
+approve: https://sepolia.arbiscan.io/tx/0xc588e500d2fb8af75e86ae9b34fc24d3104d461936a4cec216db862373bfd19f
+assertTruth: https://sepolia.arbiscan.io/tx/0x879173f7a313e9b120a0bbeb95fdc61cdb862be1beea8b434eefa6e0ca2327bc
+assertionId 0xed57d330c68595455a61c9570ac3457635685357e0ddfeed9caf36f57212e33a
+bindCourt: https://sepolia.arbiscan.io/tx/0x95cc658f6ec33ea6b91ce7f6b15415e55b2ba058df888cc77fddd08f737c3013
+disputeAssertion: https://sepolia.arbiscan.io/tx/0x30e9d541c2c788db0e7a5c446c80ac2cece1242170e974fbb6124fe8d85fb837
+resolveWithVaa: https://sepolia.arbiscan.io/tx/0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587
+settleAssertion: https://sepolia.arbiscan.io/tx/0xaaae5ed3e9edf4ab4995f034ceb79687a4c83dd79a3217f81ac17cd320c3c3df
+AssertionSettled: {"assertionId":"0xed57d330c68595455a61c9570ac3457635685357e0ddfeed9caf36f57212e33a","bondRecipient":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394","disputed":true,"settlementResolution":false,"settleCaller":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394"}
+getAssertionResult = false

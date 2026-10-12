@@ -1,0 +1,17 @@
+
+=== 2026-10-12T15:27:38.224Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+deployer 0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747: 0.00999314627226109 ETH
+deployEM: https://sepolia.etherscan.io/tx/0x9ba1b7ffc83e5462f6a6362ddadabed954a941b7d467f75cc376fb1bd77f8b66
+SaringEscalationManager 0x2618c1f527a513a1638b8071b4b796e7769dcda0 (https://sepolia.etherscan.io/address/0x2618c1f527a513a1638b8071b4b796e7769dcda0); wormhole 0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+wrapWETH: https://sepolia.etherscan.io/tx/0x16f5a3879f065e2add7d08c81dd8d00d53c09aab4e5be02bd7b30e8f589571f7
+approve: https://sepolia.etherscan.io/tx/0x474fb250b2fb9b750d93563f901b31f8513fc618e91983e72a25570340d06ccb
+assertTruth: https://sepolia.etherscan.io/tx/0x76d6f9bc150a13c2d9afec252ef2945303bba51243221fae0b4ce9dbdd321bd2
+assertionId 0x6fa0e66154558e8a188b07acbec8fff1372dce8b879aa13727bbe0cbb74f3801
+bindCourt: https://sepolia.etherscan.io/tx/0x53533e530441f3301dc6f4162dc7e6337109e023074fa9b5d31d643e5111782a
+disputeAssertion: https://sepolia.etherscan.io/tx/0xfab551c7f7550d6a1b91425efc2fee5a27832fa5b2f74f0bd4a60e40364a67e1
+resolveWithVaa: https://sepolia.etherscan.io/tx/0x914337a888d19e0cc6d96dac017234deb8f461948b921a323d0ef293de87db44
+settleAssertion: https://sepolia.etherscan.io/tx/0x48bf0c502240376ca485e5168461860db9f53c9b2e7195999677a7fa79195399
+AssertionSettled: {"assertionId":"0x6fa0e66154558e8a188b07acbec8fff1372dce8b879aa13727bbe0cbb74f3801","bondRecipient":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747","disputed":true,"settlementResolution":false,"settleCaller":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747"}
+getAssertionResult = false
+unwrapWETH: https://sepolia.etherscan.io/tx/0x601593042efd5dc929d119893e0fbd5eff606ce3ac752aff8e8797d61c92c849

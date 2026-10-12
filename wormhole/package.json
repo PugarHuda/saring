@@ -1,0 +1,9 @@
+{
+  "name": "@saring/wormhole",
+  "private": true,
+  "description": "Saring verdicts attested by Wormhole guardians from Solana devnet state",
+  "dependencies": {
+    "tsx": "^4.23.15",
+    "viem": "^2.57.4"
+  }
+}

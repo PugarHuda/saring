@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "saring-wormhole/SaringWormhole.sol";
+
 /// The Reality.eth v3 calls an arbitrator makes (RealityETH-3.0.sol).
 interface IRealityETH {
     function notifyOfArbitrationRequest(bytes32 question_id, address requester, uint256 max_previous) external;
@@ -16,17 +18,10 @@ interface IRealityETH {
 
 /// @title SaringArbitrator
 /// @notice A Reality.eth v3 arbitrator (the slot Kleros fills for Seer/Precog) whose rulings are
-///         Saring court verdicts: the same EIP-712 Verdict attestation SaringMarket uses on Tempo.
+///         Saring court verdicts, delivered either as a Wormhole VAA (ruleWithVaa: guardian-attested
+///         Solana state, no Saring key) or as the legacy EIP-712 Verdict signed by the Saring relayer (rule).
 ///         YES majority => answer 1, NO majority => 0, tie or incomplete => INVALID (0xff..ff).
-contract SaringArbitrator {
-    struct Verdict {
-        bytes32 court;        // Saring court account pubkey (Solana, 32 bytes)
-        uint8 yes;
-        uint8 no;
-        uint8 excluded;       // ballots dropped inside MPC (juror holds a position)
-        bool incomplete;      // conflict check overflowed => void
-        uint64 resolvedSlot;  // Solana slot at which the relayer read the resolved court
-    }
+contract SaringArbitrator is SaringWormhole {
 
     bytes32 public constant VERDICT_TYPEHASH = keccak256(
         "Verdict(bytes32 court,uint8 yes,uint8 no,uint8 excluded,bool incomplete,uint64 resolvedSlot)"
@@ -57,7 +52,9 @@ contract SaringArbitrator {
     error AlreadyRuled();
     error BadSignature();
 
-    constructor(IRealityETH realitio_, address relayer_, uint256 fee_) {
+    constructor(IRealityETH realitio_, address relayer_, uint256 fee_, IWormhole wormhole_, bytes32 emitter_)
+        SaringWormhole(wormhole_, emitter_)
+    {
         realitio = realitio_;
         relayer = relayer_;
         owner = msg.sender;
@@ -107,7 +104,7 @@ contract SaringArbitrator {
         return keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, structHash));
     }
 
-    function answerFor(Verdict calldata v) public pure returns (bytes32) {
+    function answerFor(Verdict memory v) public pure returns (bytes32) {
         if (v.incomplete || v.yes == v.no) return INVALID;
         return v.yes > v.no ? bytes32(uint256(1)) : bytes32(0);
     }
@@ -124,13 +121,21 @@ contract SaringArbitrator {
         bytes32 lastAnswer,
         address lastAnswerer
     ) external {
-        if (requester[questionId] == address(0)) revert NotRequested();
-        if (ruled[questionId]) revert AlreadyRuled();
-        if (courtOf[questionId] == bytes32(0) || courtOf[questionId] != v.court) revert WrongCourt();
         if (uint256(s) > HALF_N) revert BadSignature();
         address signer = ecrecover(verdictDigest(v), sigV, r, s);
         if (signer == address(0) || signer != relayer) revert BadSignature();
+        _rule(questionId, v, lastHistoryHash, lastAnswer, lastAnswerer);
+    }
 
+    /// Anyone may submit a Wormhole VAA of the bound court's verdict, posted on Solana by saring_wormhole.
+    function ruleWithVaa(bytes32 questionId, bytes calldata vaa, bytes32 lastHistoryHash, bytes32 lastAnswer, address lastAnswerer) external {
+        _rule(questionId, verdictFromVaa(vaa), lastHistoryHash, lastAnswer, lastAnswerer);
+    }
+
+    function _rule(bytes32 questionId, Verdict memory v, bytes32 lastHistoryHash, bytes32 lastAnswer, address lastAnswerer) internal {
+        if (requester[questionId] == address(0)) revert NotRequested();
+        if (ruled[questionId]) revert AlreadyRuled();
+        if (courtOf[questionId] == bytes32(0) || courtOf[questionId] != v.court) revert WrongCourt();
         ruled[questionId] = true;
         bytes32 answer = answerFor(v);
         // Reality.eth credits the last answerer if they were right, else the requester who paid us.

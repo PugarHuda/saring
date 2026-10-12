@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../src/SaringEscalationManager.sol";
+import "saring-wormhole/SaringWormholeFixtures.sol";
 
 interface IERC20T {
     function approve(address, uint256) external returns (bool);
@@ -50,20 +51,20 @@ contract SaringEscalationManagerTest is Test {
 
     function setUp() public {
         mock = new MockOO();
-        em = new SaringEscalationManager(address(mock), vm.addr(RELAYER_PK));
+        em = new SaringEscalationManager(address(mock), vm.addr(RELAYER_PK), IWormhole(address(0)), bytes32(0));
     }
 
-    function _v(uint8 yes, uint8 no, bool incomplete) internal pure returns (SaringEscalationManager.Verdict memory) {
-        return SaringEscalationManager.Verdict(COURT, yes, no, 1, incomplete, 510221975);
+    function _v(uint8 yes, uint8 no, bool incomplete) internal pure returns (SaringWormhole.Verdict memory) {
+        return SaringWormhole.Verdict(COURT, yes, no, 1, incomplete, 510221975);
     }
 
-    function _resolve(SaringEscalationManager m, bytes32 id, SaringEscalationManager.Verdict memory v, uint256 pk) internal {
+    function _resolve(SaringEscalationManager m, bytes32 id, SaringWormhole.Verdict memory v, uint256 pk) internal {
         (uint8 sv, bytes32 r, bytes32 s) = vm.sign(pk, m.verdictDigest(v));
         m.resolve(id, v, sv, r, s);
     }
 
     /// expectRevert applies to the next call, so sign first, then expect, then resolve.
-    function _expectResolveRevert(bytes4 err, bytes32 id, SaringEscalationManager.Verdict memory v, uint256 pk) internal {
+    function _expectResolveRevert(bytes4 err, bytes32 id, SaringWormhole.Verdict memory v, uint256 pk) internal {
         (uint8 sv, bytes32 r, bytes32 s) = vm.sign(pk, em.verdictDigest(v));
         vm.expectRevert(err);
         em.resolve(id, v, sv, r, s);
@@ -111,13 +112,13 @@ contract SaringEscalationManagerTest is Test {
         vm.expectRevert(SaringEscalationManager.AlreadyBound.selector);
         em.bindCourt(ID, COURT);
 
-        SaringEscalationManager.Verdict memory other = _v(0, 1, false);
+        SaringWormhole.Verdict memory other = _v(0, 1, false);
         other.court = keccak256("other");
         _expectResolveRevert(SaringEscalationManager.WrongCourt.selector, ID, other, RELAYER_PK);
 
         _expectResolveRevert(SaringEscalationManager.BadSignature.selector, ID, _v(0, 1, false), 0xB0B); // not the relayer
 
-        SaringEscalationManager.Verdict memory v = _v(0, 1, false);
+        SaringWormhole.Verdict memory v = _v(0, 1, false);
         (uint8 sv, bytes32 r, bytes32 s) = vm.sign(RELAYER_PK, em.verdictDigest(v));
         v.yes = 5; // tampered after signing
         vm.expectRevert(SaringEscalationManager.BadSignature.selector);
@@ -150,7 +151,7 @@ contract SaringEscalationManagerTest is Test {
         vm.createSelectFork("https://sepolia-rollup.arbitrum.io/rpc");
         IOOv3 oo = IOOv3(0x1037A21a30aEfF90c269b01c3933eB9a5285d9b8);
         IERC20T dbt = IERC20T(0x689FF0D2c17ECbB01477420aB18482A8DAd45186);
-        SaringEscalationManager m = new SaringEscalationManager(address(oo), vm.addr(RELAYER_PK));
+        SaringEscalationManager m = new SaringEscalationManager(address(oo), vm.addr(RELAYER_PK), IWormhole(address(0)), bytes32(0));
         address asserter = makeAddr("asserter");
         address disputer = makeAddr("disputer");
         uint256 bond = 100e18;
@@ -176,5 +177,77 @@ contract SaringEscalationManagerTest is Test {
         assertFalse(oo.getAssertionResult(id));
         assertEq(dbt.balanceOf(disputer), 150e18); // 2x bond minus 50% burned to UMA Store
         assertEq(dbt.balanceOf(asserter), 0);
+    }
+
+    // ---------------- Wormhole path: real recorded VAA, real core bridge (Arbitrum Sepolia fork) ----------------
+
+    function _forkEm(bytes32 emitter) internal returns (SaringEscalationManager m) {
+        vm.createSelectFork("https://sepolia-rollup.arbitrum.io/rpc");
+        mock = new MockOO();
+        m = new SaringEscalationManager(address(mock), address(0), IWormhole(SaringWormholeFixtures.CORE_ARBITRUM_SEPOLIA), emitter);
+    }
+
+    /// Full UMA flow settled by the guardian-signed VAA alone (relayer = address(0): no Saring key at all).
+    function test_fork_vaa_realOOv3() public {
+        vm.createSelectFork("https://sepolia-rollup.arbitrum.io/rpc");
+        IOOv3 oo = IOOv3(0x1037A21a30aEfF90c269b01c3933eB9a5285d9b8);
+        IERC20T dbt = IERC20T(0x689FF0D2c17ECbB01477420aB18482A8DAd45186);
+        SaringEscalationManager m = new SaringEscalationManager(address(oo), address(0), IWormhole(SaringWormholeFixtures.CORE_ARBITRUM_SEPOLIA), SaringWormholeFixtures.EMITTER);
+        address asserter = makeAddr("asserter");
+        address disputer = makeAddr("disputer");
+        dbt.allocateTo(asserter, 100e18);
+        dbt.allocateTo(disputer, 100e18);
+        vm.startPrank(asserter);
+        dbt.approve(address(oo), 100e18);
+        bytes32 id = oo.assertTruth("claim", asserter, address(0), address(m), 7200, address(dbt), 100e18, "ASSERT_TRUTH", 0);
+        vm.stopPrank();
+        m.bindCourt(id, SaringWormholeFixtures.COURT);
+        vm.startPrank(disputer);
+        dbt.approve(address(oo), 100e18);
+        oo.disputeAssertion(id, disputer);
+        vm.stopPrank();
+
+        SaringWormhole.Verdict memory v = m.verdictFromVaa(SaringWormholeFixtures.VAA);
+        assertEq(v.court, SaringWormholeFixtures.COURT);
+        assertEq(abi.encode(v.yes, v.no, v.excluded, v.incomplete), abi.encode(uint8(0), uint8(1), uint8(1), false));
+        vm.prank(makeAddr("anyone"));
+        m.resolveWithVaa(id, SaringWormholeFixtures.VAA);
+        oo.settleAssertion(id);
+        assertFalse(oo.getAssertionResult(id));
+        assertEq(dbt.balanceOf(disputer), 150e18);
+        vm.expectRevert(SaringEscalationManager.AlreadyResolved.selector);
+        m.resolveWithVaa(id, SaringWormholeFixtures.VAA);
+    }
+
+    function test_fork_vaa_tamperedPayload() public {
+        SaringEscalationManager m = _forkEm(SaringWormholeFixtures.EMITTER);
+        mock.dispute(m, ID);
+        m.bindCourt(ID, SaringWormholeFixtures.COURT);
+        bytes memory bad = SaringWormholeFixtures.tampered();
+        vm.expectRevert(abi.encodeWithSelector(SaringWormhole.BadVaa.selector, "VM signature invalid"));
+        m.resolveWithVaa(ID, bad);
+    }
+
+    function test_fork_vaa_wrongEmitter() public {
+        SaringEscalationManager m = _forkEm(SaringWormholeFixtures.EMITTER);
+        mock.dispute(m, ID);
+        m.bindCourt(ID, SaringWormholeFixtures.COURT);
+        // genuine guardian signatures, but emitted by another Solana program
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector);
+        m.resolveWithVaa(ID, SaringWormholeFixtures.FOREIGN_VAA);
+        // our genuine VAA against a contract expecting a different emitter
+        SaringEscalationManager other = new SaringEscalationManager(address(mock), address(0), IWormhole(SaringWormholeFixtures.CORE_ARBITRUM_SEPOLIA), keccak256("other emitter"));
+        mock.dispute(other, ID);
+        other.bindCourt(ID, SaringWormholeFixtures.COURT);
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector);
+        other.resolveWithVaa(ID, SaringWormholeFixtures.VAA);
+    }
+
+    function test_fork_vaa_wrongCourt() public {
+        SaringEscalationManager m = _forkEm(SaringWormholeFixtures.EMITTER);
+        mock.dispute(m, ID);
+        m.bindCourt(ID, COURT); // a different court than the VAA attests
+        vm.expectRevert(SaringEscalationManager.WrongCourt.selector);
+        m.resolveWithVaa(ID, SaringWormholeFixtures.VAA);
     }
 }

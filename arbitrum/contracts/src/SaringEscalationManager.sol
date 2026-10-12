@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "saring-wormhole/SaringWormhole.sol";
+
 /// UMA Optimistic Oracle V3 EscalationManagerInterface (UMAprotocol/protocol,
 /// packages/core/contracts/optimistic-oracle-v3/interfaces/EscalationManagerInterface.sol).
 interface EscalationManagerInterface {
@@ -26,17 +28,10 @@ interface IOptimisticOracleV3Stamp {
 /// @title SaringEscalationManager
 /// @notice Unplugs UMA's DVM for assertions that name this contract as escalation manager:
 ///         a disputed assertion is decided by a Saring court (conflict-blind jury on Solana),
-///         relayed as the same EIP-712 Verdict attestation SaringMarket uses on Tempo.
+///         delivered either as a Wormhole VAA (resolveWithVaa: guardian-attested Solana state, no Saring key)
+///         or as the legacy EIP-712 Verdict signed by the Saring relayer (resolve).
 ///         YES majority => price 1e18 (assertion true). NO, tie or incomplete => 0 (false).
-contract SaringEscalationManager is EscalationManagerInterface {
-    struct Verdict {
-        bytes32 court;        // Saring court account pubkey (Solana, 32 bytes)
-        uint8 yes;
-        uint8 no;
-        uint8 excluded;       // ballots dropped inside MPC (juror holds a position)
-        bool incomplete;      // conflict check overflowed => void
-        uint64 resolvedSlot;  // Solana slot at which the relayer read the resolved court
-    }
+contract SaringEscalationManager is EscalationManagerInterface, SaringWormhole {
 
     struct Request {
         bytes32 identifier;
@@ -73,7 +68,7 @@ contract SaringEscalationManager is EscalationManagerInterface {
     error NotResolved();
     error BadSignature();
 
-    constructor(address oo_, address relayer_) {
+    constructor(address oo_, address relayer_, IWormhole wormhole_, bytes32 emitter_) SaringWormhole(wormhole_, emitter_) {
         oo = oo_;
         relayer = relayer_;
         owner = msg.sender;
@@ -134,13 +129,22 @@ contract SaringEscalationManager is EscalationManagerInterface {
 
     /// Anyone may submit; only the relayer's signature over the bound court's verdict counts.
     function resolve(bytes32 assertionId, Verdict calldata v, uint8 sigV, bytes32 r, bytes32 s) external {
+        if (uint256(s) > HALF_N) revert BadSignature();
+        address signer = ecrecover(verdictDigest(v), sigV, r, s);
+        if (signer == address(0) || signer != relayer) revert BadSignature();
+        _rule(assertionId, v);
+    }
+
+    /// Anyone may submit a Wormhole VAA of the bound court's verdict, posted on Solana by saring_wormhole.
+    function resolveWithVaa(bytes32 assertionId, bytes calldata vaa) external {
+        _rule(assertionId, verdictFromVaa(vaa));
+    }
+
+    function _rule(bytes32 assertionId, Verdict memory v) internal {
         if (courtOf[assertionId] == bytes32(0) || courtOf[assertionId] != v.court) revert WrongCourt();
         Request storage req = requests[keccak256(IOptimisticOracleV3Stamp(oo).stampAssertion(assertionId))];
         if (req.assertionId != assertionId) revert NotRequested();
         if (req.resolved) revert AlreadyResolved();
-        if (uint256(s) > HALF_N) revert BadSignature();
-        address signer = ecrecover(verdictDigest(v), sigV, r, s);
-        if (signer == address(0) || signer != relayer) revert BadSignature();
 
         int256 price = (!v.incomplete && v.yes > v.no) ? NUMERICAL_TRUE : int256(0);
         req.resolved = true;

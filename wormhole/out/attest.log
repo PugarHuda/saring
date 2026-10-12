@@ -1,0 +1,27 @@
+
+=== 2026-10-12T15:11:33.922Z attest court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb (emitter 6hrzcMmM16aUh5D1YkaVvPoQ2q532Acb2PC8yU935ABq = 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238)
+solana tx: https://explorer.solana.com/tx/5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z?cluster=devnet
+wormhole sequence 0; waiting for the guardian signature (Solana finality ~15 s) ...
+VAA: https://wormholescan.io/#/tx/5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z?network=Testnet  (api https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/0)
+
+=== 2026-10-12T15:37:26.681Z simulate attest of 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ (owner 11111111111111111111111111111111): err {"InstructionError":[0,"InvalidAccountData"]}
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq invoke [1]
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq consumed 7360 of 200000 compute units
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq failed: invalid account data for instruction
+
+=== 2026-10-12T15:37:29.607Z simulate attest of 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb (owner 3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy): err null
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq invoke [1]
+  Program log: Sequence: 1
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq consumed 44206 of 200000 compute units
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq success
+
+=== 2026-10-12T15:37:52.113Z simulate attest of 4xvqbCPmAbA85A9qQgZqq41ZURCcxGbZ7ivgjpRBWfVV (owner 3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy): err {"InstructionError":[0,{"Custom":1}]}
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq invoke [1]
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq consumed 7637 of 200000 compute units
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq failed: custom program error: 0x1
+
+=== 2026-10-12T15:41:42.690Z simulate attest of 3W2eB4oTgGYhpyUq5NuoeHqFhmTbhGdcK2Tb1gfs81FR (owner 3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy): err null
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq invoke [1]
+  Program log: Sequence: 1
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq consumed 44206 of 200000 compute units
+  Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq success

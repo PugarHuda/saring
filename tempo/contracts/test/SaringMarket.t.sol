@@ -2,7 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
-import {SaringMarket, IERC20} from "../src/SaringMarket.sol";
+import {SaringMarket, IERC20, IWormhole, SaringWormhole} from "../src/SaringMarket.sol";
+import "saring-wormhole/SaringWormholeFixtures.sol";
 
 /// Test-only stand-in for a TIP-20 (6 decimals, ERC-20 surface). On Tempo the market uses the real precompile token.
 contract TestUSD {
@@ -30,7 +31,7 @@ contract SaringMarketTest is Test {
 
     function setUp() public {
         usd = new TestUSD();
-        mkt = new SaringMarket(IERC20(address(usd)), vm.addr(relayerKey));
+        mkt = new SaringMarket(IERC20(address(usd)), vm.addr(relayerKey), IWormhole(address(0)), bytes32(0));
         address[3] memory who = [alice, bob, carol];
         for (uint256 i; i < 3; i++) {
             usd.mint(who[i], 100e6);
@@ -39,11 +40,11 @@ contract SaringMarketTest is Test {
         }
     }
 
-    function _v(uint8 y, uint8 n, bool inc) internal view returns (SaringMarket.Verdict memory) {
-        return SaringMarket.Verdict(court, y, n, 1, inc, 123);
+    function _v(uint8 y, uint8 n, bool inc) internal view returns (SaringWormhole.Verdict memory) {
+        return SaringWormhole.Verdict(court, y, n, 1, inc, 123);
     }
 
-    function _settle(SaringMarket.Verdict memory v, uint256 key) internal {
+    function _settle(SaringWormhole.Verdict memory v, uint256 key) internal {
         (uint8 sv, bytes32 r, bytes32 s) = vm.sign(key, mkt.verdictDigest(v));
         mkt.settle(v, sv, r, s);
     }
@@ -78,7 +79,7 @@ contract SaringMarketTest is Test {
 
     function test_badSignature_reverts() public {
         _bet(alice, true, 1e6);
-        SaringMarket.Verdict memory v = _v(2, 1, false);
+        SaringWormhole.Verdict memory v = _v(2, 1, false);
         vm.expectRevert(SaringMarket.BadSignature.selector);
         this.settleWith(v, 0xB0B); // signed by the wrong key
         // valid signature over a different verdict (tampered tally)
@@ -89,14 +90,14 @@ contract SaringMarketTest is Test {
     }
 
     function test_highS_rejected() public {
-        SaringMarket.Verdict memory v = _v(2, 1, false);
+        SaringWormhole.Verdict memory v = _v(2, 1, false);
         (uint8 sv, bytes32 r, bytes32 s) = vm.sign(relayerKey, mkt.verdictDigest(v));
         uint256 n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
         vm.expectRevert(SaringMarket.BadSignature.selector);
         mkt.settle(v, sv == 27 ? 28 : 27, r, bytes32(n - uint256(s)));
     }
 
-    function settleWith(SaringMarket.Verdict memory v, uint256 key) external { _settle(v, key); }
+    function settleWith(SaringWormhole.Verdict memory v, uint256 key) external { _settle(v, key); }
 
     function test_doubleSettle_reverts() public {
         _bet(alice, true, 1e6);
@@ -143,5 +144,51 @@ contract SaringMarketTest is Test {
         vm.prank(alice);
         vm.expectRevert(SaringMarket.ZeroAmount.selector);
         mkt.bet(court, true, 0);
+    }
+
+    // ---------------- Wormhole path: real recorded VAA, real core bridge (Tempo Moderato fork) ----------------
+
+    function _forkMarket(bytes32 emitter) internal returns (SaringMarket m) {
+        vm.createSelectFork("https://rpc.moderato.tempo.xyz");
+        usd = new TestUSD();
+        m = new SaringMarket(IERC20(address(usd)), address(0), IWormhole(SaringWormholeFixtures.CORE_TEMPO_MODERATO), emitter);
+        bytes32 c = SaringWormholeFixtures.COURT;
+        usd.mint(alice, 3e6);
+        usd.mint(bob, 2e6);
+        vm.startPrank(alice);
+        usd.approve(address(m), 3e6);
+        m.bet(c, true, 3e6);
+        vm.stopPrank();
+        vm.startPrank(bob);
+        usd.approve(address(m), 2e6);
+        m.bet(c, false, 2e6);
+        vm.stopPrank();
+    }
+
+    /// Settled by the guardian-signed VAA alone (relayer = address(0): no Saring key at all).
+    function test_fork_vaa_settlesNo() public {
+        SaringMarket m = _forkMarket(SaringWormholeFixtures.EMITTER);
+        vm.prank(carol);
+        m.settleWithVaa(SaringWormholeFixtures.VAA);
+        assertEq(m.claimable(SaringWormholeFixtures.COURT, bob), 5e6);
+        assertEq(m.claimable(SaringWormholeFixtures.COURT, alice), 0);
+        vm.expectRevert(SaringMarket.MarketClosed.selector);
+        m.settleWithVaa(SaringWormholeFixtures.VAA);
+    }
+
+    function test_fork_vaa_tamperedPayload() public {
+        SaringMarket m = _forkMarket(SaringWormholeFixtures.EMITTER);
+        bytes memory bad = SaringWormholeFixtures.tampered();
+        vm.expectRevert(abi.encodeWithSelector(SaringWormhole.BadVaa.selector, "VM signature invalid"));
+        m.settleWithVaa(bad);
+    }
+
+    function test_fork_vaa_wrongEmitter() public {
+        SaringMarket m = _forkMarket(SaringWormholeFixtures.EMITTER);
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector);
+        m.settleWithVaa(SaringWormholeFixtures.FOREIGN_VAA);
+        SaringMarket other = _forkMarket(keccak256("other emitter"));
+        vm.expectRevert(SaringWormhole.WrongEmitter.selector);
+        other.settleWithVaa(SaringWormholeFixtures.VAA);
     }
 }

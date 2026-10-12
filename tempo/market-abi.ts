@@ -12,6 +12,16 @@ export const marketAbi = [
         "name": "relayer_",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "wormhole_",
+        "type": "address",
+        "internalType": "contract IWormhole"
+      },
+      {
+        "name": "emitter_",
+        "type": "bytes32",
+        "internalType": "bytes32"
       }
     ],
     "stateMutability": "nonpayable"
@@ -25,6 +35,19 @@ export const marketAbi = [
         "name": "",
         "type": "bytes32",
         "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "SOLANA_CHAIN_ID",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint16",
+        "internalType": "uint16"
       }
     ],
     "stateMutability": "view"
@@ -176,12 +199,25 @@ export const marketAbi = [
   },
   {
     "type": "function",
+    "name": "saringEmitter",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "settle",
     "inputs": [
       {
         "name": "v",
         "type": "tuple",
-        "internalType": "struct SaringMarket.Verdict",
+        "internalType": "struct SaringWormhole.Verdict",
         "components": [
           {
             "name": "court",
@@ -236,6 +272,19 @@ export const marketAbi = [
   },
   {
     "type": "function",
+    "name": "settleWithVaa",
+    "inputs": [
+      {
+        "name": "vaa",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "token",
     "inputs": [],
     "outputs": [
@@ -254,7 +303,7 @@ export const marketAbi = [
       {
         "name": "v",
         "type": "tuple",
-        "internalType": "struct SaringMarket.Verdict",
+        "internalType": "struct SaringWormhole.Verdict",
         "components": [
           {
             "name": "court",
@@ -294,6 +343,70 @@ export const marketAbi = [
         "name": "",
         "type": "bytes32",
         "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "verdictFromVaa",
+    "inputs": [
+      {
+        "name": "vaa",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "v",
+        "type": "tuple",
+        "internalType": "struct SaringWormhole.Verdict",
+        "components": [
+          {
+            "name": "court",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "yes",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "no",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "excluded",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "incomplete",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "resolvedSlot",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "wormhole",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IWormhole"
       }
     ],
     "stateMutability": "view"
@@ -429,8 +542,24 @@ export const marketAbi = [
   },
   {
     "type": "error",
+    "name": "BadPayload",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "BadSignature",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "BadVaa",
+    "inputs": [
+      {
+        "name": "reason",
+        "type": "string",
+        "internalType": "string"
+      }
+    ]
   },
   {
     "type": "error",
@@ -450,6 +579,11 @@ export const marketAbi = [
   {
     "type": "error",
     "name": "TransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "WrongEmitter",
     "inputs": []
   },
   {

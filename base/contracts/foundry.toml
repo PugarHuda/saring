@@ -5,3 +5,5 @@ out = "out"
 libs = ["lib"]
 solc_version = "0.8.30"
 optimizer = true
+remappings = ["saring-wormhole/=../../wormhole/contracts/"]
+allow_paths = ["../../wormhole/contracts"]
