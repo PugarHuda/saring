@@ -15,13 +15,13 @@ import {
   getMempoolAccAddress,
   x25519,
 } from "@arcium-hq/client";
+import { DEMO_MARKET, allTraders, identityId, marketHolders, marketQuestion } from "../../panta/panta";
 import idl from "./idl/blindcourt.json";
 import type { Blindcourt } from "./idl/blindcourt";
 
 export const CLUSTER_OFFSET = 456; // Arcium devnet cluster
 export const RPC_URL: string = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
 export const PROGRAM_ID = new PublicKey(idl.address);
-export const MARKET = "Did X happen by Oct 31?";
 const FINALIZE_TIMEOUT_MS = 300_000;
 
 export const explorerTx = (sig: string) => `https://explorer.solana.com/tx/${sig}?cluster=devnet`;
@@ -69,13 +69,19 @@ export function makeClient(kp: Keypair) {
 }
 export type Client = ReturnType<typeof makeClient>;
 
-// ---------- scenario ----------
+// ---------- scenario (built from real Panta data on Solana mainnet) ----------
+
+export const MAINNET_RPC_URL: string = import.meta.env.VITE_MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com";
+export { DEMO_MARKET as PANTA_MARKET };
+export const pantaMarketUrl = (m: string) => `https://explorer.solana.com/address/${m}`;
+export const explorerMainnetAddr = (a: string) => `https://explorer.solana.com/address/${a}`;
+const BATCH = 6;
 
 export type Action =
-  | { kind: "create" }
-  | { kind: "juror"; id: number }
-  | { kind: "position"; id: number }
-  | { kind: "cast"; id: number; yes: boolean }
+  | { kind: "create"; question: string }
+  | { kind: "juror"; wallet: string; id: number }
+  | { kind: "positions"; ids: number[] }
+  | { kind: "cast"; wallet: string; id: number; yes: boolean }
   | { kind: "resolve" };
 
 export interface ScriptStep {
@@ -84,37 +90,87 @@ export interface ScriptStep {
   note: string;
 }
 
-export const INSIDERS = [101, 102, 103]; // jurors who also traded the market
-export const HONEST = [104, 105];
-export const OUTSIDE_TRADERS = [201, 202];
+export interface Juror {
+  wallet: string;
+  id: number;
+  /** Holds a position in the disputed market (read from mainnet). */
+  conflicted: boolean;
+}
 
-export const SCRIPT: ScriptStep[] = [
-  { action: { kind: "create" }, title: "Open the court", note: `Market: “${MARKET}”` },
-  ...[...INSIDERS, ...HONEST].map((id) => ({
-    action: { kind: "juror", id } as Action,
-    title: `Seat juror #${id}`,
-    note: "Id sent as ciphertext",
-  })),
-  ...[...INSIDERS, ...OUTSIDE_TRADERS].map((id) => ({
-    action: { kind: "position", id } as Action,
-    title: `Record a position for trader #${id}`,
-    note: INSIDERS.includes(id) ? "Also a juror. Nobody on chain can tell" : "Ordinary trader",
-  })),
-  ...INSIDERS.map((id) => ({
-    action: { kind: "cast", id, yes: true } as Action,
-    title: `Juror #${id} votes YES`,
-    note: "Conflicted: holds a position",
-  })),
-  { action: { kind: "cast", id: 104, yes: true }, title: "Juror #104 votes YES", note: "Bribed: this is the receipt shown to the briber" },
-  { action: { kind: "cast", id: 104, yes: false }, title: "Juror #104 re-votes NO", note: "Silently overwrites the bribed ballot" },
-  { action: { kind: "cast", id: 105, yes: false }, title: "Juror #105 votes NO", note: "Honest" },
-  { action: { kind: "resolve" }, title: "Resolve", note: "MPC drops conflicted jurors, tallies the rest" },
-];
+export interface Scenario {
+  market: string;
+  question: string;
+  holderCount: number;
+  otherTraderCount: number;
+  jurors: Juror[];
+  steps: ScriptStep[];
+}
+
+const short = (w: string) => `${w.slice(0, 4)}…${w.slice(-4)}`;
+
+/**
+ * Reads the disputed Panta market from mainnet and builds the run:
+ * 3 jurors are real holders of this market, 2 are real Panta traders who are not.
+ * Ballots are scripted (we don't hold those wallets' keys); positions are real.
+ */
+export async function loadScenario(): Promise<Scenario> {
+  const mainnet = new Connection(MAINNET_RPC_URL, "confirmed");
+  const [question, holders, traders] = await Promise.all([
+    marketQuestion(mainnet, DEMO_MARKET),
+    marketHolders(mainnet, DEMO_MARKET),
+    allTraders(mainnet),
+  ]);
+  const outsiders = [...traders.keys()].filter((w) => !traders.get(w)!.has(DEMO_MARKET));
+  const conflictedWallets = holders.filter((h) => h.yes + h.no > 0n).slice(0, 3).map((h) => h.owner);
+  const jurors: Juror[] = await Promise.all(
+    [...conflictedWallets.map((w) => [w, true] as const), ...outsiders.slice(0, 2).map((w) => [w, false] as const)].map(
+      async ([wallet, conflicted]) => ({ wallet, id: await identityId(wallet), conflicted })
+    )
+  );
+  const holderIds = await Promise.all(holders.map((h) => identityId(h.owner)));
+  const batches: number[][] = [];
+  for (let i = 0; i < holderIds.length; i += BATCH) {
+    const b = holderIds.slice(i, i + BATCH);
+    while (b.length < BATCH) b.push(0);
+    batches.push(b);
+  }
+  const [c1, c2, c3, bribed, honest] = jurors;
+  const steps: ScriptStep[] = [
+    { action: { kind: "create", question: question.slice(0, 64) }, title: "Open the court", note: `Panta market: “${question}”` },
+    ...jurors.map((j) => ({
+      action: { kind: "juror", wallet: j.wallet, id: j.id } as Action,
+      title: `Seat juror ${short(j.wallet)}`,
+      note: j.conflicted ? "Real holder of this market. Nobody on chain can tell" : "Real Panta trader, no position here",
+    })),
+    ...batches.map((ids, i) => ({
+      action: { kind: "positions", ids } as Action,
+      title: `Mirror Panta positions ${i * BATCH + 1}–${Math.min((i + 1) * BATCH, holderIds.length)} of ${holderIds.length}`,
+      note: "Read from mainnet, sent as ciphertext",
+    })),
+    ...[c1, c2, c3].map((j) => ({
+      action: { kind: "cast", wallet: j.wallet, id: j.id, yes: true } as Action,
+      title: `Juror ${short(j.wallet)} votes YES`,
+      note: "Conflicted: holds a position",
+    })),
+    { action: { kind: "cast", wallet: bribed.wallet, id: bribed.id, yes: true }, title: `Juror ${short(bribed.wallet)} votes YES`, note: "Bribed: this is the receipt shown to the briber" },
+    { action: { kind: "cast", wallet: bribed.wallet, id: bribed.id, yes: false }, title: `Juror ${short(bribed.wallet)} re-votes NO`, note: "Silently overwrites the bribed ballot" },
+    { action: { kind: "cast", wallet: honest.wallet, id: honest.id, yes: false }, title: `Juror ${short(honest.wallet)} votes NO`, note: "Clean juror" },
+    { action: { kind: "resolve" }, title: "Resolve", note: "MPC drops conflicted jurors, tallies the rest" },
+  ];
+  return {
+    market: DEMO_MARKET,
+    question,
+    holderCount: holders.length,
+    otherTraderCount: outsiders.length,
+    jurors,
+    steps,
+  };
+}
 
 const CIRCUIT: Record<Action["kind"], string> = {
   create: "init_court",
   juror: "add_juror",
-  position: "record_position",
+  positions: "record_positions",
   cast: "cast",
   resolve: "resolve",
 };
@@ -175,16 +231,16 @@ export async function queueStep(c: Client, courtId: number, mxePub: Uint8Array, 
   let b;
   switch (a.kind) {
     case "create":
-      b = m.createCourt(offset, courtId, MARKET);
+      b = m.createCourt(offset, courtId, a.question);
       break;
     case "juror": {
       const e = encrypt(mxePub, [BigInt(a.id)]);
       b = m.addJuror(offset, courtId, e.ct[0], e.pub, e.nonce);
       break;
     }
-    case "position": {
-      const e = encrypt(mxePub, [BigInt(a.id)]);
-      b = m.recordPosition(offset, courtId, e.ct[0], e.pub, e.nonce).accountsPartial(court);
+    case "positions": {
+      const e = encrypt(mxePub, a.ids.map(BigInt));
+      b = m.recordPositions(offset, courtId, e.ct, e.pub, e.nonce).accountsPartial(court);
       break;
     }
     case "cast": {

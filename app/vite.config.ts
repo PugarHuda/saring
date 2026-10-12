@@ -11,7 +11,10 @@ export default defineConfig({
   plugins: [react()],
   base: "./",
   define: { global: "globalThis" },
+  // ../panta/panta.ts lives outside the app root; one web3.js copy for both.
+  server: { fs: { allow: [".."] } },
   resolve: {
+    dedupe: ["@solana/web3.js"],
     alias: [
       { find: /^crypto$/, replacement: shim("crypto.ts") },
       { find: /^fs$/, replacement: shim("fs.ts") },

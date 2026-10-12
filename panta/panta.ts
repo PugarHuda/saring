@@ -94,7 +94,7 @@ export async function holdsPosition(mainnet: Connection, market: string, wallet:
  */
 // ponytail: wallet-derived ids; one-person-one-id needs an identity attestation (SAS) on top.
 export async function identityId(wallet: string): Promise<number> {
-  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", new PublicKey(wallet).toBuffer()));
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array(new PublicKey(wallet).toBytes())));
   const id = new DataView(h.buffer).getUint32(0, true);
   return id === 0 ? 1 : id;
 }

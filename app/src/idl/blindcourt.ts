@@ -781,16 +781,16 @@ export type Blindcourt = {
       "args": []
     },
     {
-      "name": "initRecordPositionCompDef",
+      "name": "initRecordPositionsCompDef",
       "discriminator": [
-        81,
-        129,
-        70,
-        120,
-        234,
-        60,
-        103,
-        239
+        28,
+        202,
+        203,
+        168,
+        113,
+        20,
+        95,
+        170
       ],
       "accounts": [
         {
@@ -871,19 +871,21 @@ export type Blindcourt = {
       "args": []
     },
     {
-      "name": "recordPosition",
+      "name": "recordPositions",
       "docs": [
-        "Records an encrypted trader id as holding a position in this market."
+        "Records up to 6 encrypted identities as holding a position in this market",
+        "(unused entries encrypt 0). Authority only: it mirrors positions read from",
+        "the market's chain state (Panta `UserPosition` accounts in the demo)."
       ],
       "discriminator": [
-        121,
-        236,
-        13,
+        157,
+        129,
+        139,
         250,
-        155,
-        214,
-        140,
-        173
+        46,
+        210,
+        197,
+        10
       ],
       "accounts": [
         {
@@ -1005,11 +1007,16 @@ export type Blindcourt = {
           "type": "u32"
         },
         {
-          "name": "traderId",
+          "name": "traderIds",
           "type": {
             "array": [
-              "u8",
-              32
+              {
+                "array": [
+                  "u8",
+                  32
+                ]
+              },
+              6
             ]
           }
         },
@@ -1029,16 +1036,16 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "recordPositionCallback",
+      "name": "recordPositionsCallback",
       "discriminator": [
-        148,
-        225,
-        9,
-        43,
-        6,
-        115,
-        80,
-        72
+        246,
+        54,
+        179,
+        211,
+        56,
+        42,
+        49,
+        211
       ],
       "accounts": [
         {
@@ -1077,7 +1084,7 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "recordPositionOutput"
+                      "name": "recordPositionsOutput"
                     }
                   }
                 }
@@ -1397,7 +1404,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "6"
+                    "value": "11"
                   }
                 ]
               }
@@ -1461,7 +1468,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "6"
+                    "value": "11"
                   }
                 ]
               }
@@ -1792,7 +1799,7 @@ export type Blindcourt = {
                     32
                   ]
                 },
-                6
+                11
               ]
             }
           },
@@ -1872,7 +1879,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "6"
+                    "value": "11"
                   }
                 ]
               }
@@ -2346,7 +2353,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "recordPositionOutput",
+      "name": "recordPositionsOutput",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -2362,7 +2369,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "6"
+                    "value": "11"
                   }
                 ]
               }
