@@ -1,0 +1,35 @@
+[package]
+name = "saring-stylus"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Stylus verifier for Saring verdict VAAs: Wormhole core check + the shared Rust verdict codec"
+
+[dependencies]
+alloy-primitives = "1.5.7"
+alloy-sol-types = "1.5.7"
+stylus-sdk = "0.10.10"
+saring-verdict-codec = { path = "../../wormhole/verdict-codec" }
+
+[dev-dependencies]
+stylus-sdk = { version = "0.10.10", features = ["stylus-test"] }
+
+[lib]
+crate-type = ["lib", "cdylib"]
+
+[features]
+default = ["mini-alloc"]
+export-abi = ["stylus-sdk/export-abi"]
+debug = ["stylus-sdk/debug"]
+mini-alloc = ["stylus-sdk/mini-alloc"]
+contract-client-gen = []
+
+[profile.release]
+codegen-units = 1
+strip = true
+lto = true
+panic = "abort"
+opt-level = "z"
+
+# Standalone: not part of the root Anchor workspace.
+[workspace]

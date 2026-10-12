@@ -1,0 +1,11 @@
+ParseOnlyWormhole (devnode stand-in for the core bridge) 0x525c2aBA45F66987217323E8a05EA400C65D06DC
+2026-10-12T16:33:56.761Z INFO  [stylus_tools::core::deployment] deployed code at address: 0xe547a947fc6c8683c210a6a56a9de05dd87142ea
+2026-10-12T16:33:56.761Z INFO  [stylus_tools::core::deployment] deployment tx hash: 0x69ecb564e78d826b56dcfb61bec5ba0e4bc1ceb180fa4b0e7f4a96ec5cf3a1b6
+SaringStylusVerifier 0xe547a947fc6c8683c210a6a56a9de05dd87142ea
+decodePayload(real payload): 0x0fccfd5d8927992d06ab5468a7232ed5280718e34bf449a0acbbf66a36aa5f04 0 1 1 false 510304739 [5.103e8] 2 
+verdictOf before: false 0 0 0 false 0 0 
+gasUsed              106847
+status               1 (success)
+transactionHash      0xd4ef7637d96d06c5cc23d245d85750fc1608502ed989fcfdf0d8ec851ec30f22
+verdictOf after: true 0 1 1 false 510304739 [5.103e8] 2 
+flag byte 2 -> execution reverted: BadPayload

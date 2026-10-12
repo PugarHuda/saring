@@ -67,6 +67,30 @@ RPC_URL_EVM=http://127.0.0.1:8545 npx tsx flow-kleros.ts   # anvil-fork rehearsa
 npx tsx flow-kleros.ts [court]                             # live; needs ../wormhole/out/vaa-<court>.json
 ```
 
+## Stylus: one Rust verdict codec, two VMs
+
+`../wormhole/verdict-codec` (`saring-verdict-codec`, `no_std`, no dependencies) defines the 45-byte payload once:
+`0x01 | court[32] | yes | no | excluded | incomplete | slot u64 BE`, with `encode`, `decode` (which rejects a wrong length, a wrong version, or a flag byte above 1) and `ruling()` (1/2/0, the same rule as `SaringArbitratorV2`).
+`arbitrum/stylus` (`SaringStylusVerifier`, stylus-sdk 0.10.10) uses the crate in WASM:
+
+- `submitVaa(vaa)` calls the core bridge's `parseAndVerifyVM`, requires `valid`, the Solana chain id and the Saring emitter, decodes the payload with the shared crate, and records it. A later slot replaces an earlier one.
+- `verdictOf(court)` returns `(known, yes, no, excluded, incomplete, slot, ruling)`. `decodePayload(bytes)` exposes the codec on its own.
+- The constructor takes `(core, emitter)`. On Sepolia those are `0x6b9C…6a35` and `0x54c2…6238`.
+
+**Solana side, without a redeploy.** The crate builds for SBF (`cargo build-sbf` in `wormhole/verdict-codec` passes). Its test `onchain_payload_roundtrips` decodes the payload of the real VAA that the **deployed** `saring_wormhole` program emitted for `24gQ…YGb` and re-encodes it byte for byte. That proves the program could switch its hand-rolled `Vec` encoder to the crate with identical output. The program source is left as is, so nothing is redeployed.
+
+**Checked and run:**
+- `cargo test`: codec 3/3, Stylus 2/2 (TestVM with a mocked core: the real payload is recorded with ruling 2; the tests also cover an invalid VAA, a wrong emitter and a short payload).
+- `cargo stylus check` passes on nitro-devnode (23.4 KB, data fee 0.000117 ETH).
+- **nitro-devnode** (`stylus/devnode.sh`, Docker on its own subnet 172.31.0.0/16, port 8549). The verifier deployed with its constructor through StylusDeployer, then `submitVaa(real VAA)` succeeded (106,847 gas), and `verdictOf(24gQ…)` returned `(true, 0, 1, 1, false, 510304739, 2)`. The same VAA with flag byte 2 reverted with `BadPayload`. A local devnode has no guardian set, so there `core` is `contracts/test/ParseOnlyWormhole.sol`, which parses the real VAA body without checking signatures. Signature checking is covered on Sepolia by the Solidity adapters above. Log: `out/stylus-devnode.log`.
+- **Arbitrum Sepolia: not deployed.** `cargo stylus check` there fails with "Stylus activations appear to be paused on this chain": `ArbWasm(0x71).activationGas()` returns 2^64-1 on Arbitrum Sepolia, and on Arbitrum One as well. Once the chain owner lifts the pause, the command is
+  `cargo stylus deploy -e https://sepolia-rollup.arbitrum.io/rpc --private-key-path <key> --constructor-args 0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238`.
+
+```bash
+(cd ../wormhole/verdict-codec && cargo test && cargo build-sbf)
+cd stylus && cargo test && cargo stylus check -e http://127.0.0.1:8549 && bash devnode.sh
+```
+
 ## Status
 
 - **Foundry: 6/6 pass** (`out/forge-test.log`). One of them, `test_fork_realOOv3`, forks Arbitrum Sepolia and runs the full

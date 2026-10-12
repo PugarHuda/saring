@@ -1,0 +1,11 @@
+[package]
+name = "saring-verdict-codec"
+version = "0.1.0"
+edition = "2021"
+description = "The 45-byte Saring verdict payload carried in Wormhole VAAs: 0x01 | court[32] | yes | no | excluded | incomplete | slot u64 BE"
+license = "MIT"
+
+[dependencies]
+
+# Standalone: shared by wormhole/program (SBF) and arbitrum/stylus (WASM) by path.
+[workspace]
