@@ -598,7 +598,7 @@ export default function App() {
                     {([null, true, false] as const).map((b) => (
                       <label key={String(b)}>
                         <input type="radio" name="bet" checked={choice.bet === b} onChange={() => choose({ ...choice, bet: b })} />
-                        <span>{b === null ? "No bet" : b ? "YES" : "NO"}</span>
+                        <span>{b === null ? "Don’t bet" : b ? "YES" : "NO"}</span>
                       </label>
                     ))}
                   </div>
