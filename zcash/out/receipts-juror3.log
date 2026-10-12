@@ -1,0 +1,18 @@
+[
+  {
+    "txid": "0d72ed66d770a2f9c043f2d6026d063195dfaafa96f6875eb065b3377c2b547e",
+    "height": 4491810,
+    "pool": "ironwood",
+    "amount": "0.02000000 TAZ",
+    "memo": "saring demo: seed juror3",
+    "explorer": "https://testnet.zecblock.com/tx/0d72ed66d770a2f9c043f2d6026d063195dfaafa96f6875eb065b3377c2b547e"
+  },
+  {
+    "txid": "752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85",
+    "height": 4492351,
+    "pool": "ironwood",
+    "amount": "0.01000000 TAZ",
+    "memo": "saring-refund:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
+    "explorer": "https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85"
+  }
+]

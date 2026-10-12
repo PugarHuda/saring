@@ -1,0 +1,28 @@
+{
+  "courtId": 1582894422,
+  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
+  "question": "Saring x Zcash: did the bonded jury convene?",
+  "open": {
+    "queue": "https://explorer.solana.com/tx/3qb1scGe3w6PXCBzgt9pumPBwYULN6dN5oqYcwbsx2oRgDfRUYVvSoLNqGzh8BdsU5t6JA9iJGou7R8sqL4jjSHK?cluster=devnet",
+    "callback": "https://explorer.solana.com/tx/38G63S24oV64LpMUd22dBBbqgvhDXQBSJ9AmKGTmgtgE3sCqzhspv2zVqwNJRiYoQ5fo5JjouMaPj5pv43mi9SAr?cluster=devnet"
+  },
+  "seatedCount": 3,
+  "notSeatedCount": 1,
+  "txs": {
+    "seat 3da1ca63e643": "https://explorer.solana.com/tx/RwWsyepY9PbBARUZ4YiNUqVT8WGEaeBtCWfxFa2cMnpXdDGspfcTwimWsz4wxGRseSaVUA9etNS5ni9sdLuqW2R?cluster=devnet",
+    "seat baabb70b0393": "https://explorer.solana.com/tx/4L7iczVEPM7LsD9eLLJ5VWBVeNSr18NHmiCGB9tvU6yViSozpHh5fsk26kjQz8WGgaDkiCRG52XWKXeqvSGgXjuY?cluster=devnet",
+    "seat 95a632656cb8": "https://explorer.solana.com/tx/4nFaM8DLCroxaFry8Sd5Vj2tFwfEtDW6LZFGSf6euR9q4w25wK7nHZTdYG5kk5QsdGsPnnridFu1RPg468nD5A9m?cluster=devnet",
+    "mirror positions": "https://explorer.solana.com/tx/2nqFjBCAi6Sfy31iWEGVqzty2rowhheLABvi6KvKAGj8RvHbr9zsY4ZM1j9g8sxWp3c3jBbbuAg8D2Co8iBxq6LP?cluster=devnet",
+    "cast 3da1ca63e643": "https://explorer.solana.com/tx/23uu3rEetRDfnqB7AahsCcoDcnJJ9HxemLQ2yupXYLUSzbt2iWBphYS1NaeQmC2GExYbkTjUw5NZWNY4ZBFiHDqe?cluster=devnet",
+    "cast baabb70b0393": "https://explorer.solana.com/tx/39pXSTSWcgGA4DuS95mpvHAUSQkrJmix7WD76Q1JZUzcJmjHbvUAzGt4AoMLDssXf45XKWx7s5stXZMz5rbRTQb1?cluster=devnet",
+    "cast 95a632656cb8": "https://explorer.solana.com/tx/3Ebajefwp7cDmMTZWVixSe7KRppL7G9keRY9HTwTfi4hAyz1cie1SPTdRwgyQS41Y6wTMjcXS6SGo9Lqx8FDp7j?cluster=devnet",
+    "resolve": "https://explorer.solana.com/tx/jDzuH11xH8TKDUX8KCunWrXUiAYxhwQDz78CFAjyZRrtDHw8XQPqmFWjHrpSiA5DwQKU1HgBjwU27kZ64ka8VX4?cluster=devnet"
+  },
+  "verdict": {
+    "yes": 0,
+    "no": 2,
+    "excluded": 1,
+    "incomplete": false,
+    "outcome": "NO"
+  }
+}

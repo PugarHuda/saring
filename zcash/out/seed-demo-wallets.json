@@ -1,0 +1,22 @@
+{
+  "from": "juror1",
+  "outputs": [
+    {
+      "to": "utest13tre94fs0k7f4n8p4rpum2zech46jdc0hv063lntm4tknp4h7a993ssedy40nk04gqpgka3afkjnhmdxghmpdg50zyat6ww7n9gnqwgqw9uxkm72ydhqegh29ngyta2748en33jfm7ft5s4pzfr0nwafa7uvy98dsn3ccdu2ea2727nr45ungqszm4ydjsg6vlz78wug5gnmwstruwu",
+      "zat": 2000000,
+      "memo": "saring demo: seed juror2"
+    },
+    {
+      "to": "utest13rt6nk764pkvuavw2tzxfsgr7a5s78rxc5hhtx2qj4v48uluzftq8g7fxzmkkvj69r0ze23k0w6z5dd5608rm5m2l84208vwk2reaz2dy98zn5jwyt5r52gg8vuzk5l7d0jk28pa8negwe8nfnrlda0jj7fkjhyktgmurns28wlfenfkpy6t2w9fs03dmhdz80s0y5mextr96q9l5tg",
+      "zat": 2000000,
+      "memo": "saring demo: seed juror3"
+    },
+    {
+      "to": "utest1utlpmt0e3hrd0a7zn2ns0xe0r0lmffjnyjqreqypma7wwz6v47sxac6j0qfpftgtn0ns40tqhsu9y994huypzf9nk9smuqpjcuaxvgsj6axpt72vh07q5qw9x3dhy25laxu94gec023mdyhnur6jzqka6pvdj9347j0574unkxhgyedu9aalluy7pnntcmnwmt446jm8lcpcjgjkhjk",
+      "zat": 3000000,
+      "memo": "saring demo: seed operator reward pool"
+    }
+  ],
+  "txid": "0d72ed66d770a2f9c043f2d6026d063195dfaafa96f6875eb065b3377c2b547e",
+  "explorer": "https://testnet.zecblock.com/tx/0d72ed66d770a2f9c043f2d6026d063195dfaafa96f6875eb065b3377c2b547e"
+}

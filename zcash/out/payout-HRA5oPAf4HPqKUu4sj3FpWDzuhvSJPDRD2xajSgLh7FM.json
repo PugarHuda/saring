@@ -1,0 +1,47 @@
+{
+  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
+  "verdict": {
+    "resolved": true,
+    "yes": 0,
+    "no": 2,
+    "excluded": 1,
+    "incomplete": false,
+    "outcome": "NO"
+  },
+  "policy": "every bond refunded; reward only to jurors whose ballot counted (conflicted jurors: refund, no reward)",
+  "payments": [
+    {
+      "kind": "refund",
+      "juror": "3da1ca63e643eda177a662e890788e20f19a344d378dc5e19262aed6e3d5fd7e",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-refund:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM"
+    },
+    {
+      "kind": "refund",
+      "juror": "95a632656cb859ee6338206b6ead90fc17b7f3a516113ca0663ea575a32d532b",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-refund:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM"
+    },
+    {
+      "kind": "refund",
+      "juror": "baabb70b0393cda1a38e6a36551fc4ccde8036cd09703d10c4ccb8eb7eaef9d8",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-refund:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM"
+    },
+    {
+      "kind": "reward",
+      "juror": "3da1ca63e643eda177a662e890788e20f19a344d378dc5e19262aed6e3d5fd7e",
+      "amount": "0.00500000 TAZ",
+      "memo": "saring-reward:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM:NO"
+    },
+    {
+      "kind": "reward",
+      "juror": "baabb70b0393cda1a38e6a36551fc4ccde8036cd09703d10c4ccb8eb7eaef9d8",
+      "amount": "0.00500000 TAZ",
+      "memo": "saring-reward:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM:NO"
+    }
+  ],
+  "total": "0.04000000 TAZ",
+  "txid": "752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85",
+  "explorer": "https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85"
+}

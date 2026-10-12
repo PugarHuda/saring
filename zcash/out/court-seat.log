@@ -1,0 +1,8 @@
+seated juror1 (3da1ca63e643…) https://explorer.solana.com/tx/RwWsyepY9PbBARUZ4YiNUqVT8WGEaeBtCWfxFa2cMnpXdDGspfcTwimWsz4wxGRseSaVUA9etNS5ni9sdLuqW2R?cluster=devnet
+seated juror2 (baabb70b0393…) https://explorer.solana.com/tx/4L7iczVEPM7LsD9eLLJ5VWBVeNSr18NHmiCGB9tvU6yViSozpHh5fsk26kjQz8WGgaDkiCRG52XWKXeqvSGgXjuY?cluster=devnet
+seated juror3 (95a632656cb8…) https://explorer.solana.com/tx/4nFaM8DLCroxaFry8Sd5Vj2tFwfEtDW6LZFGSf6euR9q4w25wK7nHZTdYG5kk5QsdGsPnnridFu1RPg468nD5A9m?cluster=devnet
+skip juror4: no bond
+cast juror1 NO https://explorer.solana.com/tx/23uu3rEetRDfnqB7AahsCcoDcnJJ9HxemLQ2yupXYLUSzbt2iWBphYS1NaeQmC2GExYbkTjUw5NZWNY4ZBFiHDqe?cluster=devnet
+cast juror2 NO https://explorer.solana.com/tx/39pXSTSWcgGA4DuS95mpvHAUSQkrJmix7WD76Q1JZUzcJmjHbvUAzGt4AoMLDssXf45XKWx7s5stXZMz5rbRTQb1?cluster=devnet
+cast juror3 YES https://explorer.solana.com/tx/3Ebajefwp7cDmMTZWVixSe7KRppL7G9keRY9HTwTfi4hAyz1cie1SPTdRwgyQS41Y6wTMjcXS6SGo9Lqx8FDp7j?cluster=devnet
+verdict { yes: 0, no: 2, excluded: 1, incomplete: false, outcome: 'NO' }
