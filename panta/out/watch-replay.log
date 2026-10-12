@@ -1,0 +1,13 @@
+
+[2026-10-12T08:54:04.495Z] --replay of dispute tx https://explorer.solana.com/tx/5UKTLPLFyqkSwVcQxJo9PJKQA4TCFfrfa397vo3JjVHbtgg1FopSY6WLdPasep1kfCygyKVjR1Fa6mvQve1hokLz
+Panta market: 67Ku7T9CKmVYW4RTCn8yELu2b6NBsec6BMttjfLpH1zr  https://explorer.solana.com/address/67Ku7T9CKmVYW4RTCn8yELu2b6NBsec6BMttjfLpH1zr
+question: "$ETH to Hit $2500 before Friday 19th of June, 2026"
+17 holder wallets on mainnet
+court opened: D1N96E8fPXinKWd1fz9gxuLsuHPGNfzUnrqxektyRVfW (id 176943020)
+  court  https://explorer.solana.com/address/D1N96E8fPXinKWd1fz9gxuLsuHPGNfzUnrqxektyRVfW?cluster=devnet
+  tx     https://explorer.solana.com/tx/4AXiLV3b1qEi14dVUKjv7epKrKdtsDLCaNsKMWyZH56kTMQroT7PHDWNFLW6kJ4b54AdrJTEsV1iNbVFZDFAa7ay?cluster=devnet
+  mirrored holders 1-6 (encrypted)  https://explorer.solana.com/tx/ZrtE6P4y2DLm3S2TVbvtWCFYtmWHEbxrjnYMEE6wfwt5AL28AggQhJd8Q6Nv4nXoseVNPWcW3foqMLL3NcCdAFk?cluster=devnet
+  mirrored holders 7-12 (encrypted)  https://explorer.solana.com/tx/5H4yYb5PADzAtsT1QKKZNzHV2L4QJgnFJYL95FTg2iZF9DvxZ3EcKTB3J4BRTbXqnZSFZCyRrNjgWf8fdiXCvLe6?cluster=devnet
+  mirrored holders 13-17 (encrypted)  https://explorer.solana.com/tx/5erH8KUYGXPa8p9mPddEZza2SpySqWx4puTo3LoNLZU61BaskLerD8RdmCb8jszfzdTi7V5bHMr9GtcxaB1HfKCR?cluster=devnet
+done: court D1N96E8fPXinKWd1fz9gxuLsuHPGNfzUnrqxektyRVfW holds 17 encrypted Panta positions; devnet SOL spent 0.01948
+next: seat jurors (add_juror_v3), cast_v3, resolve_v3 -> verdict -> Panta resolve_event(yes_wins = court.yes > court.no)

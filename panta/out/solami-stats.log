@@ -1,0 +1,17 @@
+Panta via Solami, last 7d (since 2026-10-05T09:34:58.000Z):
+{
+  succeededPantaTxs: 103,
+  positionsCreated: 40,
+  positionTrades: 53,
+  uniqueWallets: 33,
+  marketsTouched: 10,
+  disputes: 0,
+  disputeSettlements: 0
+}
+now: {
+  userPositionAccounts: 966,
+  uniqueHolders: 182,
+  marketsWithHolders: 209,
+  openReviewRequests: 0
+}
+wrote panta/out/solami-stats.json

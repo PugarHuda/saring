@@ -1,0 +1,17 @@
+
+[2026-10-12T08:29:40.219Z] --once: opening a court for a Panta market replayed as a dispute (no live dispute required)
+Panta market: 3wdVRLDiMeuWRjGcFq2FZgAyCLhswTwNSKEHgNFRSZNB  https://explorer.solana.com/address/3wdVRLDiMeuWRjGcFq2FZgAyCLhswTwNSKEHgNFRSZNB
+question: "Will @debar be the outright winner of the NectarFi Frontier Traders Competition?"
+42 holder wallets on mainnet
+court opened: 7QSYubTzmht7Y8Hus7yxXWAciVbDk4ZceWHMFcJVoh6T (id 1075831669)
+  court  https://explorer.solana.com/address/7QSYubTzmht7Y8Hus7yxXWAciVbDk4ZceWHMFcJVoh6T?cluster=devnet
+  tx     https://explorer.solana.com/tx/4fSTpHRP2t5KErFVn6siyf8hVmWcEjsBsNhdbQhwhjMpnnff5r4xY5EtUew35g3eT2agF3yinkLwf3TH5tQLVvq5?cluster=devnet
+  mirrored holders 1-6 (encrypted)  https://explorer.solana.com/tx/5kF2bdxxz4Me8SEsMeWZ3q3uu1uLPHDq6SGy4ZbvQ7fKRVEc8y9WVeoaAnNbw2P1bArz3SzZKaw48Tv1Ycge4RFQ?cluster=devnet
+  mirrored holders 7-12 (encrypted)  https://explorer.solana.com/tx/2hDbiucjjCkecRTBzpq9a9obynFj3hqeTBv9fkBmaAcrjEgVJHKFoXvU9HxC6xD7FPTA2gzHK9RZXavzcbmwmcL7?cluster=devnet
+  mirrored holders 13-18 (encrypted)  https://explorer.solana.com/tx/5HvhJyGGqMjh3CyNfDsudPkNAkRzKvrd9LEU6oGPGhkAd7AmNaeDKZ2mZfxJa8pSjNXinxxsRXiv1YFrQceucetp?cluster=devnet
+  mirrored holders 19-24 (encrypted)  https://explorer.solana.com/tx/2ELB3ry9Vjjm92F3ztY8ak4z7KcP5Azd2RQfXRbEgmYobi8DdBvPukkKfGMyUBFNTnfvPN2tppMxznG3fXFkNW4L?cluster=devnet
+  mirrored holders 25-30 (encrypted)  https://explorer.solana.com/tx/P3XgksM4VVto7chaYD3RAMojMYscxtpdjU69iaX4VWD6PiTmv6VVtXWizZyg8uNbz8gmQDVujtz8fkWfkk54acc?cluster=devnet
+  mirrored holders 31-36 (encrypted)  https://explorer.solana.com/tx/2zBG9p1gDEugAaUt3rFzz9HcGg3Af1j7qT6XysWhQ5CXpi9Ywt1mFaiycSVkQbutPEY1bUpQfL1YC95RUF7rXgY4?cluster=devnet
+  mirrored holders 37-42 (encrypted)  https://explorer.solana.com/tx/46tD7ADXWZEACQdZ4HwybGxDmTKi9TV7neGhqnHTtyNCcAABcYK9xSP1WHfoKnhZxnr9h7XKuBNrr1iYbD3bbxMU?cluster=devnet
+done: court 7QSYubTzmht7Y8Hus7yxXWAciVbDk4ZceWHMFcJVoh6T holds 42 encrypted Panta positions; devnet SOL spent 0.07412
+next: seat jurors (add_juror_v3), cast_v3, resolve_v3 -> verdict -> Panta resolve_event(yes_wins = court.yes > court.no)
