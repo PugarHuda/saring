@@ -14,7 +14,7 @@ use arcium_client::idl::arcium::types::{CallbackAccount, CircuitSource, OffChain
 use arcium_macros::circuit_hash;
 
 /// Public host for the compiled `.arcis` circuits (GitHub release assets).
-const CIRCUIT_BASE_URL: &str = "https://github.com/PugarHuda/blindcourt/releases/download/circuits-v1/";
+const CIRCUIT_BASE_URL: &str = "https://github.com/PugarHuda/blindcourt/releases/download/circuits-v2/";
 
 fn offchain(name: &str, hash: [u8; 32]) -> CircuitSource {
     CircuitSource::OffChain(OffChainCircuitSource {
@@ -25,12 +25,12 @@ fn offchain(name: &str, hash: [u8; 32]) -> CircuitSource {
 
 const COMP_DEF_OFFSET_INIT_COURT: u32 = comp_def_offset("init_court");
 const COMP_DEF_OFFSET_ADD_JUROR: u32 = comp_def_offset("add_juror");
-const COMP_DEF_OFFSET_RECORD_POSITION: u32 = comp_def_offset("record_position");
+const COMP_DEF_OFFSET_RECORD_POSITIONS: u32 = comp_def_offset("record_positions");
 const COMP_DEF_OFFSET_CAST: u32 = comp_def_offset("cast");
 const COMP_DEF_OFFSET_RESOLVE: u32 = comp_def_offset("resolve");
 
-/// Ciphertexts produced by `Pack<[u32; 32]>`.
-pub const STATE_LEN: usize = 6;
+/// Ciphertexts produced by `Pack<[u32; 64]>`.
+pub const STATE_LEN: usize = 11;
 const STATE_OFFSET: u32 = 8 + 1;
 const STATE_BYTES: u32 = 32 * STATE_LEN as u32;
 
@@ -50,10 +50,10 @@ pub mod blindcourt {
         init_computation_def(ctx.accounts, Some(offchain("add_juror", circuit_hash!("add_juror"))))?;
         Ok(())
     }
-    pub fn init_record_position_comp_def(ctx: Context<InitRecordPositionCompDef>) -> Result<()> {
+    pub fn init_record_positions_comp_def(ctx: Context<InitRecordPositionsCompDef>) -> Result<()> {
         init_computation_def(
             ctx.accounts,
-            Some(offchain("record_position", circuit_hash!("record_position"))),
+            Some(offchain("record_positions", circuit_hash!("record_positions"))),
         )?;
         Ok(())
     }
@@ -161,21 +161,28 @@ pub mod blindcourt {
         Ok(())
     }
 
-    /// Records an encrypted trader id as holding a position in this market.
-    // ponytail: open to any signer for the demo; in production the market program CPIs this on every fill.
-    pub fn record_position(
-        ctx: Context<RecordPosition>,
+    /// Records up to 6 encrypted identities as holding a position in this market
+    /// (unused entries encrypt 0). Authority only: it mirrors positions read from
+    /// the market's chain state (Panta `UserPosition` accounts in the demo).
+    // ponytail: authority relays positions; a market program could CPI this on every fill instead.
+    pub fn record_positions(
+        ctx: Context<RecordPositions>,
         computation_offset: u64,
         _id: u32,
-        trader_id: [u8; 32],
+        trader_ids: [[u8; 32]; 6],
         pubkey: [u8; 32],
         nonce: u128,
     ) -> Result<()> {
+        require!(
+            ctx.accounts.payer.key() == ctx.accounts.court_acc.authority,
+            ErrorCode::InvalidAuthority
+        );
         require!(!ctx.accounts.court_acc.resolved, ErrorCode::AlreadyResolved);
-        let args = ArgBuilder::new()
-            .x25519_pubkey(pubkey)
-            .plaintext_u128(nonce)
-            .encrypted_u32(trader_id)
+        let mut args = ArgBuilder::new().x25519_pubkey(pubkey).plaintext_u128(nonce);
+        for ct in trader_ids {
+            args = args.encrypted_u32(ct);
+        }
+        let args = args
             .plaintext_u128(ctx.accounts.court_acc.nonce)
             .account(ctx.accounts.court_acc.key(), STATE_OFFSET, STATE_BYTES)
             .build();
@@ -185,7 +192,7 @@ pub mod blindcourt {
             ctx.accounts,
             computation_offset,
             args,
-            vec![RecordPositionCallback::callback_ix(
+            vec![RecordPositionsCallback::callback_ix(
                 computation_offset,
                 &ctx.accounts.mxe_account,
                 &[CallbackAccount { pubkey: key, is_writable: true }],
@@ -197,13 +204,13 @@ pub mod blindcourt {
         Ok(())
     }
 
-    #[arcium_callback(encrypted_ix = "record_position")]
-    pub fn record_position_callback(
-        ctx: Context<RecordPositionCallback>,
-        output: SignedComputationOutputs<RecordPositionOutput>,
+    #[arcium_callback(encrypted_ix = "record_positions")]
+    pub fn record_positions_callback(
+        ctx: Context<RecordPositionsCallback>,
+        output: SignedComputationOutputs<RecordPositionsOutput>,
     ) -> Result<()> {
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
-            Ok(RecordPositionOutput { field_0 }) => field_0,
+            Ok(RecordPositionsOutput { field_0 }) => field_0,
             Err(_) => return Err(ErrorCode::AbortedComputation.into()),
         };
         ctx.accounts.court_acc.state = o.ciphertexts;
@@ -394,10 +401,10 @@ pub struct AddJuror<'info> {
     pub court_acc: Box<Account<'info, CourtAccount>>,
 }
 
-#[queue_computation_accounts("record_position", payer)]
+#[queue_computation_accounts("record_positions", payer)]
 #[derive(Accounts)]
 #[instruction(computation_offset: u64, _id: u32)]
-pub struct RecordPosition<'info> {
+pub struct RecordPositions<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(init_if_needed, space = 9, payer = payer, seeds = [&SIGN_PDA_SEED], bump, address = derive_sign_pda!())]
@@ -413,7 +420,7 @@ pub struct RecordPosition<'info> {
     #[account(mut, address = derive_comp_pda!(computation_offset, mxe_account))]
     /// CHECK: computation_account, checked by the arcium program.
     pub computation_account: UncheckedAccount<'info>,
-    #[account(address = derive_comp_def_pda!(COMP_DEF_OFFSET_RECORD_POSITION))]
+    #[account(address = derive_comp_def_pda!(COMP_DEF_OFFSET_RECORD_POSITIONS))]
     pub comp_def_account: Box<Account<'info, ComputationDefinitionAccount>>,
     #[account(mut, address = derive_cluster_pda!(mxe_account))]
     pub cluster_account: Box<Account<'info, Cluster>>,
@@ -548,11 +555,11 @@ pub struct AddJurorCallback<'info> {
     pub court_acc: Box<Account<'info, CourtAccount>>,
 }
 
-#[callback_accounts("record_position")]
+#[callback_accounts("record_positions")]
 #[derive(Accounts)]
-pub struct RecordPositionCallback<'info> {
+pub struct RecordPositionsCallback<'info> {
     pub arcium_program: Program<'info, Arcium>,
-    #[account(address = derive_comp_def_pda!(COMP_DEF_OFFSET_RECORD_POSITION))]
+    #[account(address = derive_comp_def_pda!(COMP_DEF_OFFSET_RECORD_POSITIONS))]
     pub comp_def_account: Box<Account<'info, ComputationDefinitionAccount>>,
     #[account(address = derive_mxe_pda!())]
     pub mxe_account: Box<Account<'info, MXEAccount>>,
@@ -647,9 +654,9 @@ pub struct InitAddJurorCompDef<'info> {
     pub system_program: Program<'info, System>,
 }
 
-#[init_computation_definition_accounts("record_position", payer)]
+#[init_computation_definition_accounts("record_positions", payer)]
 #[derive(Accounts)]
-pub struct InitRecordPositionCompDef<'info> {
+pub struct InitRecordPositionsCompDef<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(mut, address = derive_mxe_pda!())]

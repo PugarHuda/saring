@@ -1,14 +1,17 @@
 /**
- * Demo scenario for a conflict-blind jury:
- *   - market "Did X happen by Oct 31?" goes to dispute; truth is NO
- *   - 5 jurors seated; 3 of them secretly also traded the market and vote YES
- *   - an honest juror is "bribed", shows a YES receipt, then silently re-votes NO
- *   - resolve() drops conflicted jurors in MPC: expect yes=0, no=2, excluded=3
- * A plain jury (Kleros/UMA-style) would have returned YES 3-2 (or 4-1 with the bribe).
+ * End-to-end dispute on a REAL Panta prediction market (Solana mainnet):
+ *   - read every wallet holding a position in the disputed market from mainnet
+ *   - mirror all of them, encrypted, into the court (record_positions, 6 per MPC call)
+ *   - seat 5 jurors: 3 real holders of this market + 2 real Panta traders who are not
+ *   - conflicted jurors vote YES; one clean juror shows a briber a YES "receipt",
+ *     then silently re-votes NO; the other clean juror votes NO
+ *   - resolve() drops conflicted jurors inside MPC: expect yes=0, no=2, excluded=3
+ * Ballots are scripted (we don't hold these wallets' keys); positions and identities
+ * are real chain data. A plain jury would have returned YES 4-1.
  */
 import * as anchor from "@anchor-lang/core";
 import { Program } from "@anchor-lang/core";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { Blindcourt } from "../target/types/blindcourt";
 import { randomBytes } from "crypto";
 import {
@@ -33,8 +36,10 @@ import {
 import * as fs from "fs";
 import * as os from "os";
 import { expect } from "chai";
+import { DEMO_MARKET, allTraders, holdsPosition, identityId, marketHolders, marketQuestion } from "../panta/panta";
 
-const CIRCUITS = ["init_court", "add_juror", "record_position", "cast", "resolve"];
+const CIRCUITS = ["init_court", "add_juror", "record_positions", "cast", "resolve"];
+const BATCH = 6;
 // Fresh court per run so devnet re-runs don't collide with an existing PDA.
 const COURT_ID = Math.floor(Math.random() * 2 ** 31);
 
@@ -44,6 +49,7 @@ describe("Blindcourt", () => {
   const provider = anchor.getProvider() as anchor.AnchorProvider;
   const arciumEnv = getArciumEnv();
   const owner = readKpJson(`${os.homedir()}/.config/solana/id.json`);
+  const mainnet = new Connection(process.env.MAINNET_RPC_URL ?? "https://api.mainnet-beta.solana.com", "confirmed");
 
   const idBuf = Buffer.alloc(4);
   idBuf.writeUInt32LE(COURT_ID);
@@ -74,7 +80,21 @@ describe("Blindcourt", () => {
     await awaitComputationFinalization(provider, offset, program.programId, "confirmed");
   }
 
-  it("excludes conflicted jurors without revealing who they are", async () => {
+  it("excludes jurors who hold a position in a real Panta market, without revealing who", async () => {
+    // --- real market data from Solana mainnet ---
+    const question = await marketQuestion(mainnet, DEMO_MARKET);
+    const holders = await marketHolders(mainnet, DEMO_MARKET);
+    const traders = await allTraders(mainnet);
+    const outsiders = [...traders.keys()].filter((w) => !traders.get(w)!.has(DEMO_MARKET));
+    console.log(`Panta market ${DEMO_MARKET}: "${question}"`);
+    console.log(`${holders.length} wallets hold a position; ${outsiders.length} other Panta traders do not`);
+
+    const conflicted = holders.filter((h) => h.yes + h.no > 0n).slice(0, 3).map((h) => h.owner);
+    const clean = outsiders.slice(0, 2);
+    for (const w of conflicted) expect(await holdsPosition(mainnet, DEMO_MARKET, w)).to.equal(true);
+    for (const w of clean) expect(await holdsPosition(mainnet, DEMO_MARKET, w)).to.equal(false);
+
+    // --- court on Arcium ---
     const mxePublicKey = await getMXEPublicKeyWithRetry(provider, program.programId);
     for (const c of CIRCUITS) await initCompDef(c);
 
@@ -86,45 +106,42 @@ describe("Blindcourt", () => {
       return { ct: cipher.encrypt(vals, nonce), nonce: new anchor.BN(deserializeLE(nonce).toString()) };
     };
 
-    await run("init_court", (o) =>
-      program.methods.createCourt(o, COURT_ID, "Did X happen by Oct 31?")
-    );
+    await run("init_court", (o) => program.methods.createCourt(o, COURT_ID, question.slice(0, 64)));
     console.log("court opened", courtPDA.toBase58());
 
-    const insiders = [101, 102, 103]; // jurors who also traded this market
-    const honest = [104, 105];
-    const traders = [...insiders, 201, 202];
-
-    for (const id of [...insiders, ...honest]) {
-      const { ct, nonce } = enc([BigInt(id)]);
+    for (const w of [...conflicted, ...clean]) {
+      const { ct, nonce } = enc([BigInt(await identityId(w))]);
       await run("add_juror", (o) =>
         program.methods.addJuror(o, COURT_ID, Array.from(ct[0]), Array.from(pub), nonce)
       );
     }
     console.log("5 jurors seated (encrypted)");
 
-    for (const id of traders) {
-      const { ct, nonce } = enc([BigInt(id)]);
-      await run("record_position", (o) =>
+    const holderIds = await Promise.all(holders.map((h) => identityId(h.owner)));
+    for (let i = 0; i < holderIds.length; i += BATCH) {
+      const batch = holderIds.slice(i, i + BATCH);
+      while (batch.length < BATCH) batch.push(0);
+      const { ct, nonce } = enc(batch.map(BigInt));
+      await run("record_positions", (o) =>
         program.methods
-          .recordPosition(o, COURT_ID, Array.from(ct[0]), Array.from(pub), nonce)
+          .recordPositions(o, COURT_ID, ct.map((c) => Array.from(c)), Array.from(pub), nonce)
           .accountsPartial({ authority: owner.publicKey, courtAcc: courtPDA })
       );
     }
-    console.log("5 positions recorded (encrypted)");
+    console.log(`${holderIds.length} Panta positions mirrored (encrypted)`);
 
-    const cast = async (id: number, yes: boolean) => {
-      const { ct, nonce } = enc([BigInt(id), BigInt(yes)]);
+    const cast = async (wallet: string, yes: boolean) => {
+      const { ct, nonce } = enc([BigInt(await identityId(wallet)), BigInt(yes)]);
       await run("cast", (o) =>
         program.methods
           .cast(o, COURT_ID, Array.from(ct[0]), Array.from(ct[1]), Array.from(pub), nonce)
           .accountsPartial({ authority: owner.publicKey, courtAcc: courtPDA })
       );
     };
-    for (const id of insiders) await cast(id, true);
-    await cast(104, true); // bribed: shows the briber this receipt...
-    await cast(104, false); // ...then silently overwrites it
-    await cast(105, false);
+    for (const w of conflicted) await cast(w, true);
+    await cast(clean[0], true); // bribed: shows the briber this receipt...
+    await cast(clean[0], false); // ...then silently overwrites it
+    await cast(clean[1], false);
     console.log("ballots cast");
 
     await run("resolve", (o) => program.methods.resolve(o, COURT_ID));

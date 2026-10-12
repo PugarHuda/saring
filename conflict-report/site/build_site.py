@@ -66,7 +66,7 @@ page = f"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UMA Conflict Report</title>
-<meta name="description" content="How often UMA voters resolving Polymarket disputes held a position in the market they were judging. A Blindcourt research note.">
+<meta name="description" content="How often UMA voters resolving Polymarket disputes held a position in the market they were judging. A Saring research note.">
 <style>
 :root {{
   --bg:#fbfaf7; --surface:#ffffff; --ink:#16181d; --muted:#565b66; --rule:#dcd9d2;
@@ -143,7 +143,7 @@ footer {{ margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); f
 </head>
 <body>
 <main>
-<p class="kicker">Blindcourt research note · UMA × Polymarket</p>
+<p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
 <p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since {e(S['window_start'])}. Generated {e(S['generated_utc'][:10])}.</p>
@@ -209,15 +209,15 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <li>Some markets have two DVM requests (re-votes), so a voter can appear twice for one market.</li>
 </ul>
 
-<h2 id="fix">How Blindcourt fixes this</h2>
-<p>Blindcourt is a conflict-blind jury for prediction-market disputes, built on Solana with Arcium multi-party computation. The conflict check happens inside MPC, so the filter never becomes a public list.</p>
+<h2 id="fix">How Saring fixes this</h2>
+<p>Saring is a conflict-blind jury for prediction-market disputes, built on Solana with Arcium multi-party computation. The conflict check happens inside MPC, so the filter never becomes a public list.</p>
 <ol class="steps">
 <li><strong>Silent exclusion.</strong> Inside Arcium MPC, each juror's ballot is checked against positions in the disputed market. Jurors holding a position are excluded from the tally.</li>
 <li><strong>Nobody learns the jury.</strong> Not the parties, not the operators, not other jurors. Who sat and who was excluded both stay secret, so there is no one to target.</li>
 <li><strong>Bribe receipts are worthless.</strong> Ballots can be overwritten until the deadline, and only the last one counts. A juror can show a briber a vote and then change it.</li>
 <li><strong>Minimal output.</strong> The only thing revealed is <code>(yes, no, excluded_count)</code>.</li>
 </ol>
-<div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Blindcourt builds on that idea: it also filters conflicted jurors, and does it without revealing who the jurors are.</div>
+<div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Saring builds on that idea: it also filters conflicted jurors, and does it without revealing who the jurors are.</div>
 
 <footer>
 Data and scripts: <code>data/conflict-report/</code> (<code>conflict_report.py</code>, <code>out/summary.json</code>). Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.

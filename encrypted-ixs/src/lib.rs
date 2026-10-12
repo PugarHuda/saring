@@ -9,17 +9,23 @@ use arcis::*;
 mod circuits {
     use arcis::*;
 
-    /// Position-holder slots.
-    const H: usize = 16;
+    /// Position-holder slots (a real Panta market in the demo has 37 holders).
+    const H: usize = 48;
     /// Juror slots.
     const J: usize = 8;
+    /// Identities recorded per `record_positions` call.
+    const B: usize = 6;
     /// Layout: [0..H) holder ids, [H..H+J) juror ids, [H+J..H+2J) ballots
     /// (0 = none, 1 = yes, 2 = no). Id 0 marks an empty slot.
     // ponytail: u32 ids keep the state at a few ciphertexts; move to u128 (SAS-derived) for mainnet.
-    type Court = Pack<[u32; 32]>;
+    type Court = Pack<[u32; 64]>;
 
     pub struct Identity {
         id: u32,
+    }
+
+    pub struct Holders {
+        ids: [u32; B],
     }
 
     pub struct Ballot {
@@ -29,7 +35,7 @@ mod circuits {
 
     #[instruction]
     pub fn init_court() -> Enc<Mxe, Court> {
-        Mxe::get().from_arcis(Pack::new([0u32; 32]))
+        Mxe::get().from_arcis(Pack::new([0u32; 64]))
     }
 
     /// Seats a juror in the first empty jury slot.
@@ -48,24 +54,28 @@ mod circuits {
         court.owner.from_arcis(Pack::new(s))
     }
 
-    /// Records that `id` holds a position in the disputed market (called on trade).
+    /// Records up to B identities that hold a position in the disputed market
+    /// (unused entries are 0). Duplicates are ignored.
     #[instruction]
-    pub fn record_position(
-        input: Enc<Shared, Identity>,
+    pub fn record_positions(
+        input: Enc<Shared, Holders>,
         court: Enc<Mxe, Court>,
     ) -> Enc<Mxe, Court> {
-        let id = input.to_arcis().id;
+        let ids = input.to_arcis().ids;
         let mut s = court.to_arcis().unpack();
-        let mut placed = id == 0;
-        for k in 0..H {
-            placed = placed || s[k] == id;
-        }
-        for k in 0..H {
-            let empty = s[k] == 0;
-            if empty && !placed {
-                s[k] = id;
+        for b in 0..B {
+            let id = ids[b];
+            let mut placed = id == 0;
+            for k in 0..H {
+                placed = placed || s[k] == id;
             }
-            placed = placed || empty;
+            for k in 0..H {
+                let empty = s[k] == 0;
+                if empty && !placed {
+                    s[k] = id;
+                }
+                placed = placed || empty;
+            }
         }
         court.owner.from_arcis(Pack::new(s))
     }

@@ -1,4 +1,4 @@
-# Blindcourt
+# Saring
 
 **A conflict-blind jury for prediction-market disputes, on Solana with Arcium MPC.**
 
@@ -32,7 +32,7 @@ sequenceDiagram
     participant M as Market program / trader
     participant A as Court authority
     participant J as Juror (any relayer)
-    participant P as Blindcourt (Solana)
+    participant P as Saring (Solana)
     participant X as Arcium MXE (MPC)
 
     A->>P: create_court(market)
@@ -66,7 +66,7 @@ sequenceDiagram
 **Demo scenario** (`tests/blindcourt.ts`). Market: "Did X happen by Oct 31?" The truth is NO. Five jurors are seated, and three of them (101 to 103) also traded the market and vote YES. Juror 104 is bribed: he casts YES as a "receipt" and then re-casts NO. Juror 105 votes NO.
 
 - A plain jury rules YES 3–2 (4–1 if the bribe holds).
-- Blindcourt rules **yes=0, no=2, excluded=3**, and never reveals which three.
+- Saring rules **yes=0, no=2, excluded=3**, and never reveals which three.
 
 ## Run it
 
@@ -118,9 +118,9 @@ Not audited. Don't use with real funds.
 
 ## Prior art
 
-- **Kleros** randomly draws jurors from staked subcourts. Votes are hidden with Shutter threshold encryption, and there are appeal rounds. Jurors' identities are public on chain, and there is no check of whether a juror holds a position. Blindcourt borrows the court model and adds the private conflict filter.
+- **Kleros** randomly draws jurors from staked subcourts. Votes are hidden with Shutter threshold encryption, and there are appeal rounds. Jurors' identities are public on chain, and there is no check of whether a juror holds a position. Saring borrows the court model and adds the private conflict filter.
 - **UMA DVM** uses commit-reveal voting weighted by UMA tokens, and it is the resolver for Polymarket. It has no conflict check. Our Conflict Report measures what this misses.
-- **MACI** (Privacy & Scaling Explorations) gives receipt-free, collusion-resistant voting through key changes, but it relies on a trusted coordinator who can decrypt. Blindcourt's overwritable ballots are the simple version of this idea. With Arcium the coordinator role is replaced by MPC. Full key-change is on the roadmap.
+- **MACI** (Privacy & Scaling Explorations) gives receipt-free, collusion-resistant voting through key changes, but it relies on a trusted coordinator who can decrypt. Saring's overwritable ballots are the simple version of this idea. With Arcium the coordinator role is replaced by MPC. Full key-change is on the roadmap.
 - **Arcium `examples/voting`**: this repo started from it (see below).
 
 ## Prior code and license
