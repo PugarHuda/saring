@@ -125,4 +125,4 @@ Not audited. Don't use with real funds.
 
 ## Prior code and license
 
-Forked from the `voting` example in [`arcium-hq/examples`](https://github.com/arcium-hq/examples/tree/main/voting) (commit `fe15384`). We kept the scaffolding and the comp-def, queue and callback pattern. We rewrote the circuits, the account layout, the instructions and the tests. The examples repo has no LICENSE file, and `voting/package.json` declares ISC. **[TODO: confirm with Arcium and add a LICENSE file to this repo, MIT or Apache-2.0.]**
+Forked from the `voting` example in [`arcium-hq/examples`](https://github.com/arcium-hq/examples/tree/main/voting) (commit `fe15384`). We kept the scaffolding and the comp-def, queue and callback pattern. We rewrote the circuits, the account layout, the instructions and the tests. The examples repo has no LICENSE file, and `voting/package.json` declares ISC. This repo is MIT-licensed (see LICENSE).
