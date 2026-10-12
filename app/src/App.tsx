@@ -136,8 +136,8 @@ function payout(v: Verdict, b: NonNullable<Bet>): { kind: "refund" | "win" | "lo
 
 // Every figure here is copied from the Conflict Report (docs/index.html).
 const STATS = [
-  { n: "60.4%", l: "of UMA voters control a Polymarket wallet", s: "3,742 of 6,197 voters", pos: "p-tl" },
-  { n: "20.4%", l: "of disputes had a voter holding a position", s: "834 of 4,093 disputes", pos: "p-tr" },
+  { n: "60.4%", l: "of UMA voters control a Polymarket wallet", s: "3,743 of 6,198 voters", pos: "p-tl" },
+  { n: "20.2%", l: "of disputes had a voter holding a position", s: "834 of 4,121 disputes", pos: "p-tr" },
   { n: "65.7%", l: "of disputes in ≥ $1M markets had one", s: "423 of 644 disputes", pos: "p-bl" },
   { n: "0", l: "outcomes shown to be flipped", s: "The gap: nothing filters these voters", pos: "p-br" },
 ];

@@ -336,7 +336,7 @@ function grpcStop() {
 
 // ---------- handler ----------
 
-const perIp = new Map();
+const conns = new Set(); // { ip, finish } per open stream, oldest first
 const LIVE = { via: "Solami Yellowstone gRPC grpc.solami.dev" };
 const RPC = { via: "Solami RPC rpc.solami.dev" };
 
@@ -347,9 +347,14 @@ export default async function handler(req, res) {
   const key = process.env.SOLAMI_API_KEY;
   if (!key) return res.status(500).json({ error: "Solami not configured" });
   const ip = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim() || "unknown";
-  // ponytail: per-instance counters; a shared KV store if this gets abused across instances.
-  if ((perIp.get(ip) ?? 0) >= MAX_PER_IP || listeners.size >= MAX_CLIENTS) return res.status(429).json({ error: "too many live connections" });
-  perIp.set(ip, (perIp.get(ip) ?? 0) + 1);
+  // Client disconnects don't reliably reach the function (the browser drops the stream every
+  // time the section scrolls out of view), so a dead stream can hold its slot until LIVE_MS.
+  // Rejecting the IP's next connection then 429s a real visitor; instead its oldest stream
+  // is closed. An IP still holds at most MAX_PER_IP streams, the instance MAX_CLIENTS.
+  // ponytail: per-instance limits; a shared KV store if this gets abused across instances.
+  const mine = [...conns].filter((c) => c.ip === ip);
+  if (mine.length >= MAX_PER_IP) mine[0].finish();
+  if (conns.size >= MAX_CLIENTS) return res.status(429).json({ error: "too many live connections" });
 
   res.writeHead(200, { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive", "X-Accel-Buffering": "no" });
   let open = true, listener, resolveDone;
@@ -363,13 +368,17 @@ export default async function handler(req, res) {
     clearTimeout(cap);
     if (listener) listeners.delete(listener);
     if (!listeners.size) grpcStop();
-    const n = (perIp.get(ip) ?? 1) - 1;
-    n > 0 ? perIp.set(ip, n) : perIp.delete(ip);
+    conns.delete(conn);
+    res.end(); // free the invocation now, even if this stream is still waiting on the backfill
     resolveDone();
   };
   req.on("close", finish);
+  res.on("close", finish);
+  res.on("error", finish);
   // backfill + LIVE_MS stays under maxDuration; "bye" then close makes EventSource reconnect
   const cap = setTimeout(() => { send("bye", { reconnect: true }); finish(); }, LIVE_MS + 30_000);
+  const conn = { ip, finish };
+  conns.add(conn);
   res.write("retry: 3000\n\n");
 
   try {

@@ -38,9 +38,9 @@ When a prediction market is disputed, someone has to decide the outcome. On Poly
 
 | Metric | Value |
 |---|---|
-| UMA disputes mapped to Polymarket markets | 4,093 |
-| UMA voters who control a Polymarket wallet | 60.4% (3,742 of 6,197) |
-| Disputes where at least one voter held a position in that market at vote time | 20.4% (834) |
+| UMA disputes mapped to Polymarket markets | 4,121 |
+| UMA voters who control a Polymarket wallet | 60.4% (3,743 of 6,198) |
+| Disputes where at least one voter held a position in that market at vote time | 20.2% (834 of 4,121) |
 | Same, markets with ≥ $1M volume | 65.7% (423 of 644) |
 | Distinct conflicted voters, and the cost of their positions | 405 voters, ≈ $8.0M |
 | **Outcomes that flip if conflicted voters are removed** | **0** |
@@ -112,7 +112,7 @@ Honest caveat: the 5 scripted jurors' ballots are scripted, because we don't hol
 - **All Panta traders:** every `UserPosition` on the program (182 traders at the last run), used to pick clean jurors who have no position in the disputed market.
 - **Identity:** `id = first 4 bytes of SHA-256(wallet pubkey)`, the same function for holders, bettors and jurors. It is encrypted client-side (x25519 + Rescue) before it reaches the chain.
 
-We don't use a Panta API key. Panta's REST API has no endpoint that lists a market's holders, and the on-chain accounts are the source of truth anyway. `panta/check.ts` is a quick mainnet sanity check: it prints the question, holder and trader counts, and whether the identity ids are unique.
+Panta's REST API (`live-api.panta.market/api/v1`, `X-Api-Key`) is used by the web app through a server proxy, [`app/api/panta.js`](app/api/panta.js), so the key never reaches the browser. The app uses three endpoints: the market catalog (the market picker, joined with on-chain holder counts), market detail (the market card and the titles in the live feed) and per-wallet positions (the god-view cross-check of each juror against chain). Holders still come from chain: the API has no endpoint that lists a market's holders, and the on-chain accounts are the source of truth. `panta/check.ts` is a quick mainnet sanity check: it prints the question, holder and trader counts, and whether the identity ids are unique.
 
 ## Run it
 
@@ -173,7 +173,7 @@ The wallet needs about 0.5 devnet SOL. The public devnet RPC rate-limits polling
 
 `app/` is a Vite + React + three.js front end, hosted at **https://saring-silk.vercel.app**. It reads the same Panta market from mainnet, shows the Conflict Report numbers, and runs the dispute on devnet from a burner wallet. The visitor is juror #6, with their own secret ballot key and their own ballot. They can also bet 0.01 SOL on the court's market, which gives them a position, so MPC drops their ballot and `excluded` goes up by one.
 
-- One-click faucet: 0.12 SOL to the burner; one run costs about 0.08 SOL.
+- One-click faucet: 0.15 SOL to the burner; one run costs about 0.10 SOL (about 0.105 with a bet).
 - 25 steps (28 with a bet), about 2–4 minutes. Every step links its transaction; MPC steps link the queue transaction and the successful callback.
 - All RPC goes through a same-origin server proxy with a method allowlist, so the provider key never reaches the browser.
 - By default each juror's conflict status shows as "Encrypted". A "god view" toggle reveals which jurors hold the market, which the chain never sees.

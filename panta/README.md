@@ -16,6 +16,12 @@ Panta data is always read from mainnet. The court runs on devnet (Saring program
 | `decode.check.ts` | Self-check that a `MarketDisputed` event built byte by byte decodes correctly |
 | `out/` | Outputs and logs of every run quoted below |
 
+These scripts read Panta on chain only. The web app also uses Panta's REST API
+(`live-api.panta.market/api/v1`, `X-Api-Key`) through the server proxy `app/api/panta.js`, which keeps
+`PANTA_API_KEY` server-side: the market catalog (market picker), market detail (market card, live-feed
+titles) and per-wallet positions (god-view cross-check against chain). See `app/README.md`. Holder lists
+always come from chain, because the API has no endpoint for them.
+
 ## Setup
 
 Run all commands from the repo root after `set -a; . ./.env.local; set +a`.
