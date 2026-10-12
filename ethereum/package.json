@@ -5,9 +5,12 @@
   "scripts": {
     "votes": "tsx uma-onchain.ts",
     "verify": "tsx uma-onchain.ts --verify-report",
-    "merkle": "tsx conflict-registry/script/build-merkle.ts"
+    "merkle": "tsx conflict-registry/script/build-merkle.ts",
+    "prove": "tsx prove-votes.ts",
+    "prove:verify": "tsx prove-votes.ts --verify"
   },
   "dependencies": {
+    "@ethereumjs/trie": "^6.2.1",
     "@openzeppelin/merkle-tree": "^1.0.8",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",

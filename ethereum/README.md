@@ -51,6 +51,9 @@ npx tsx uma-onchain.ts --verify-report --top 10                       # 10 large
 npx tsx uma-onchain.ts --verify-report --case-studies                 # the 10 case studies
 npx tsx uma-onchain.ts --verify-report --top 10 --all-tallies         # + every dispute's tally (voters, UMA, winner share)
 npx tsx uma-onchain.ts --index                                        # just build/refresh the L1 request index
+# header-anchored receipt proofs for the 70 case-study conflict rows
+npx tsx prove-votes.ts                                                # build out/vote-proofs.json
+npx tsx prove-votes.ts --verify [--offline]                           # re-check; RPC only for block hashes (none with --offline)
 # registry
 npx tsx conflict-registry/script/build-merkle.ts                      # root + proofs from conflicts.csv
 cd conflict-registry && forge install foundry-rs/forge-std --no-git && forge test -vv
@@ -87,6 +90,22 @@ Across these 10 disputes we checked 96 report conflict rows. All 96 are real L1 
 **One honest mismatch: "Will the government shutdown end November 12?"** (neg-risk, round 10203). The report flags 7 conflicted voters, but on-chain balances confirm only 3. The other 4 are `0x86cc…273d`, `0x81f9…2ac0`, `0x790b…f04f` and `0x89db…3b7e`, and the report says all 4 held **No**. On-chain, 2 of them visibly held No one day before the cut-off (`0x81f9` 270.27, `0x790b` 1,659.63) and held nothing at the last reveal (Polygon block 79,071,919). The Data API trade history doesn't record what removed those shares. That fits a neg-risk `convertPositions` or a transfer, which the report already lists as not counted. For `0x86cc` we found no No balance at any point we sampled (30, 7, 3 and 1 days before the cut-off, and at the cut-off). `0x89db` has no on-chain balance at the cut-off; we didn't sample it at earlier points. The votes themselves (weight, side) match L1. So for this dispute the report overstates conflicts at the cut-off by 4 voters.
 
 **All 4,121 report disputes, tallies only** (`--all-tallies`): **4,079 of 4,121** match exactly (voters, revealed UMA within 1 token, winner share within 0.0001), **42 differ**, and 0 are missing from L1. The 42 fall into two groups. (a) 23 disputes from one voting round (e.g. "LoL: LNG Esports vs Ultra Prime"): voters and revealed UMA match exactly, but the report gives winner share 0.9976 and L1 gives 1.0. (b) 19 disputes from 3 request timestamps, mostly sibling markets that share one timestamp and an identical ancillary-data prefix (e.g. "Will Bitcoin reach $110k/$120k/$150k by January 31, 2025?"): voter counts are off by 1 to 3 and revealed UMA by at most 0.5%. That pattern points to the report's request-id key (truncated ancillary data) putting the votes of one sibling request on another, so these are most likely report-side errors that the L1 check catches. They don't affect the conflict list: all 96 conflict rows in the top 10 and all 70 case-study rows check out on L1. Per-dispute detail is in `out/verify-report.json` under `all_tallies_mismatches`.
+
+## Vote proofs: trust only block headers (`prove-votes.ts`)
+
+**70/70 conflicted votes proven against block headers (68 mainnet blocks, 0 failures); Polygon balances remain RPC-trusted (no keyless archive getProof).**
+
+Everything above trusts whichever RPC answered `eth_getLogs`. `prove-votes.ts` removes that trust for the vote side. For each of the 70 conflict rows in `out/verify-case-studies.json`, it:
+
+1. reads the block hash from all three keyless RPCs and requires them to agree, then checks `keccak256(RLP(header)) == blockHash`. The header RLP covers every field through Prague (`requestsHash`);
+2. fetches every receipt in the block with `eth_getBlockReceipts`, rebuilds the receipts trie with `@ethereumjs/trie` (key `RLP(txIndex)`, value the EIP-2718 typed receipt), and requires the root to equal `header.receiptsRoot`;
+3. stores the Merkle-Patricia proof for the vote's receipt, and decodes the `VoteRevealed` log inside the proven receipt: emitter is VotingV2, status 1, and voter, roundId, identifier (`YES_OR_NO_QUERY`), price and numTokens all match. The case study's `priceRequestId` is recomputed from the log's `(identifier, time, ancillaryData)`.
+
+The bundle `out/vote-proofs.json` (~780 KB) holds 68 headers (RLP and hash) and 70 rows (block, txIndex, log position, claimed values, proof nodes). `--verify` re-runs step 3 from the bundle alone and makes no receipt or log calls. It only asks the RPCs for `eth_getBlockByNumber` to confirm each bundled hash is the canonical mainnet hash. `--verify --offline` makes no calls at all. Tampering with a vote amount, a proof node or a header byte makes the affected row fail (tested).
+
+**Trust: headers only.** A dishonest RPC can't forge a vote here. Doing so would mean finding a keccak collision in the trie or the header. The only remaining assumption is "these 68 block hashes are canonical mainnet". You can check that against any node you run, a light client, or a block explorer. We cross-check it on three independent providers. We did not chain the hashes back to a recent head. EIP-2935 serves only the last 8,191 block hashes and `BLOCKHASH` only the last 256, while these votes sit in blocks 22,015,400 to 24,588,437. A parent-hash walk would cost millions of header calls, and a beacon-chain light-client sync (historical summaries) is the right tool for that.
+
+**Why the Polygon half stays RPC-trusted.** Proving a CTF `balanceOf` at a past block needs `eth_getProof` on a Polygon archive node, checked against that block's `stateRoot`. On 2026-10-12, no keyless Polygon endpoint serves historical state: drpc returns "Unknown state", publicnode needs a token, polygon-rpc returns 403, and 1rpc and llamarpc fail. So the holdings side (who held what at the vote) is still read with `eth_call` and is only as honest as the RPC. A paid archive key plus `eth_getProof` would close that gap with the same pattern.
 
 ## UmaConflictRegistry (`conflict-registry/`)
 
