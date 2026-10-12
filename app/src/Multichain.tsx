@@ -57,11 +57,13 @@ const SEL = {
   ruled: "0x2a7ff9c1",
   isFinalized: "0x7f8d429e",
   resultFor: "0xd09cc57e",
+  currentRuling: "0x1c3db16d", // currentRuling(uint256), Kleros IArbitratorV2
 };
+const courtHex = (c: string) => "0x" + Buffer.from(new PublicKey(c).toBytes()).toString("hex");
 
 // The Solana devnet court the Tempo market, Arbitrum EM and Base arbitrator were all settled on (resolved NO).
 const COURT_24G = "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb";
-const COURT_24G_HEX = "0x" + Buffer.from(new PublicKey(COURT_24G).toBytes()).toString("hex");
+const COURT_24G_HEX = courtHex(COURT_24G);
 
 // ---------- Wormhole VAA proof ----------
 // The saring_wormhole program (devnet DdNYVoQV…WdPq) read COURT_24G on-chain and posted its verdict as a Wormhole
@@ -183,15 +185,25 @@ const TEMPO_MARKET = "0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482";
 const TEMPO_CORE = "0xa29E8c21924834E6249bCE1FD733f24eC492018c";
 const TEMPO_VAA_TX = "0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc";
 const OUTCOME = ["Open", "Yes", "No", "Refund"];
+// One paid dispute end to end (tempo/mpp-e2e.ts): MPP 402 -> court H7Bd -> VAA -> fee-sponsored settleWithVaa -> memo receipt.
+const PAID_MARKET = "0x4df7a5af22bb31c5f33cf6d5a0e28859faa45eae";
+const PAID_COURT = "H7BdJraNzvNQBS6WaYxiaSK9jGrAFqVKfVVaNHSvNKU1";
+const PAID_SETTLE_TX = "0xb9a99298e7bf68b572617cf12ecc9ea1169f14bcae537341cf00da6e3ca97893";
+const PAID_RECEIPT_TX = "0x67475ad666ffe37fd5811dcf27c152cd12c6c0476774797f5dffcfbb0461add6";
 const pathUsd = (n: bigint) => `${(Number(n) / 1e6).toFixed(2)} pathUSD`; // TIP-20, 6 decimals
 
 async function loadTempo(): Promise<Read> {
-  const [b, [yes, no, outcome], v, proof] = await Promise.all([
+  const [b, [yes, no, outcome], v, proof, [, , paidOutcome], settle, receipt] = await Promise.all([
     block(TEMPO_RPC),
     call(TEMPO_RPC, TEMPO_MARKET, SEL.markets + pad(COURT_24G_HEX)),
     readCourt(COURT_24G),
     vaaProof(TEMPO_RPC, TEMPO_MARKET, TEMPO_CORE, TEMPO_VAA_TX, VAA_SEL.settleWithVaa),
+    call(TEMPO_RPC, PAID_MARKET, SEL.markets + pad(courtHex(PAID_COURT))),
+    rpc<{ from: string; feePayerSignature?: unknown }>(TEMPO_RPC, "eth_getTransactionByHash", [PAID_SETTLE_TX]),
+    rpc<{ status: string; logs: { topics: string[] }[] }>(TEMPO_RPC, "eth_getTransactionReceipt", [PAID_RECEIPT_TX]),
   ]);
+  // The receipt is a TIP-20 TransferWithMemo whose memo (topic 3) is the paid court's pubkey.
+  const memoOk = receipt?.status === "0x1" && receipt.logs.some((l) => l.topics[3] === courtHex(PAID_COURT));
   return {
     at: `block ${b.toLocaleString()}`,
     rows: [
@@ -201,6 +213,10 @@ async function loadTempo(): Promise<Read> {
       ["Outcome", <strong className={outcome === 2n ? "ok" : ""}>{OUTCOME[Number(outcome)] ?? String(outcome)}</strong>],
       ["Court on Solana devnet", `yes ${v.yes} · no ${v.no} · excluded ${v.excluded}`],
       ...proof,
+      ["Paid dispute (MPP 402)", <>market <Ext href={`${TEMPO_X}/address/${PAID_MARKET}`}>{short(PAID_MARKET)}</Ext> outcome{" "}
+        <strong className={paidOutcome === 2n ? "ok" : ""}>{OUTCOME[Number(paidOutcome)] ?? String(paidOutcome)}</strong>; settled by{" "}
+        {short(settle.from)}{settle.feePayerSignature ? " (fee sponsored)" : ""}; memo receipt{" "}
+        <strong className={memoOk ? "ok" : "bad"}>{memoOk ? "names court" : "check failed"}</strong> {short(PAID_COURT)}</>],
     ],
   };
 }
@@ -213,8 +229,10 @@ interface ZecTx {
 }
 const ZEC_X = (t: string) => `https://testnet.zecblock.com/tx/${t}`;
 
+const ZEC_COURT = "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm";
+
 async function loadZcash(): Promise<Read> {
-  const { zcash: z, zcashError, at } = await chainsApi();
+  const [{ zcash: z, zcashError, at }, v] = await Promise.all([chainsApi(), readCourt(ZEC_COURT)]);
   if (!z) throw new Error(`ZecBlock: ${zcashError ?? "unavailable"}`);
   const p = z.payout;
   const bonds = [z.bond1, z.bond2, z.bond3];
@@ -228,6 +246,7 @@ async function loadZcash(): Promise<Read> {
       ["Shielded actions", `${p.ironwoodActions} Ironwood (tx v${p.version})`],
       ["Net value balance", `${p.valueBalance} TAZ (= fee, amounts hidden)`],
       ["Juror bonds", `${bonds.filter(shielded).length}/3 fully shielded, ${Math.min(...bonds.map((b) => b.confirmations)).toLocaleString()}+ confirmations`],
+      ["Slashed", <><strong>{bonds.length - (v.yes + v.no + v.excluded)} no-show</strong> <span className="muted">(3 bonds on Zcash − {v.yes + v.no + v.excluded} counted ballots in court {short(ZEC_COURT)})</span></>],
     ],
   };
 }
@@ -319,6 +338,7 @@ async function loadHyperliquid(): Promise<Read> {
 
 // ---------- Ethereum L1 + Sepolia ----------
 
+const GH = "https://github.com/PugarHuda/saring/blob/main";
 const ETH_RPC = ["https://ethereum-rpc.publicnode.com", "https://eth.drpc.org"];
 const SEP_RPC = ["https://ethereum-sepolia-rpc.publicnode.com", "https://sepolia.drpc.org"];
 const VOTING_V2 = "0x004395edb43EFca9885CEdad51EC9fAf93Bd34ac";
@@ -356,6 +376,8 @@ async function loadEthereum(): Promise<Read> {
       ["Registry leaves", `${leaves.toLocaleString()} (dispute, voter) pairs`],
       ["isConflicted(Thailand, 0xacb1…6272)", yesNo(c1)],
       ["isConflicted(same dispute, whale 0xb524…3715)", yesNo(c2)],
+      ["Vote proofs (proof bundle, not a live read)", <><strong>70/70 votes proven against headers</strong>{" "}
+        <Ext href={`${GH}/ethereum/out/vote-proofs.json`}>vote-proofs.json</Ext> · <code>npx tsx prove-votes.ts --verify --offline</code></>],
       ["Sepolia OOv3.getAssertionResult", <>{yesNo(sepResult)} <span className="muted">(assertion {short(SEP_ASSERTION)}, Saring EM said NO)</span></>],
       ...proof,
     ],
@@ -371,14 +393,17 @@ const OOV3 = "0x1037A21a30aEfF90c269b01c3933eB9a5285d9b8";
 const ARB_CORE = "0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35";
 const ASSERTION = "0xed57d330c68595455a61c9570ac3457635685357e0ddfeed9caf36f57212e33a";
 const ARB_VAA_TX = "0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587";
+const KLEROS_V2 = "0xc2b4805da6899d788b179f12eb19136bd73f5ba5"; // SaringArbitratorV2 (IArbitratorV2)
+const KLEROS_RULE_TX = "0x4a9da88971511f607a2d45a18866e6dd7dd5ceb2cbab5f78d65226352e18eeea";
 
 async function loadArbitrum(): Promise<Read> {
-  const [b, [court], [result], [, viaEm], proof] = await Promise.all([
+  const [b, [court], [result], [, viaEm], proof, [ruling, tied]] = await Promise.all([
     block(ARB_RPC),
     call(ARB_RPC, EM, SEL.courtOf + pad(ASSERTION)),
     call(ARB_RPC, OOV3, SEL.getAssertionResult + pad(ASSERTION)), // reverts unless settled
     call(ARB_RPC, EM, SEL.getAssertionPolicy + pad(ASSERTION)), // (block, arbitrateViaEM, discardOracle, validateDisputers)
     vaaProof(ARB_RPC, EM, ARB_CORE, ARB_VAA_TX, VAA_SEL.resolveWithVaa),
+    call(ARB_RPC, KLEROS_V2, SEL.currentRuling + pad("0")),
   ]);
   return {
     at: `block ${b.toLocaleString()}`,
@@ -386,6 +411,8 @@ async function loadArbitrum(): Promise<Read> {
       ["Assertion", <code>{short(ASSERTION)}</code>],
       ["EM.courtOf", <>{b58(court)} <span className="muted">(Saring court)</span></>],
       ["OOv3.getAssertionResult", <>{yesNo(result)} <span className="muted">(settled; Saring said NO, disputer won)</span></>],
+      ["Kleros V2 currentRuling(0)", <><strong className={ruling === 2n ? "ok" : ""}>{ruling.toString()} ({["refused", "YES", "NO"][Number(ruling)] ?? "?"})</strong>{tied ? ", tied" : ""}{" "}
+        <span className="muted">(SaringArbitratorV2 {short(KLEROS_V2)}; escrow payer refunded by VAA)</span></>],
       ["EM.getAssertionPolicy", <>arbitrateViaEscalationManager = {viaEm ? "true" : "false"} <span className="muted">({viaEm ? "UMA DVM bypassed" : "DVM used"})</span></>],
       ...proof,
     ],
@@ -401,16 +428,24 @@ const REALITY = "0x86b653Dc9aa6d7311109276925927087573f91CB";
 const BASE_CORE = "0x79A1027a6A159502049F10906D333EC57E95F083";
 const QID = "0x7cb90bbfca19ffc2fddb8f390d4d81384b0863871264470a3095ee3c0f3cec83";
 const BASE_VAA_TX = "0xf2a1ef9c6ab80fbd75a9cf298bee115d3eaf5d4a9608ccdcde86e5c8b37d01c9";
+// Base-native loop (base/limitless-court.ts): 12 real Limitless holders -> court BT7f (top holder seated, excluded) -> VAA -> Reality.eth.
+const LIMITLESS_COURT = "BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr";
+const LIMITLESS_QID = "0x9c1fd757056eba950758ca3ba4b92222ee333a0198dfe6999e12027956c6baaf";
+const LIMITLESS_VAA_TX = "0x8147296f09df926865aeba6eb35215995d896c6ebbae26482fe09737033b44d2";
 const answer = (h: bigint) => (h === 1n ? "YES" : h === 0n ? "NO" : h === 2n ** 256n - 1n ? "INVALID" : hex32(h));
 
 async function loadBase(): Promise<Read> {
-  const [b, [court], [ruled], [fin], [res], proof] = await Promise.all([
+  const [b, [court], [ruled], [fin], [res], proof, lc, [lCourt], [lFin], [lRes]] = await Promise.all([
     block(BASE_RPC),
     call(BASE_RPC, ARBITRATOR, SEL.courtOf + pad(QID)),
     call(BASE_RPC, ARBITRATOR, SEL.ruled + pad(QID)),
     call(BASE_RPC, REALITY, SEL.isFinalized + pad(QID)),
     call(BASE_RPC, REALITY, SEL.resultFor + pad(QID)),
     vaaProof(BASE_RPC, ARBITRATOR, BASE_CORE, BASE_VAA_TX, VAA_SEL.ruleWithVaa),
+    readCourt(LIMITLESS_COURT),
+    call(BASE_RPC, ARBITRATOR, SEL.courtOf + pad(LIMITLESS_QID)),
+    call(BASE_RPC, REALITY, SEL.isFinalized + pad(LIMITLESS_QID)),
+    call(BASE_RPC, REALITY, SEL.resultFor + pad(LIMITLESS_QID)),
   ]);
   return {
     at: `block ${b.toLocaleString()}`,
@@ -421,6 +456,10 @@ async function loadBase(): Promise<Read> {
       ["Reality.eth isFinalized", fin ? "true" : "false"],
       ["Reality.eth resultFor", <><strong>{answer(res)}</strong> <span className="muted">(answerer said YES; Saring overruled)</span></>],
       ...proof,
+      ["Limitless court (Base mainnet holders)", <>court {short(LIMITLESS_COURT)}: yes {lc.yes} · no {lc.no} · excluded {lc.excluded}
+        {b58(lCourt) === LIMITLESS_COURT ? "" : " (court mismatch!)"}; Reality question {short(LIMITLESS_QID)}{" "}
+        <strong className={lFin && lRes === 0n ? "ok" : ""}>{lFin ? answer(lRes) : "not final"}</strong>{" "}
+        <span className="muted">("Atalanta vs Venezia", 12 holders, top holder seated)</span></>],
     ],
   };
 }
@@ -440,18 +479,21 @@ const CARDS: { chain: string; net: string; what: ReactNode; load: () => Promise<
       ["Solana emitter tx (Wormhole)", `https://explorer.solana.com/tx/${SOL_EMITTER_TX}?cluster=devnet`],
       ["VAA on Wormholescan", `https://wormholescan.io/#/tx/${SOL_EMITTER_TX}?network=Testnet`],
       ["Fee with memo", `${TEMPO_X}/tx/0xfd2ecd44cbd7f47565e4cec1451ab74660303f752c6c4cb37ff9a3e698e37846`],
+      ["Paid dispute: sponsored settleWithVaa", `${TEMPO_X}/tx/${PAID_SETTLE_TX}`],
+      ["Paid dispute: memo receipt", `${TEMPO_X}/tx/${PAID_RECEIPT_TX}`],
     ],
   },
   {
     chain: "Zcash",
     net: "testnet (NU7)",
-    what: <>Juror bonds, refunds and rewards move as shielded ZEC with encrypted memos, so no one can check a bribe was earned.</>,
+    what: <>Juror bonds, refunds and rewards move as shielded ZEC with encrypted memos; a no-show's bond is slashed to the voters, and anyone can recheck the payout with the published viewing key.</>,
     load: loadZcash,
     links: [
-      ["Payout tx", ZEC_X("752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85")],
-      ["Bond 1", ZEC_X("5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e")],
-      ["Bond 2", ZEC_X("971faa3c8a8c18afd738549333f51c29c2474d27f9630d3dc804d70d19b78c57")],
-      ["Bond 3", ZEC_X("e6c5ef6943b2735a782eae77cb72e9fa17f44c737f6a7afc748d2426c68b207b")],
+      ["Payout tx", ZEC_X("9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b")],
+      ["Bond 1", ZEC_X("d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233")],
+      ["Bond 2", ZEC_X("7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8")],
+      ["Bond 3 (slashed)", ZEC_X("b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8")],
+      ["Public verifier report (12/12)", `${GH}/zcash/out/verify-8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm.md`],
     ],
   },
   {
@@ -473,6 +515,7 @@ const CARDS: { chain: string; net: string; what: ReactNode; load: () => Promise<
     links: [
       ["UMA VotingV2", `https://etherscan.io/address/${VOTING_V2}#readContract`],
       ["UmaConflictRegistry", `https://sepolia.etherscan.io/address/${REGISTRY}`],
+      ["Vote proof bundle", `${GH}/ethereum/out/vote-proofs.json`],
       ["Registry deploy tx", "https://sepolia.etherscan.io/tx/0xc7c0a7b18cc73aea684c66a6eb280b1f6d15b0bd660ae77a9c276c0dc50fff4f"],
       ["Sepolia SaringEscalationManager", `https://sepolia.etherscan.io/address/${SEP_EM}`],
       ["resolveWithVaa tx", `https://sepolia.etherscan.io/tx/${SEP_VAA_TX}`],
@@ -483,25 +526,29 @@ const CARDS: { chain: string; net: string; what: ReactNode; load: () => Promise<
   {
     chain: "Arbitrum",
     net: "Sepolia",
-    what: <>A UMA OOv3 escalation manager: a disputed assertion goes to a Saring court instead of the DVM, and the verdict arrives as a Wormhole VAA.</>,
+    what: <>A UMA OOv3 escalation manager and a Kleros v2 <code>IArbitratorV2</code>: disputes go to a Saring court, and the verdict arrives as a Wormhole VAA.</>,
     load: loadArbitrum,
     links: [
       ["SaringEscalationManager", `${ARB_X}/address/${EM}`],
       ["resolveWithVaa tx", `${ARB_X}/tx/${ARB_VAA_TX}`],
       ["settleAssertion tx", `${ARB_X}/tx/0xaaae5ed3e9edf4ab4995f034ceb79687a4c83dd79a3217f81ac17cd320c3c3df`],
+      ["SaringArbitratorV2 (Kleros)", `${ARB_X}/address/${KLEROS_V2}`],
+      ["Kleros ruleWithVaa tx", `${ARB_X}/tx/${KLEROS_RULE_TX}`],
       ["Solana emitter tx (Wormhole)", `https://explorer.solana.com/tx/${SOL_EMITTER_TX}?cluster=devnet`],
       ["VAA on Wormholescan", `https://wormholescan.io/#/tx/${SOL_EMITTER_TX}?network=Testnet`],
     ],
   },
   {
     chain: "Base",
-    net: "Sepolia",
-    what: <>A Reality.eth v3 arbitrator, the slot Kleros fills for Seer and Precog, backed by a Saring court whose verdict arrives as a Wormhole VAA.</>,
+    net: "Sepolia + mainnet reads",
+    what: <>A Reality.eth v3 arbitrator (the slot Kleros fills for Seer and Precog) ruled by a Wormhole VAA, plus a court seated from real Limitless holders on Base mainnet.</>,
     load: loadBase,
     links: [
       ["SaringArbitrator", `${BASE_X}/address/${ARBITRATOR}`],
       ["ruleWithVaa tx", `${BASE_X}/tx/${BASE_VAA_TX}`],
       ["Reality.eth v3", `${BASE_X}/address/${REALITY}`],
+      ["Limitless court on devnet", `https://explorer.solana.com/address/${LIMITLESS_COURT}?cluster=devnet`],
+      ["Limitless ruleWithVaa tx", `${BASE_X}/tx/${LIMITLESS_VAA_TX}`],
       ["Solana emitter tx (Wormhole)", `https://explorer.solana.com/tx/${SOL_EMITTER_TX}?cluster=devnet`],
       ["VAA on Wormholescan", `https://wormholescan.io/#/tx/${SOL_EMITTER_TX}?network=Testnet`],
     ],

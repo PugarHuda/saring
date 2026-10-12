@@ -3,11 +3,12 @@
 // Every other chain in that section is read browser-side over CORS-enabled RPC.
 // Only the fixed Saring txs / VAA below are fetched; nothing from the request reaches the upstream.
 const ZEC_API = "https://api.testnet.zecblock.com/api/tx/";
+// v2 run, court 8bX2…GNFm: 3 bonds in, one shielded payout out (juror3 never voted and was slashed).
 const TXS = {
-  payout: "752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85",
-  bond1: "5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e",
-  bond2: "971faa3c8a8c18afd738549333f51c29c2474d27f9630d3dc804d70d19b78c57",
-  bond3: "e6c5ef6943b2735a782eae77cb72e9fa17f44c737f6a7afc748d2426c68b207b",
+  payout: "9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b",
+  bond1: "d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233",
+  bond2: "7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8",
+  bond3: "b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8",
 };
 // The guardian-signed VAA the saring_wormhole program's emitter posted for court 24gQ… (seq 0).
 const VAA_API = "https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/0";
