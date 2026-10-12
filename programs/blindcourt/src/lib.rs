@@ -86,6 +86,7 @@ pub mod blindcourt {
         court.bump = ctx.bumps.court_acc;
         court.pending = true;
         court.pending_slot = Clock::get()?.slot;
+        court.pending_computation = ctx.accounts.computation_account.key();
         court.id = id;
         court.authority = ctx.accounts.payer.key();
         court.market = market;
@@ -114,6 +115,9 @@ pub mod blindcourt {
         ctx: Context<InitCourtV3Callback>,
         output: SignedComputationOutputs<InitCourtV3Output>,
     ) -> Result<()> {
+        if !is_current(&ctx.accounts.court_acc, &ctx.accounts.computation_account) {
+            return Ok(());
+        }
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(InitCourtV3Output { field_0 }) => field_0,
             Err(_) => return aborted(&mut ctx.accounts.court_acc),
@@ -137,7 +141,8 @@ pub mod blindcourt {
         pubkey: [u8; 32],
         nonce: u128,
     ) -> Result<()> {
-        lock(&mut ctx.accounts.court_acc)?;
+        let computation = ctx.accounts.computation_account.key();
+        lock(&mut ctx.accounts.court_acc, computation)?;
         let args = ArgBuilder::new()
             .x25519_pubkey(pubkey)
             .plaintext_u128(nonce)
@@ -169,6 +174,9 @@ pub mod blindcourt {
         ctx: Context<AddJurorV3Callback>,
         output: SignedComputationOutputs<AddJurorV3Output>,
     ) -> Result<()> {
+        if !is_current(&ctx.accounts.court_acc, &ctx.accounts.computation_account) {
+            return Ok(());
+        }
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(AddJurorV3Output { field_0 }) => field_0,
             Err(_) => return aborted(&mut ctx.accounts.court_acc),
@@ -195,7 +203,8 @@ pub mod blindcourt {
             ctx.accounts.payer.key() == ctx.accounts.court_acc.authority,
             ErrorCode::InvalidAuthority
         );
-        lock(&mut ctx.accounts.court_acc)?;
+        let computation = ctx.accounts.computation_account.key();
+        lock(&mut ctx.accounts.court_acc, computation)?;
         let mut args = ArgBuilder::new().x25519_pubkey(pubkey).plaintext_u128(nonce);
         for ct in trader_ids {
             args = args.encrypted_u32(ct);
@@ -227,6 +236,9 @@ pub mod blindcourt {
         ctx: Context<RecordPositionsV3Callback>,
         output: SignedComputationOutputs<RecordPositionsV3Output>,
     ) -> Result<()> {
+        if !is_current(&ctx.accounts.court_acc, &ctx.accounts.computation_account) {
+            return Ok(());
+        }
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(RecordPositionsV3Output { field_0 }) => field_0,
             Err(_) => return aborted(&mut ctx.accounts.court_acc),
@@ -251,7 +263,8 @@ pub mod blindcourt {
         pubkey: [u8; 32],
         nonce: u128,
     ) -> Result<()> {
-        lock(&mut ctx.accounts.court_acc)?;
+        let computation = ctx.accounts.computation_account.key();
+        lock(&mut ctx.accounts.court_acc, computation)?;
         let args = ArgBuilder::new()
             .x25519_pubkey(pubkey)
             .plaintext_u128(nonce)
@@ -285,6 +298,9 @@ pub mod blindcourt {
         ctx: Context<CastV3Callback>,
         output: SignedComputationOutputs<CastV3Output>,
     ) -> Result<()> {
+        if !is_current(&ctx.accounts.court_acc, &ctx.accounts.computation_account) {
+            return Ok(());
+        }
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(CastV3Output { field_0 }) => field_0,
             Err(_) => return aborted(&mut ctx.accounts.court_acc),
@@ -302,12 +318,12 @@ pub mod blindcourt {
             ctx.accounts.payer.key() == ctx.accounts.court_acc.authority,
             ErrorCode::InvalidAuthority
         );
-        // Resolve reads the state but never writes it, so it doesn't need the
-        // shared lock: a stream of junk ballots can't hold it off. Once queued,
-        // `resolving` stops new seats, positions, ballots and bets.
+        // Resolve takes the lock like every other computation: it reads the
+        // encrypted state with the nonce stored now, so no other write may land
+        // in between. Once queued, `resolving` also stops new bets.
+        let computation = ctx.accounts.computation_account.key();
         let court = &mut ctx.accounts.court_acc;
-        require!(court.ready, ErrorCode::NotReady);
-        require!(!court.resolved && !court.resolving, ErrorCode::AlreadyResolved);
+        lock(court, computation)?;
         court.resolving = true;
         let args = ArgBuilder::new()
             .plaintext_u128(ctx.accounts.court_acc.nonce)
@@ -336,16 +352,19 @@ pub mod blindcourt {
         ctx: Context<ResolveV3Callback>,
         output: SignedComputationOutputs<ResolveV3Output>,
     ) -> Result<()> {
+        if !is_current(&ctx.accounts.court_acc, &ctx.accounts.computation_account) {
+            return Ok(());
+        }
         let o = match output.verify_output(&ctx.accounts.cluster_account, &ctx.accounts.computation_account) {
             Ok(ResolveV3Output { field_0 }) => field_0,
             Err(_) => {
                 ctx.accounts.court_acc.resolving = false;
-                emit!(ComputationAbortedEvent { court: ctx.accounts.court_acc.key() });
-                return Ok(());
+                return aborted(&mut ctx.accounts.court_acc);
             }
         };
         let court = &mut ctx.accounts.court_acc;
         require!(!court.resolved, ErrorCode::AlreadyResolved);
+        court.pending = false;
         court.resolving = false;
         court.resolved = true;
         court.yes = o.field_0;
@@ -371,6 +390,8 @@ pub mod blindcourt {
             ErrorCode::ComputationPending
         );
         court.pending = false;
+        court.resolving = false;
+        court.pending_computation = Pubkey::default();
         Ok(())
     }
 
@@ -480,13 +501,21 @@ pub mod blindcourt {
 }
 
 /// Takes the one-computation-at-a-time lock (see crate docs).
-fn lock(court: &mut CourtAccount) -> Result<()> {
+fn lock(court: &mut CourtAccount, computation: Pubkey) -> Result<()> {
     require!(court.ready, ErrorCode::NotReady);
     require!(!court.resolved && !court.resolving, ErrorCode::AlreadyResolved);
     require!(!court.pending, ErrorCode::ComputationPending);
     court.pending = true;
     court.pending_slot = Clock::get()?.slot;
+    court.pending_computation = computation;
     Ok(())
+}
+
+/// Only the computation that took the lock may write the court. A late callback
+/// from a computation released by `reset_pending` is ignored instead of
+/// overwriting newer state.
+fn is_current(court: &CourtAccount, computation: &UncheckedAccount) -> bool {
+    court.pending && court.pending_computation == computation.key()
 }
 
 /// An aborted computation leaves the state untouched; release the lock so the
@@ -996,6 +1025,8 @@ pub struct CourtAccount {
     pub resolving: bool,
     /// Slot when the lock was taken (for `reset_pending`).
     pub pending_slot: u64,
+    /// Computation account that holds the lock; other callbacks are ignored.
+    pub pending_computation: Pubkey,
 }
 
 #[account]
