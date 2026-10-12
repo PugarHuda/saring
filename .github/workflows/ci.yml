@@ -61,9 +61,10 @@ jobs:
       - name: Type-check sdk (if present)
         run: |
           if [ -f sdk/package.json ]; then
-            cd sdk
-            if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm install --no-audit --no-fund; fi
-            npx --yes -p typescript tsc -p . --noEmit
+            # The SDK's peer deps (anchor, arcium client, web3.js, @types/node)
+            # come from the repo root, exactly like a local checkout.
+            yarn install --frozen-lockfile
+            npx tsc -p sdk --noEmit
           else
             echo "sdk/package.json not present; skipping"
           fi
