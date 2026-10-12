@@ -1,18 +1,20 @@
-"""Shared helpers: HTTP with DoH for polymarket.com (ISP DNS blocks it), keccak, caching."""
+"""Shared helpers: HTTP (optional DoH for polymarket.com), keccak, caching."""
 import json, os, socket, time, requests
 from Crypto.Hash import keccak as _k
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(HERE, 'cache'); os.makedirs(CACHE, exist_ok=True)
+CACHE = os.environ.get('CONFLICT_CACHE') or os.path.join(HERE, 'cache')  # only the full backfill uses it
 UMA_SUBGRAPH = "https://api.goldsky.com/api/public/project_clus2fndawbcc01w31192938i/subgraphs/mainnet-voting-v2/0.1.0/gn"
 POLYGON_RPCS = ["https://polygon.drpc.org", "https://1rpc.io/matic", "https://rpc-mainnet.matic.quiknode.pro"]
 GAMMA = "https://gamma-api.polymarket.com"
 DATA = "https://data-api.polymarket.com"
 
-# ponytail: DoH only for *.polymarket.com because local ISP DNS hijacks it; harmless elsewhere.
+# ponytail: DoH only for *.polymarket.com because some ISPs' DNS hijacks it. On by default locally,
+# off on CI (GitHub sets CI=true). Override with CONFLICT_DOH=0/1.
+USE_DOH = os.environ.get('CONFLICT_DOH', '0' if os.environ.get('CI') else '1') == '1'
 _orig, _dns = socket.getaddrinfo, {}
 def _gai(host, *a, **kw):
-    if isinstance(host, str) and host.endswith('polymarket.com'):
+    if USE_DOH and isinstance(host, str) and host.endswith('polymarket.com'):
         if host not in _dns:
             r = requests.get('https://cloudflare-dns.com/dns-query', params={'name': host, 'type': 'A'},
                              headers={'accept': 'application/dns-json'}, timeout=15).json()
@@ -71,4 +73,4 @@ def cached(name, fn):
     p = os.path.join(CACHE, name)
     if os.path.exists(p):
         return json.load(open(p, encoding='utf-8'))
-    v = fn(); json.dump(v, open(p, 'w', encoding='utf-8')); return v
+    v = fn(); os.makedirs(CACHE, exist_ok=True); json.dump(v, open(p, 'w', encoding='utf-8')); return v

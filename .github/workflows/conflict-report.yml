@@ -1,0 +1,62 @@
+# Daily UMA Conflict Report monitor: fetch newly resolved UMA disputes, re-check voters' Polymarket
+# positions, rebuild docs/ (GitHub Pages) and commit the refreshed dataset. Public sources only, no secrets.
+name: conflict-report
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: conflict-report
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests pycryptodome
+
+      # Incremental run writes out/ only after every new dispute is fully checked, so a failed attempt
+      # leaves nothing half-written and the retry starts clean.
+      - name: Incremental update (3 attempts)
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          for i in 1 2 3; do
+            timeout 25m python conflict-report/conflict_report.py --incremental && exit 0
+            echo "attempt $i failed"; sleep $((i * 60))
+          done
+          exit 1
+
+      - name: Tests
+        run: python conflict-report/test_conflict.py
+
+      - name: Rebuild site and dataset
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python conflict-report/site/build_site.py
+
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/index.html docs/data conflict-report/out
+          if git diff --cached --quiet; then echo 'no changes'; exit 0; fi
+          git commit -m "conflict-report: daily update $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep 10
+          done
+          exit 1

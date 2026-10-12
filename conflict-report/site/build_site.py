@@ -1,13 +1,22 @@
-"""Build site/index.html from out/*.json. Run: PYTHONIOENCODING=utf-8 python site/build_site.py"""
-import csv, html, json
+"""Build docs/index.html (GitHub Pages) and the public dataset docs/data/* from out/*.
+Run: PYTHONIOENCODING=utf-8 python conflict-report/site/build_site.py"""
+import csv, html, json, shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "out"
+DOCS = ROOT.parent / "docs"
+REPO = "https://github.com/PugarHuda/saring"
+LATEST_N = 25
 summary = json.loads((OUT / "summary.json").read_text(encoding="utf-8"))
 cases = json.loads((OUT / "case_studies.json").read_text(encoding="utf-8"))
-slugs = {d["request_id"]: d["slug"] for d in csv.DictReader(open(OUT / "disputes.csv", encoding="utf-8"))}
+disputes = list(csv.DictReader(open(OUT / "disputes.csv", encoding="utf-8")))
+slugs = {d["request_id"]: d["slug"] for d in disputes}
 conflicts = list(csv.DictReader(open(OUT / "conflicts.csv", encoding="utf-8")))
+
+(DOCS / "data").mkdir(parents=True, exist_ok=True)
+for f in ("summary.json", "disputes.csv", "conflicts.csv"):
+    shutil.copyfile(OUT / f, DOCS / "data" / f)
 
 ETH, POLY, PM = "https://etherscan.io/address/", "https://polygonscan.com/address/", "https://polymarket.com/market/"
 e = html.escape
@@ -43,6 +52,17 @@ rows = [{
 S = summary
 pct_linked = S["voters_linked_to_polymarket_wallet"] / S["unique_voters"] * 100
 n_big_conf = round(S["disputes_market_volume_ge_1M"] * S["pct_of_those_with_conflicted_voter"] / 100)
+
+# latest disputes: by vote end date, then by request time (embedded in the request id)
+req_time = lambda d: int(d["request_id"].split("-")[1])
+latest = sorted(disputes, key=lambda d: (d["vote_round_end_utc"], req_time(d)), reverse=True)[:LATEST_N]
+latest_html = "".join(f"""<tr{' class="hit"' if int(d['conflicted_voters']) else ''}>
+<td class="mk">{mlink(d['request_id'], d['market'])}</td><td>{e(d['vote_round_end_utc'])}</td><td class="num">{money(d['volume_usd'])}</td>
+<td>{e(d['resolved_outcome'])}</td><td class="num">{int(d['voters']):,}</td>
+<td class="num">{'<span class="tag warn">' + d['conflicted_voters'] + ' (' + d['conflicted_pct'] + '% of tokens)</span>' if int(d['conflicted_voters']) else '0'}</td>
+<td>{'<strong>yes</strong>' if d['outcome_flips'] == 'True' else 'no'}</td></tr>""" for d in latest)
+updated = S["generated_utc"].replace("T", " ").replace("+00:00", "")
+n_conf_latest = sum(int(d["conflicted_voters"]) > 0 for d in latest)
 
 case_html = []
 for c in cases:
@@ -129,6 +149,9 @@ th button {{ all:unset; cursor:pointer; font-weight:600; }}
 th button::after {{ content:" ↕"; color:var(--muted); }}
 td.num {{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }}
 td.mk {{ min-width:200px; }}
+tr.hit td {{ background:var(--accent-soft); }}
+.dl {{ font-family:var(--sans); font-size:0.95rem; }}
+.dl li {{ margin-bottom:6px; }}
 .steps {{ counter-reset:s; list-style:none; padding:0; display:grid; gap:12px; }}
 .steps li {{ background:var(--surface); border:1px solid var(--rule); padding:14px 16px 14px 56px; position:relative; font-family:var(--sans); font-size:0.95rem; }}
 .steps li::before {{ counter-increment:s; content:counter(s); position:absolute; left:16px; top:12px; font:700 1.3rem var(--sans); color:var(--accent); }}
@@ -146,7 +169,7 @@ footer {{ margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); f
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since {e(S['window_start'])}. Generated {e(S['generated_utc'][:10])}.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since {e(S['window_start'])}. Updated daily; last updated <time datetime="{e(S['generated_utc'])}">{e(updated)} UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
   <div class="stat"><div class="n">{pct_linked:.1f}%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">{S['voters_linked_to_polymarket_wallet']:,} of {S['unique_voters']:,} voters</div></div>
@@ -169,21 +192,21 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on exact questionID match (2,895) or exact title match (1,198, mostly negRisk). {S['mapped_to_polymarket']:,} of {S['uma_yes_no_requests_resolved']:,} requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). {S['mapped_to_polymarket']:,} of {S['uma_yes_no_requests_resolved']:,} requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
 </ol>
 
 <h2 id="cases">Case studies</h2>
-<p>The largest positions held while voting. The first two were re-checked live on-chain. Voter links go to Etherscan (UMA votes on Ethereum); Safe links go to Polygonscan (Polymarket settles on Polygon).</p>
+<p>The largest positions held while voting. The Thailand–Cambodia and Maduro cases were re-checked live on-chain. Voter links go to Etherscan (UMA votes on Ethereum); Safe links go to Polygonscan (Polymarket settles on Polygon).</p>
 <div class="cases">
 {''.join(case_html)}
 </div>
 <p class="muted" style="font-family:var(--sans);font-size:0.9rem">Repeat jurors: <code>0x93a6…ced4</code> appears in {sum(1 for r in conflicts if r['voter']=='0x93a692fe5477902c3cf5f6997c1cf59a3712ced4')} conflicted votes. <code>0x86cc…273d</code> appears in {sum(1 for r in conflicts if r['voter']=='0x86cc5e1e8fb20102fa7a0fa4afeaf1cbe1be273d')}, including the US government shutdown dispute where 25 voters were conflicted.</p>
 
 <h2 id="table">Top 50 conflicted votes</h2>
-<p>Sorted by cost of the position held at vote time. Click a column header to re-sort. The full set of {S['conflicted_vote_rows']:,} rows is in <code>out/conflicts.csv</code>.</p>
+<p>Sorted by cost of the position held at vote time. Click a column header to re-sort. The full set of {S['conflicted_vote_rows']:,} rows is in <a href="data/conflicts.csv">conflicts.csv</a>.</p>
 <div class="tablewrap">
 <table id="t">
 <thead><tr>
@@ -198,6 +221,24 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <tbody></tbody>
 </table>
 </div>
+
+<h2 id="latest">Latest disputes</h2>
+<p>The {LATEST_N} most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed ({n_conf_latest} of {LATEST_N} here). Last updated {e(updated)} UTC; newest resolution indexed {e(S['latest_resolution_utc'][:10])}.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
+<tbody>{latest_html}</tbody>
+</table>
+</div>
+
+<h2 id="data">Download the data</h2>
+<p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="{REPO}/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
+<ul class="dl">
+<li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market ({S['disputes_with_votes']:,} rows).</li>
+<li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market ({S['conflicted_vote_rows']:,} rows).</li>
+</ul>
+<p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="{REPO}/tree/main/conflict-report" rel="noopener">source</a>).</p>
 
 <h2 id="limits">Limitations</h2>
 <ul>
@@ -220,7 +261,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Saring builds on that idea: it also filters conflicted jurors, and the chain never sees who the jurors are or which ones were dropped.</div>
 
 <footer>
-Data and scripts: <code>conflict-report/</code> (<code>conflict_report.py</code>, <code>out/summary.json</code>). Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.
+Data and scripts: <a href="{REPO}/tree/main/conflict-report" rel="noopener"><code>conflict-report/</code></a> · <a href="data/summary.json">summary.json</a> · data CC BY 4.0. Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.
 </footer>
 </main>
 <script type="application/json" id="data">{data_json}</script>
@@ -254,6 +295,6 @@ Data and scripts: <code>conflict-report/</code> (<code>conflict_report.py</code>
 </html>
 """
 
-(Path(__file__).parent / "index.html").write_text(page, encoding="utf-8")
+(DOCS / "index.html").write_text(page, encoding="utf-8", newline="\n")
 assert len(page.encode()) < 2_000_000 and len(rows) == 50
 print("wrote index.html", len(page.encode()), "bytes")
