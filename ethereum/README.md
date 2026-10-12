@@ -109,16 +109,12 @@ Across these 10 disputes we checked 96 report conflict rows. All 96 are real L1 
   - owner-only `publish`, after which old proofs stop verifying.
 - **Local deploy.** We deployed to `anvil` with `RPC=http://127.0.0.1:8545 KEY_FILE=… ./deploy.sh`. `cast call isConflicted(Thailand, 0xacb1…6272)` returned `true`, and the same call for the whale `0xb524…3715` returned `false`.
 
-### Sepolia status: ready to deploy, not deployed
+### Sepolia: deployed
 
-We created a deployer key outside the repo at `~/.saring-eth/deployer.key` (mode 600, never printed). Its address is **`0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747`** and its Sepolia balance is 0. The public faucets can't be used from a script: the PoW faucet (`sepolia-faucet.pk910.de`) needs a captcha before it will start, and Google Cloud, Alchemy, Infura, QuickNode and Chainlink all need a login and/or mainnet ETH. To deploy:
-
-1. Get about 0.02 Sepolia ETH sent to `0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747`. Any of these works:
-   - <https://cloud.google.com/application/web3/faucet/ethereum/sepolia> (Google login, 0.05 ETH);
-   - <https://sepolia-faucet.pk910.de> (solve the captcha, mine a few minutes, claim);
-   - a transfer from any wallet that already has Sepolia ETH.
-2. Run `cd ethereum/conflict-registry && ./deploy.sh`. It deploys with the current root, checks the Thailand proof on-chain, and writes `data/deployment-11155111.json` with the address and tx. The links will be `https://sepolia.etherscan.io/address/<registry>` and `/tx/<tx>`.
-3. Optionally, to verify the source: `forge verify-contract <registry> src/UmaConflictRegistry.sol:UmaConflictRegistry --chain sepolia --constructor-args $(cast abi-encode "f(bytes32,bytes32,uint64,uint64,string)" <root> <hash> 2256 834 <uri>)` with `ETHERSCAN_API_KEY` set.
+- `UmaConflictRegistry`: [`0x4e87CC9fD0791bC8cF85d9f49772E193BCD5be55`](https://sepolia.etherscan.io/address/0x4e87CC9fD0791bC8cF85d9f49772E193BCD5be55), deploy tx [`0xc7c0a7b1…ff4f`](https://sepolia.etherscan.io/tx/0xc7c0a7b18cc73aea684c66a6eb280b1f6d15b0bd660ae77a9c276c0dc50fff4f). Deployer `0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747`.
+- It was deployed with root `0x9eb03f81…57af` (2256 leaves, 834 disputes) and dataset URI `https://pugarhuda.github.io/saring/data/conflicts.csv`.
+- On-chain check against Sepolia: `isConflicted(Thailand, 0xacb1…6272, proof)` returns `true`, and the whale `0xb524…3715` with the same proof returns `false`. The record is in `conflict-registry/data/deployment-11155111.json`.
+- The source is verified on Sourcify with an exact match: <https://repo.sourcify.dev/11155111/0x4e87CC9fD0791bC8cF85d9f49772E193BCD5be55>. We did not verify on Etherscan because that needs an API key.
 
 ## Limits
 

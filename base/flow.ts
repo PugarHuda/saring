@@ -8,6 +8,8 @@
  */
 import { decodeEventLog, encodePacked, formatEther, keccak256, parseAbi, parseEther, type Address, type Hex } from "viem";
 import { baseSepolia } from "viem/chains";
+import fs from "node:fs";
+import path from "node:path";
 import { account, artifact, clients, courtToBytes32, logger, saveState, signCourtVerdict, txLink } from "./lib";
 
 const REALITY = "0x86b653Dc9aa6d7311109276925927087573f91CB" as const; // reality.eth deployments/84532/ETH/RealityETH-3.0.json
@@ -69,6 +71,30 @@ async function main() {
   // Relayer: read the court on Solana, sign, submit. Last history entry = the single YES answer above.
   const sv = await signCourtVerdict(COURT, "SaringArbitrator", baseSepolia.id, ARB, log);
   await send("rule", wallet.writeContract({ address: ARB, abi: art.abi, functionName: "rule", args: [qid, sv.message, sv.sigV, sv.r, sv.s, ZERO32, YES, me] }));
+  await settle(qid);
+}
+
+/** After rule(): read the result and pay out. Resume with `RESUME=1 npx tsx flow.ts` (reads questionId from out/state.json). */
+async function settle(qid: Hex) {
+  const log = logger(__dirname, "flow");
+  const { pub, wallet } = clients(baseSepolia, "deployer");
+  const dsp = clients(baseSepolia, "disputer").wallet;
+  const me = wallet.account.address;
+  const disputer = dsp.account.address;
+  const send = async (label: string, p: Promise<Hex>) => {
+    const hash = await p;
+    const rc = await pub.waitForTransactionReceipt({ hash });
+    if (rc.status !== "success") throw new Error(`${label} reverted: ${hash}`);
+    log(`${label}: ${txLink(EXPLORER, hash)}`);
+    saveState(__dirname, { [label]: hash });
+    return rc;
+  };
+  // sepolia.base.org is load-balanced: a read right after a receipt can hit a node that hasn't seen the block yet,
+  // and resultFor reverts until finalized. Wait until the node we hit agrees.
+  for (let i = 0; !(await pub.readContract({ address: REALITY, abi: realityAbi, functionName: "isFinalized", args: [qid] })); i++) {
+    if (i > 30) throw new Error("question not finalized after rule()");
+    await new Promise((r) => setTimeout(r, 2000));
+  }
   const answer = await pub.readContract({ address: REALITY, abi: realityAbi, functionName: "resultFor", args: [qid] });
   log(`Reality.eth isFinalized=${await pub.readContract({ address: REALITY, abi: realityAbi, functionName: "isFinalized", args: [qid] })} resultFor=${answer}`);
 
@@ -79,7 +105,7 @@ async function main() {
   await send("withdraw", dsp.writeContract({ address: REALITY, abi: realityAbi, functionName: "withdraw" }));
 }
 
-main().catch((e) => {
+(process.env.RESUME ? settle(JSON.parse(fs.readFileSync(path.join(__dirname, "out", "state.json"), "utf8")).questionId) : main()).catch((e) => {
   console.error(e);
   process.exit(1);
 });

@@ -49,10 +49,21 @@ full `getLogs` scan instead, which also catches transfers that happen outside Li
   fee too low, double request, unbound or wrong court, wrong signer, tampered tally, high-s, double ruling, only-owner, and fee withdrawal.
 - **`flow.ts` rehearsed on an anvil fork of Base Sepolia** against the real Reality.eth and the real Solana devnet court `24gQ…YGb`
   (resolved NO). Every step succeeded, `resultFor = 0x0`, and the disputer claimed and withdrew the bond.
-- **Live testnet run: waiting on testnet ETH.** The deployer `0x1cE80de3835Ee1e32264DbADe102aB62c78AB394` has 0 ETH on Base Sepolia.
-  Every faucet we tried needs a captcha, a login or an API key: https://portal.cdp.coinbase.com/products/faucet,
-  https://www.alchemy.com/faucets/base-sepolia, https://faucet.quicknode.com/base/sepolia, https://console.optimism.io/faucet.
-  **0.003 ETH is enough.** Then run `npx tsx flow.ts`. Tx links are written to `out/flow.log` and `out/state.json`.
+- **Live on Base Sepolia.** `SaringArbitrator` is at [`0xd96e40e336363f856ce264176da6c24bf23803b4`](https://sepolia.basescan.org/address/0xd96e40e336363f856ce264176da6c24bf23803b4)
+  (source verified on Sourcify, exact match: https://repo.sourcify.dev/84532/0xd96e40e336363f856ce264176da6c24bf23803b4). The run used the real Reality.eth v3 and the real devnet court `24gQ…YGb`, which resolved NO.
+  Question `0xf68230ab…00ae`:
+  [deploy](https://sepolia.basescan.org/tx/0xe2c9364eae9ce772032346c183b607815668bba72bf02cc529e886aab540a431),
+  [askQuestion](https://sepolia.basescan.org/tx/0x52b7261a9cdffe908c4e8cf242e4170b2a9486c498975bc1db04477c56747991),
+  [submitAnswer YES](https://sepolia.basescan.org/tx/0xa6d3d9a896cb7f404776d81f3bd6787e81f340f819a8576a8ff90f41981e6862),
+  [requestArbitration](https://sepolia.basescan.org/tx/0x4962b80d211e77ec41176817f2b6cd4abf1e5a680ad5fec4759a07deb11f3b21),
+  [bindCourt](https://sepolia.basescan.org/tx/0x097ba9088a82b43538901f625e5d0b8a2182d9f3cdcf98b9ad97379d91a9bf10),
+  [rule (Saring verdict)](https://sepolia.basescan.org/tx/0x5878e40b55faecdaf3b3c5b8b5f491f03227247d3556a2b1c7350ed1e57fd47e),
+  [claimWinnings](https://sepolia.basescan.org/tx/0x3b6f72890b64b7bc5612ffc9beb018e5f38da3819bf9df7817949c74fc27d030),
+  [withdraw](https://sepolia.basescan.org/tx/0x808b6613e0c1e2565856edf9812fe33ff52d9f79625efd565a709a7f6fec45f8).
+  After the ruling, `isFinalized` is true and `resultFor` is `0x0` (NO). The claim credited the YES answerer's 0.00002 ETH bond to the disputer, and `withdraw` paid it out.
+  Note: `sepolia.base.org` is load-balanced, and the first run's `resultFor` read right after `rule` reached a node that had not seen the block yet.
+  `flow.ts` now waits for `isFinalized`, and `RESUME=1 npx tsx flow.ts` finished the payout without redeploying. The "balance 0 ETH" line in `out/flow.log` comes from the same lag;
+  the withdraw tx shows the 0.00002 ETH transfer.
 
 ## Commands
 

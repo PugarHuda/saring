@@ -1,0 +1,18 @@
+{
+ "chainId": 11155111,
+ "registry": "0x4e87CC9fD0791bC8cF85d9f49772E193BCD5be55",
+ "tx": "0xc7c0a7b18cc73aea684c66a6eb280b1f6d15b0bd660ae77a9c276c0dc50fff4f",
+ "deployer": "0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747",
+ "root": "0x9eb03f8171aa6cb079efb210af191385fc5b3f9706638b1e7cf14b5c67d157af",
+ "leafCount": 2256,
+ "disputeCount": 834,
+ "datasetURI": "https://pugarhuda.github.io/saring/data/conflicts.csv",
+ "check": {
+  "disputeId": "0xcbf53e5b73b0f292f03d27399777c002b70b7dde2291d3038579025d509d640e",
+  "voter": "0xacb1a67a4725c7433d238dbad292fdae839d6272",
+  "isConflicted": "true",
+  "nonConflicted": "0xb524735356985d2f267fa010d681f061dff03715",
+  "isConflictedNonConflicted": "false"
+ },
+ "deployed_utc": "2026-10-12T14:50:51.736Z"
+}

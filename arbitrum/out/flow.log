@@ -1,0 +1,16 @@
+
+=== 2026-10-12T14:50:58.554Z  ===
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.005 ETH; disputer 0x1f85Ce34e545fd0B0a42433CFCbd68331fcefCAE; relayer 0x1F80ebdF0305a038b302Eb96778d73588763e682
+deployEM: https://sepolia.arbiscan.io/tx/0x683afb1efd3914ae4b05666598be9524d64057c86fc9adc523bec305c255f5c6
+SaringEscalationManager 0xd96e40e336363f856ce264176da6c24bf23803b4 (https://sepolia.arbiscan.io/address/0xd96e40e336363f856ce264176da6c24bf23803b4)
+mintDBT: https://sepolia.arbiscan.io/tx/0xd4333e8af332cfedeae460e1a96da9c46f5099083e2dddf751c090323a300576
+approveDBT: https://sepolia.arbiscan.io/tx/0x6f5af83a5a86ec8cb193e26512fdf5572583d0d680026cdba8afabd5258f2594
+assertTruth: https://sepolia.arbiscan.io/tx/0x5cf652873226c9d06dd7a6539e3f2d6ca6cb2465737b08daa011db08b6d1a800
+assertionId 0x57ca4c55695ada75c42df08a1f15c8020d410a83fa25b393c5a69fcd5b50d75e
+bindCourt: https://sepolia.arbiscan.io/tx/0x161d976f662f7f3c7cc5cdc1ad2e1bfac2803861846f9c35fc27276f8f187a6a
+disputeAssertion: https://sepolia.arbiscan.io/tx/0xc1198c693e0f6eaeb42feb997d60ab77db0d05ebf3c17f400eb43323d35adc6e
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb: NO (yes 0, no 1, excluded 1, incomplete false) observed at slot 510299648
+resolve: https://sepolia.arbiscan.io/tx/0x47d123956b20235728e45363a7f72d5b9c1c36d79ceb67cb6826775f24da3324
+settleAssertion: https://sepolia.arbiscan.io/tx/0x60761025882c3d693c27867d0e5e8d14876642233477104ab39fec89c47cdf72
+AssertionSettled: {"assertionId":"0x57ca4c55695ada75c42df08a1f15c8020d410a83fa25b393c5a69fcd5b50d75e","bondRecipient":"0x1f85Ce34e545fd0B0a42433CFCbd68331fcefCAE","disputed":true,"settlementResolution":false,"settleCaller":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394"}
+getAssertionResult = false; disputer DBT +150

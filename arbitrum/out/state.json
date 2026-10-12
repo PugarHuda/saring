@@ -1,0 +1,13 @@
+{
+  "deployEM": "0x683afb1efd3914ae4b05666598be9524d64057c86fc9adc523bec305c255f5c6",
+  "escalationManager": "0xd96e40e336363f856ce264176da6c24bf23803b4",
+  "court": "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb",
+  "mintDBT": "0xd4333e8af332cfedeae460e1a96da9c46f5099083e2dddf751c090323a300576",
+  "approveDBT": "0x6f5af83a5a86ec8cb193e26512fdf5572583d0d680026cdba8afabd5258f2594",
+  "assertTruth": "0x5cf652873226c9d06dd7a6539e3f2d6ca6cb2465737b08daa011db08b6d1a800",
+  "assertionId": "0x57ca4c55695ada75c42df08a1f15c8020d410a83fa25b393c5a69fcd5b50d75e",
+  "bindCourt": "0x161d976f662f7f3c7cc5cdc1ad2e1bfac2803861846f9c35fc27276f8f187a6a",
+  "disputeAssertion": "0xc1198c693e0f6eaeb42feb997d60ab77db0d05ebf3c17f400eb43323d35adc6e",
+  "resolve": "0x47d123956b20235728e45363a7f72d5b9c1c36d79ceb67cb6826775f24da3324",
+  "settleAssertion": "0x60761025882c3d693c27867d0e5e8d14876642233477104ab39fec89c47cdf72"
+}

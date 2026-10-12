@@ -30,11 +30,17 @@ incomplete conflict check returns 0, so the assertion is false and the disputer 
   YES→1e18, NO→0, tie and incomplete→0, unbound or wrong court, wrong signer, tampered tally, high-s, double resolve, only-OO `requestPrice`, and only-owner bind.
 - **`flow.ts` rehearsed on an anvil fork of Arbitrum Sepolia** against the real OOv3 and the real Solana devnet court `24gQ…YGb`.
   Every step succeeded, and `AssertionSettled{disputed:true, settlementResolution:false, bondRecipient: disputer}` paid the disputer +150 DBT.
-- **Live testnet run: waiting on testnet ETH.** The deployer `0x1cE80de3835Ee1e32264DbADe102aB62c78AB394` has 0 ETH on Arbitrum
-  Sepolia. Every faucet we tried needs a captcha, a login or a mainnet balance:
-  https://www.alchemy.com/faucets/arbitrum-sepolia, https://faucets.chain.link/arbitrum-sepolia,
-  https://faucet.quicknode.com/arbitrum/sepolia. Another option is to bridge Sepolia ETH at https://bridge.arbitrum.io. **0.005 ETH is enough.** Then run
-  `npx tsx flow.ts`. Tx links are written to `out/flow.log` and `out/state.json`.
+- **Live on Arbitrum Sepolia.** `SaringEscalationManager` is at [`0xd96e40e336363f856ce264176da6c24bf23803b4`](https://sepolia.arbiscan.io/address/0xd96e40e336363f856ce264176da6c24bf23803b4)
+  (source verified on Sourcify, exact match: https://repo.sourcify.dev/421614/0xd96e40e336363f856ce264176da6c24bf23803b4). The run used the real OOv3 and the real devnet court `24gQ…YGb`, which resolved NO
+  (yes 0, no 1, 1 conflicted juror excluded). Assertion `0x57ca4c55…d75e`:
+  [deploy](https://sepolia.arbiscan.io/tx/0x683afb1efd3914ae4b05666598be9524d64057c86fc9adc523bec305c255f5c6),
+  [assertTruth](https://sepolia.arbiscan.io/tx/0x5cf652873226c9d06dd7a6539e3f2d6ca6cb2465737b08daa011db08b6d1a800),
+  [bindCourt](https://sepolia.arbiscan.io/tx/0x161d976f662f7f3c7cc5cdc1ad2e1bfac2803861846f9c35fc27276f8f187a6a),
+  [disputeAssertion](https://sepolia.arbiscan.io/tx/0xc1198c693e0f6eaeb42feb997d60ab77db0d05ebf3c17f400eb43323d35adc6e),
+  [resolve (Saring verdict)](https://sepolia.arbiscan.io/tx/0x47d123956b20235728e45363a7f72d5b9c1c36d79ceb67cb6826775f24da3324),
+  [settleAssertion](https://sepolia.arbiscan.io/tx/0x60761025882c3d693c27867d0e5e8d14876642233477104ab39fec89c47cdf72).
+  OOv3 emitted `AssertionSettled{disputed:true, settlementResolution:false, bondRecipient: disputer}`, `getAssertionResult` returned false, and the disputer received +150 DBT.
+  The full log is in `out/flow.log` and `out/state.json`.
 
 ## Commands
 

@@ -1,0 +1,19 @@
+
+=== 2026-10-12T14:51:32.369Z  ===
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.003 ETH; disputer 0x1f85Ce34e545fd0B0a42433CFCbd68331fcefCAE; relayer 0x1F80ebdF0305a038b302Eb96778d73588763e682
+deployArbitrator: https://sepolia.basescan.org/tx/0xe2c9364eae9ce772032346c183b607815668bba72bf02cc529e886aab540a431
+SaringArbitrator 0xd96e40e336363f856ce264176da6c24bf23803b4 (https://sepolia.basescan.org/address/0xd96e40e336363f856ce264176da6c24bf23803b4)
+fundDisputer: https://sepolia.basescan.org/tx/0xdaf7f8a57bb2e49e7c35451bb413dca2bfbe652c2f84057e5e79ff7f346962a4
+askQuestion: https://sepolia.basescan.org/tx/0x52b7261a9cdffe908c4e8cf242e4170b2a9486c498975bc1db04477c56747991
+question_id 0xf68230ab06fd9e433ad3f497e5b9956b34ebf0ca74e11a306c5f7cbb9ec200ae
+submitAnswerYES: https://sepolia.basescan.org/tx/0xa6d3d9a896cb7f404776d81f3bd6787e81f340f819a8576a8ff90f41981e6862
+requestArbitration: https://sepolia.basescan.org/tx/0x4962b80d211e77ec41176817f2b6cd4abf1e5a680ad5fec4759a07deb11f3b21
+bindCourt: https://sepolia.basescan.org/tx/0x097ba9088a82b43538901f625e5d0b8a2182d9f3cdcf98b9ad97379d91a9bf10
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb: NO (yes 0, no 1, excluded 1, incomplete false) observed at slot 510299768
+rule: https://sepolia.basescan.org/tx/0x5878e40b55faecdaf3b3c5b8b5f491f03227247d3556a2b1c7350ed1e57fd47e
+
+=== 2026-10-12T14:52:27.807Z  ===
+Reality.eth isFinalized=true resultFor=0x0000000000000000000000000000000000000000000000000000000000000000
+claimWinnings: https://sepolia.basescan.org/tx/0x3b6f72890b64b7bc5612ffc9beb018e5f38da3819bf9df7817949c74fc27d030
+disputer Reality.eth balance 0 ETH
+withdraw: https://sepolia.basescan.org/tx/0x808b6613e0c1e2565856edf9812fe33ff52d9f79625efd565a709a7f6fec45f8
