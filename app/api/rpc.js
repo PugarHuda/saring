@@ -36,6 +36,8 @@ const ALLOWED_ORIGIN = /^https:\/\/(saring-silk|saring-[a-z0-9-]+-hudas-projects
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 900; // a dispute run polls hard (~300/min peak); leave headroom
 const hits = new Map(); // ip -> { start, n }
+const GPA_TTL_MS = 60_000;
+const gpaCache = new Map(); // params json -> { t, text }
 
 function overLimit(ip) {
   const now = Date.now();
@@ -67,13 +69,25 @@ export default async function handler(req, res) {
       return res.status(403).json({ jsonrpc: "2.0", id: isObj(bad) ? bad.id ?? null : null, error: { code: -32601, message: `method not allowed: ${isObj(bad) ? bad.method : typeof bad}` } });
     }
 
+    // Panta's position scan is heavy (~1k accounts) and every visitor asks for it;
+    // serve it from a short per-instance cache to stay under the upstream rate limit.
+    const cacheable = net === "mainnet" && calls.length === 1 && calls[0].method === "getProgramAccounts";
+    const cacheKey = cacheable ? JSON.stringify(calls[0].params) : null;
+    const hit = cacheKey && gpaCache.get(cacheKey);
+    if (hit && Date.now() - hit.t < GPA_TTL_MS) {
+      const { id } = calls[0];
+      return res.status(200).setHeader("Content-Type", "application/json").send(hit.text.replace(/"id":[^,}]*/, `"id":${JSON.stringify(id ?? null)}`));
+    }
+
     const upstream = await fetch(UPSTREAM[net] + key, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    res.status(upstream.status).setHeader("Content-Type", "application/json").send(await upstream.text());
+    const text = await upstream.text();
+    if (cacheKey && upstream.ok && !text.includes('"error"')) gpaCache.set(cacheKey, { t: Date.now(), text });
+    res.status(upstream.status).setHeader("Content-Type", "application/json").send(text);
   } catch (e) {
     res.status(502).json({ jsonrpc: "2.0", id: null, error: { code: -32603, message: `proxy error: ${e.name === "TimeoutError" ? "upstream timeout" : "bad request"}` } });
   }
