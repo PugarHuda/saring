@@ -13,11 +13,59 @@ Two pieces, both aimed at prediction markets on Base:
 | `contracts/src/SaringArbitrator.sol` | `requestArbitration(qid, max_previous)` takes the fee (`getDisputeFee`) and calls `realitio.notifyOfArbitrationRequest`. The owner (the Saring operator) binds a court to the question. `rule(...)` checks the relayer's **EIP-712 Verdict** (same type, `ecrecover` check and high-s rejection as `tempo/contracts/src/SaringMarket.sol`) and calls `realitio.assignWinnerAndSubmitAnswerByArbitrator`, so Reality.eth credits the last answerer if they were right and the requester if not. YES maps to `0x…01`, NO to `0x…00`, and a tie or incomplete check to **INVALID `0xff…ff`**, which is Reality.eth's own "invalid" answer. |
 | `flow.ts` | Live end to end. It deploys the arbitrator, then calls `askQuestion` (template 0 bool, arbitrator = Saring). The deployer calls `submitAnswer` YES with a bond. The disputer calls `requestArbitration` and pays the fee. Then the script binds the court, the relayer reads the Solana court and signs, and it calls `rule`. Reality.eth finalizes, and the disputer calls `claimWinnings` and `withdraw`. |
 | `limitless-holders.ts` | Calls `CTFExchange.getCtf()` to get the Gnosis CTF, collects the market's ERC-1155 `TransferSingle`/`TransferBatch` logs, and confirms each address with `CTF.balanceOfBatch` at the latest block. |
+| `limitless-court.ts` | The Base-native loop: real holders, then the court, then Wormhole, then Reality.eth (section above). |
 | `lib.ts` | A copy of `arbitrum/lib.ts`: keys, clients, Solana read, EIP-712 signing. |
 
 Reality.eth v3 on Base Sepolia (chain 84532) is the official deployment
 `0x86b653Dc9aa6d7311109276925927087573f91CB`, taken from `reality-eth-monorepo/packages/contracts/chains/deployments/84532/ETH/RealityETH-3.0.json`.
 Its code is on-chain (16.9 KB) and template 0 exists, so we did not deploy our own copy.
+
+## Base-native loop: real Limitless holders → blind court → Wormhole → Reality.eth on Base (live, 2026-10-12)
+
+`limitless-court.ts` runs the whole path from one command. It uses no Saring key in the verdict and has no mocked step:
+
+1. **Real holders, read from Base mainnet logs.** The script takes the 10 highest-volume Limitless markets opened in the last 6 days and
+   runs one chunked `eth_getLogs` scan of the Gnosis CTF `0xC9c9…6e18` (`TransferSingle`/`TransferBatch`, 1000-block chunks, blocks
+   52269730..52516124, **130,286 logs**). Public RPCs are tried in order (Tenderly gateway → publicnode → drpc → llamarpc → mainnet.base.org).
+   Every address that touched a candidate's YES/NO position id is then checked with `CTF.balanceOfBatch` at the head block.
+   The market with the most holders wins: **"Serie A, Atalanta vs Venezia: Atalanta"** (`atalanta-1791363632567`, condition `0x3035e251…cfed`),
+   with **12 holders** (106 transfers, 15 addresses touched). The largest holder is [0x4f49D938…8Da9](https://basescan.org/address/0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9)
+   with 466.39 YES. The full table is in `out/limitless-court.log`. The same scan also corrects Bills vs. Rams to 6 holders: the receipts method above found 5.
+2. **Saring court on Solana devnet** [`BT7fCq2t…kZhr`](https://explorer.solana.com/address/BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr?cluster=devnet)
+   is labelled `limitless:atalanta-1791363632567`. Juror A is the **real holder 0x4f49…8Da9**. Jurors B and C are fresh EVM addresses, each confirmed by
+   `balanceOfBatch` to hold 0 shares. Identities use `evmIdentityId` from `hyperliquid/hl.ts`. All 12 holders are mirrored encrypted (2 MPC batches).
+   The ballots are scripted: A votes YES, B and C vote NO. **The verdict is NO (yes 0, no 2, excluded 1)**: MPC dropped the real holder's ballot without revealing whose it was. The run spent 0.0676 devnet SOL.
+   [open](https://explorer.solana.com/tx/GDNdzx92EkFbETZZkGHfpqyqV27LUoKCNgMKs4iEB94pbbZfEJiFZW3SJqs8QEDh9GK3d8CEy5ruEevyobtMbvu?cluster=devnet),
+   [seat A (holder)](https://explorer.solana.com/tx/65qD5ZdTsHHviHewCHqzQE7P19DUxYqphSyeWewQkhM3J1nMeeH2JSZYB5Mu68seq557nx6oBBPyitpW5Reenjap?cluster=devnet),
+   [mirror 1](https://explorer.solana.com/tx/2ARfSKtFxS7hA2VhzUcRvftnUFPE27V2ghz4NKAQhWEDYv9zzKfPGqZMSDVe35Jepgjj335i8bvAGCxj2dst9qYJ?cluster=devnet),
+   [mirror 2](https://explorer.solana.com/tx/4fgjqhD5ds4t1KosJuaBCwWgMG8PdKgsdJyqkDx1yNFQ3xgVM7nxiAMPJzF5HuijVdTJF79495KFZkDmxBERcKns?cluster=devnet),
+   [cast A YES](https://explorer.solana.com/tx/5VoVGipMXoari5wCeoLWM9mJD5semk3B5zTiihtUJCGnzxEeuknc2HMRJThBGoLQtJi5qsKYELNpnB2iGe2X95Xo?cluster=devnet),
+   [resolve](https://explorer.solana.com/tx/3KSWxCTd3LN37CizsTKTw4nSg2oUshDL7UXu8HKsVmJUrQ38v6auzZBU7SorszJvVjXqEHWoyU6XKp23uadCV5WS?cluster=devnet).
+3. **Wormhole.** `saring_wormhole` read the court and posted it ([Solana tx](https://explorer.solana.com/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?cluster=devnet)).
+   The guardian-signed VAA is `1/54c231ce…6238/1` ([Wormholescan](https://wormholescan.io/#/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?network=Testnet),
+   [API](https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/1)), saved in `../wormhole/out/vaa-BT7f….json`.
+4. **Reality.eth v3 on Base Sepolia**, using the existing `SaringArbitrator` [`0x3848…682a`](https://sepolia.basescan.org/address/0x384822075dc735ea7de0b8417c9b4403bb9d682a) (not redeployed).
+   The question mirrors the Limitless market: *Limitless (Base) market "Serie A, Atalanta vs Venezia: Atalanta" [atalanta-1791363632567, CTF condition 0x3035…]: does it resolve YES?*
+   Question `0x9c1fd757…baaf`:
+   [askQuestion](https://sepolia.basescan.org/tx/0x456bcd7aa9c131aceb63e2bfcf836193a7cc2b4d8f71529e8ab084aa54255133),
+   [submitAnswer YES](https://sepolia.basescan.org/tx/0x7a533ada6a193f2f70d9fe562feafddc805cdfcb90ba518075e9da67e2f2cd0f),
+   [requestArbitration](https://sepolia.basescan.org/tx/0x7be4eb4b6d850b91e0c9352e6e3e1e21d584dc918cdde2308d0a87adaf48d74e),
+   [bindCourt](https://sepolia.basescan.org/tx/0xa21194e6303484b901f51d71f12aee8f060ec0dbbf7285b639c991363071a130),
+   [**ruleWithVaa**](https://sepolia.basescan.org/tx/0x8147296f09df926865aeba6eb35215995d896c6ebbae26482fe09737033b44d2) (sent by the disputer),
+   [claimWinnings](https://sepolia.basescan.org/tx/0xc2357b444302566f3217fd0672a275c56c0480bb82bff25836fc08ba07b82147),
+   [withdraw](https://sepolia.basescan.org/tx/0xbceb11a26591e62c66b3a250e3e50546588c26b1faac39fbfecd3928f6f43042).
+   After the ruling, `isFinalized` is true and `resultFor = 0x0` (NO). The YES answerer's bond went to the disputer. (The "balance 0 ETH" line is the same load-balanced RPC lag noted below.)
+
+What is real and what is not: the holders, balances, court, MPC exclusion, VAA and Reality.eth settlement are all on-chain. The **ballots are scripted**: the jury did not judge the
+football match, and the Limitless market itself is still resolved by Limitless. The Reality.eth question is a mirror on Base Sepolia, not the market's own resolver.
+Full stdout is in `out/limitless-court.run.log`, and the state is in `out/state.json` (`limitlessCourt`).
+
+```bash
+cd ~/blindcourt/base
+npx tsx limitless-court.ts                       # auto-pick market -> court -> Wormhole -> Reality.eth (Base Sepolia)
+npx tsx limitless-court.ts <slug> [slug ...]     # restrict the candidates
+npx tsx limitless-court.ts --from-court <court> <slug>   # resume at the Wormhole + Reality.eth part
+```
 
 ## Real Limitless holders (Base mainnet, block 52512197): done
 
@@ -101,4 +149,4 @@ to the disputer for gas and the arbitration fee.
   verdict on Solana is public, so a lie can be detected but not prevented.
 - `rule` must be given the question's latest history entry, as Reality.eth requires. `flow.ts` knows it because there is exactly one answer.
   With several answers, a relayer reads it from `LogNewAnswer`.
-- The Limitless holders are read and printed here, but not yet mirrored into a Saring court (`record_positions_v3`). Panta's pipeline does that step on Solana.
+- Holder discovery scans CTF logs from public RPCs. Tenderly's public gateway is the only free archive endpoint we found (1000-block cap). A court mirrors at most 42 holders. `limitless-court.ts` reuses the arbitrator `0x3848…`, whose owner (our deployer) binds the court.

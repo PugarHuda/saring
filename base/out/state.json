@@ -43,5 +43,277 @@
   "bindCourt": "0x097ba9088a82b43538901f625e5d0b8a2182d9f3cdcf98b9ad97379d91a9bf10",
   "rule": "0x5878e40b55faecdaf3b3c5b8b5f491f03227247d3556a2b1c7350ed1e57fd47e",
   "claimWinnings": "0x3b6f72890b64b7bc5612ffc9beb018e5f38da3819bf9df7817949c74fc27d030",
-  "withdraw": "0x808b6613e0c1e2565856edf9812fe33ff52d9f79625efd565a709a7f6fec45f8"
+  "withdraw": "0x808b6613e0c1e2565856edf9812fe33ff52d9f79625efd565a709a7f6fec45f8",
+  "limitlessCourt": {
+    "market": {
+      "id": 423044,
+      "automationType": "sports",
+      "conditionId": "0x3035e251baf00cf24dae95ad3d86b51af5a7196664629fbf3b6800262586cfed",
+      "negRiskRequestId": "0x821149f16ec2e8acc375acb77cdf05ae10c7d6ef2bf5ecd5596539c8d26a8a0e",
+      "description": "This market resolves to \"YES\" if the listed club wins after 90 minutes plus stoppage time, excluding extra time and penalty shootouts, in the match scheduled for October 12, 2026, 16:30 UTC. Otherwise, it will resolve to \"NO.\"\nIf the match is postponed, this market will remain open until the match has been completed.\nIf the match is not completed as scheduled for any reason (for example, if it is abandoned, canceled, or awarded), and an official final result is recognized by the governing body or event organizers, this market will resolve based on that result.\nIf no official final result is recognized and no make-up match is scheduled, this market will resolve \"NO.\"\nRevisions to officially declared final scores made after market resolution will not be accounted for in determining the outcome.",
+      "groupId": 10014732,
+      "collateralToken": {
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "decimals": 6,
+        "symbol": "USDC"
+      },
+      "title": "Atalanta",
+      "proxyTitle": null,
+      "expirationDate": "Oct 13, 2026",
+      "expirationTimestamp": 1791909000000,
+      "createdAt": "2026-10-07T10:00:39.518Z",
+      "startAt": null,
+      "updatedAt": "2026-10-07T10:06:10.432Z",
+      "categories": [
+        "Football Matches"
+      ],
+      "status": "FUNDED",
+      "expired": false,
+      "hidden": false,
+      "creator": {
+        "name": "Limitless",
+        "username": "Limitless",
+        "imageURI": "https://limitless.exchange/assets/images/logo.svg",
+        "link": "https://x.com/trylimitless",
+        "address": "0x60e61631d9a585797cDee9f79FafDecf3bd7F64D"
+      },
+      "tags": [
+        "Football",
+        "Lumy",
+        "Italy Serie A",
+        "club_dominance",
+        "Pareto"
+      ],
+      "volume": "525526000",
+      "volumeFormatted": "525.526000",
+      "tokens": {
+        "yes": "27333479010933118668550407958160062832121178296643970469578387466213942386886",
+        "no": "41239971918272399325674041897722060120231299161478217267677866483297676305059"
+      },
+      "prices": [
+        0.625,
+        0.375
+      ],
+      "tradePrices": {
+        "buy": {
+          "market": [
+            0.645,
+            0.395
+          ],
+          "limit": [
+            0.605,
+            0.355
+          ]
+        },
+        "sell": {
+          "market": [
+            0.605,
+            0.355
+          ],
+          "limit": [
+            0.645,
+            0.395
+          ]
+        }
+      },
+      "isOther": false,
+      "isRewardable": true,
+      "slug": "atalanta-1791363632567",
+      "tradeType": "clob",
+      "venue": {
+        "exchange": "0xe3E00BA3a9888d1DE4834269f62ac008b4BB5C47",
+        "adapter": "0x6151EF8368b6316c1aa3C68453EF083ad31E712D"
+      },
+      "marketType": "group",
+      "priorityIndex": 0,
+      "properties": [
+        {
+          "propertyKeySlug": "domain",
+          "value": [
+            "sport"
+          ]
+        },
+        {
+          "propertyKeySlug": "football-leagues",
+          "value": [
+            "italy-serie-a"
+          ]
+        },
+        {
+          "propertyKeySlug": "football-tab",
+          "value": [
+            "matches"
+          ]
+        },
+        {
+          "propertyKeySlug": "sport-type",
+          "value": [
+            "football"
+          ]
+        }
+      ],
+      "winningOutcomeIndex": null,
+      "metadata": {
+        "fee": true,
+        "awayTeam": "Venezia",
+        "homeTeam": "Atalanta",
+        "fixtureId": 1550137,
+        "groupSlug": "serie-a-atalanta-vs-venezia-1791363632556",
+        "sportType": "football",
+        "marketType": "match_winner",
+        "externalSlug": "sea-ata-ven-2026-10-12-ata",
+        "externalRulesWatch": {
+          "rulesHash": "96e7917005d5a91b076cd5df64ba7c06c2bcf6d94ca40025c34a9cc9c75b4658",
+          "clarificationIds": []
+        },
+        "startMatchTimestampInUTC": 1791822600
+      },
+      "settings": {
+        "minSize": "100000000",
+        "maxSpread": 0.035,
+        "dailyReward": "0",
+        "effectiveDailyReward": "0",
+        "currentRewardsMultiplier": 1,
+        "rewardsEpoch": "0",
+        "c": "3",
+        "rebateRate": "0",
+        "takerDelayMs": 1250,
+        "creatorFeePct": 0
+      },
+      "orderInGroup": 0,
+      "imageUrl": "https://media.api-sports.io/football/teams/499.png",
+      "logo": "https://media.api-sports.io/football/teams/499.png",
+      "group": "Serie A, Atalanta vs Venezia"
+    },
+    "ctf": "0xC9c98965297Bc527861c898329Ee280632B76e18",
+    "scan": {
+      "fromBlock": "52269730",
+      "toBlock": "52516124",
+      "transfers": 106
+    },
+    "holders": [
+      {
+        "address": "0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9",
+        "yes": "466391829",
+        "no": "0"
+      },
+      {
+        "address": "0xD12074BD15074C19D94e16AD353d4c462bf8052d",
+        "yes": "0",
+        "no": "408088062"
+      },
+      {
+        "address": "0xFA3FC5C6201c7a845B93dDe251B1b6439a4d4027",
+        "yes": "0",
+        "no": "343468000"
+      },
+      {
+        "address": "0xC36B0C82478B3257866B6023116C1F62a941D970",
+        "yes": "0",
+        "no": "152686000"
+      },
+      {
+        "address": "0xC09D7Fb41717a964E4414b12BC1Fb64B9Be61b8E",
+        "yes": "21063547",
+        "no": "0"
+      },
+      {
+        "address": "0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD",
+        "yes": "0",
+        "no": "20683000"
+      },
+      {
+        "address": "0x0fBA941664d9FE45A463abd2b83a58a96d5422AB",
+        "yes": "15567258",
+        "no": "0"
+      },
+      {
+        "address": "0x6978254F397B18Cf946eED8cBaF3eeE712a712b9",
+        "yes": "9254396",
+        "no": "0"
+      },
+      {
+        "address": "0x0186341CD07081835904F11356D611Cec58AEb28",
+        "yes": "0",
+        "no": "8689000"
+      },
+      {
+        "address": "0xd201a9d9AF1DCBe812855B4816D3401A368744Ce",
+        "yes": "8532598",
+        "no": "0"
+      },
+      {
+        "address": "0xF0170019a7409f9C5F290d895E86d68842eFa242",
+        "yes": "3160823",
+        "no": "0"
+      },
+      {
+        "address": "0xf238676445FCB305f8bB0D3B3e91302D9CdabDb7",
+        "yes": "1555549",
+        "no": "0"
+      }
+    ],
+    "court": "BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr",
+    "courtId": 1235754522,
+    "label": "limitless:atalanta-1791363632567",
+    "jurors": [
+      {
+        "label": "juror A (real Limitless holder)",
+        "address": "0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9",
+        "yes": true,
+        "jurorId": 1204895018
+      },
+      {
+        "label": "juror B (clean, 0 shares)",
+        "address": "0x4bcab527405b8e741a0ef8258c2701bbe0f56da5",
+        "yes": false,
+        "jurorId": 618174360
+      },
+      {
+        "label": "juror C (clean, 0 shares)",
+        "address": "0x40f54c67f3e7a632facd9f6878bf2e63c17132db",
+        "yes": false,
+        "jurorId": 1973933507
+      }
+    ],
+    "mirroredIds": [
+      1204895018,
+      2055311669,
+      1696123133,
+      903895561,
+      82633775,
+      1231344196,
+      3140689390,
+      1054453393,
+      3098617779,
+      4144522463,
+      279695541,
+      2010547063
+    ],
+    "txs": {
+      "open": "https://explorer.solana.com/tx/GDNdzx92EkFbETZZkGHfpqyqV27LUoKCNgMKs4iEB94pbbZfEJiFZW3SJqs8QEDh9GK3d8CEy5ruEevyobtMbvu?cluster=devnet",
+      "seat 0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9": "https://explorer.solana.com/tx/65qD5ZdTsHHviHewCHqzQE7P19DUxYqphSyeWewQkhM3J1nMeeH2JSZYB5Mu68seq557nx6oBBPyitpW5Reenjap?cluster=devnet",
+      "seat 0x4bcab527405b8e741a0ef8258c2701bbe0f56da5": "https://explorer.solana.com/tx/3din2z2jaLEa8tgC7ro2n8bk2MV2AdpSDGUWsB7zsK9uYFjHH48mvB7nkL21hdgBJvZA7n3MxKFxKTCtaRLemkwh?cluster=devnet",
+      "seat 0x40f54c67f3e7a632facd9f6878bf2e63c17132db": "https://explorer.solana.com/tx/23a6VfQN3m8P9TPPAdcUtAybD5yk3neAdYkJw4v6mmDoSzmLSmTEEjXExUQFYqK7qLQdu8amWvamsH8PFRq1qbHd?cluster=devnet",
+      "mirror 1": "https://explorer.solana.com/tx/2ARfSKtFxS7hA2VhzUcRvftnUFPE27V2ghz4NKAQhWEDYv9zzKfPGqZMSDVe35Jepgjj335i8bvAGCxj2dst9qYJ?cluster=devnet",
+      "mirror 2": "https://explorer.solana.com/tx/4fgjqhD5ds4t1KosJuaBCwWgMG8PdKgsdJyqkDx1yNFQ3xgVM7nxiAMPJzF5HuijVdTJF79495KFZkDmxBERcKns?cluster=devnet",
+      "cast 0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9": "https://explorer.solana.com/tx/5VoVGipMXoari5wCeoLWM9mJD5semk3B5zTiihtUJCGnzxEeuknc2HMRJThBGoLQtJi5qsKYELNpnB2iGe2X95Xo?cluster=devnet",
+      "cast 0x4bcab527405b8e741a0ef8258c2701bbe0f56da5": "https://explorer.solana.com/tx/UPJS9gnQMHgSWSxz7E93WQpn5hn4BSxpuNuLo27AxtSiZqFcry7Rp2gWQZVdBUUiVeVicvGpnhFf8vfpZfzwcg6?cluster=devnet",
+      "cast 0x40f54c67f3e7a632facd9f6878bf2e63c17132db": "https://explorer.solana.com/tx/xUYTcRKE7FBtpZza6KYJCr5yd6kj5H7JQXvEhdooMxrQCcf8NsYSuJKkhrjgsZqmDPFWNbgQg9Ao3sPbQX9dzQf?cluster=devnet",
+      "resolve": "https://explorer.solana.com/tx/3KSWxCTd3LN37CizsTKTw4nSg2oUshDL7UXu8HKsVmJUrQ38v6auzZBU7SorszJvVjXqEHWoyU6XKp23uadCV5WS?cluster=devnet"
+    },
+    "verdict": {
+      "yes": 0,
+      "no": 2,
+      "excluded": 1,
+      "incomplete": false,
+      "outcome": "NO"
+    },
+    "devnetSolSpent": 0.067604933,
+    "reality": {
+      "arbitrator": "0x384822075dc735ea7de0b8417c9b4403bb9d682a",
+      "questionId": "0x9c1fd757056eba950758ca3ba4b92222ee333a0198dfe6999e12027956c6baaf",
+      "resultFor": "0x0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
 }

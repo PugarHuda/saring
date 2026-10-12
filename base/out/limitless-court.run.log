@@ -1,0 +1,62 @@
+CTF 0xC9c98965297Bc527861c898329Ee280632B76e18: eth_getLogs blocks 52269730..52516124 (247 chunks of 1000) for 10 candidate markets
+  50 chunks, 27293 CTF logs
+  100 chunks, 52894 CTF logs
+  150 chunks, 78131 CTF logs
+  200 chunks, 104672 CTF logs
+scanned 130286 CTF transfer logs
+  daniil-medvedev-vs-stefanos-tsitsipas-1791806402442: 36 transfers, 3 addresses touched, 3 holders
+  sean-cuenin-vs-izan-almazan-valiente-1791724934953: 56 transfers, 11 addresses touched, 10 holders
+  occidental-petroleum-oxy-up-or-down-daily-1791576000: 36 transfers, 9 addresses touched, 9 holders
+  atalanta-1791363632567: 106 transfers, 15 addresses touched, 12 holders
+  newcastle-1791363606058: 98 transfers, 11 addresses touched, 9 holders
+  bills-vs-rams-1791332408841: 45 transfers, 7 addresses touched, 6 holders
+  feyenoord-1791363610795: 35 transfers, 5 addresses touched, 3 holders
+  draw-1791363610825: 28 transfers, 5 addresses touched, 3 holders
+  btc-up-or-down-hourly-p-1791810311648: 46 transfers, 7 addresses touched, 7 holders
+  fenerbahce-1791363616361: 14 transfers, 5 addresses touched, 3 holders
+
+market: "Serie A, Atalanta vs Venezia: Atalanta" (atalanta-1791363632567) sports/FUNDED, expires Oct 13, 2026, condition 0x3035e251baf00cf24dae95ad3d86b51af5a7196664629fbf3b6800262586cfed
+holders at block 52516124 (CTF.balanceOfBatch, 6-decimal shares):
+  0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9  YES 466.39  NO 0.00  https://basescan.org/address/0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9
+  0xD12074BD15074C19D94e16AD353d4c462bf8052d  YES 0.00  NO 408.09  https://basescan.org/address/0xD12074BD15074C19D94e16AD353d4c462bf8052d
+  0xFA3FC5C6201c7a845B93dDe251B1b6439a4d4027  YES 0.00  NO 343.47  https://basescan.org/address/0xFA3FC5C6201c7a845B93dDe251B1b6439a4d4027
+  0xC36B0C82478B3257866B6023116C1F62a941D970  YES 0.00  NO 152.69  https://basescan.org/address/0xC36B0C82478B3257866B6023116C1F62a941D970
+  0xC09D7Fb41717a964E4414b12BC1Fb64B9Be61b8E  YES 21.06  NO 0.00  https://basescan.org/address/0xC09D7Fb41717a964E4414b12BC1Fb64B9Be61b8E
+  0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD  YES 0.00  NO 20.68  https://basescan.org/address/0xa606d5a85A6dA3743F5E27aE1844847C39ED1fBD
+  0x0fBA941664d9FE45A463abd2b83a58a96d5422AB  YES 15.57  NO 0.00  https://basescan.org/address/0x0fBA941664d9FE45A463abd2b83a58a96d5422AB
+  0x6978254F397B18Cf946eED8cBaF3eeE712a712b9  YES 9.25  NO 0.00  https://basescan.org/address/0x6978254F397B18Cf946eED8cBaF3eeE712a712b9
+  0x0186341CD07081835904F11356D611Cec58AEb28  YES 0.00  NO 8.69  https://basescan.org/address/0x0186341CD07081835904F11356D611Cec58AEb28
+  0xd201a9d9AF1DCBe812855B4816D3401A368744Ce  YES 8.53  NO 0.00  https://basescan.org/address/0xd201a9d9AF1DCBe812855B4816D3401A368744Ce
+  0xF0170019a7409f9C5F290d895E86d68842eFa242  YES 3.16  NO 0.00  https://basescan.org/address/0xF0170019a7409f9C5F290d895E86d68842eFa242
+  0xf238676445FCB305f8bB0D3B3e91302D9CdabDb7  YES 1.56  NO 0.00  https://basescan.org/address/0xf238676445FCB305f8bB0D3B3e91302D9CdabDb7
+court BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr (id 1235754522) "limitless:atalanta-1791363632567" https://explorer.solana.com/tx/GDNdzx92EkFbETZZkGHfpqyqV27LUoKCNgMKs4iEB94pbbZfEJiFZW3SJqs8QEDh9GK3d8CEy5ruEevyobtMbvu?cluster=devnet
+seated juror A (real Limitless holder) 0x4f49D938c3Ad2437c52eb314F9bD7Bdb7FA58Da9 id=1204895018 https://explorer.solana.com/tx/65qD5ZdTsHHviHewCHqzQE7P19DUxYqphSyeWewQkhM3J1nMeeH2JSZYB5Mu68seq557nx6oBBPyitpW5Reenjap?cluster=devnet
+seated juror B (clean, 0 shares) 0x4bcab527405b8e741a0ef8258c2701bbe0f56da5 id=618174360 https://explorer.solana.com/tx/3din2z2jaLEa8tgC7ro2n8bk2MV2AdpSDGUWsB7zsK9uYFjHH48mvB7nkL21hdgBJvZA7n3MxKFxKTCtaRLemkwh?cluster=devnet
+seated juror C (clean, 0 shares) 0x40f54c67f3e7a632facd9f6878bf2e63c17132db id=1973933507 https://explorer.solana.com/tx/23a6VfQN3m8P9TPPAdcUtAybD5yk3neAdYkJw4v6mmDoSzmLSmTEEjXExUQFYqK7qLQdu8amWvamsH8PFRq1qbHd?cluster=devnet
+mirrored 12 Limitless holders, batch 1 (encrypted) https://explorer.solana.com/tx/2ARfSKtFxS7hA2VhzUcRvftnUFPE27V2ghz4NKAQhWEDYv9zzKfPGqZMSDVe35Jepgjj335i8bvAGCxj2dst9qYJ?cluster=devnet
+mirrored 12 Limitless holders, batch 2 (encrypted) https://explorer.solana.com/tx/4fgjqhD5ds4t1KosJuaBCwWgMG8PdKgsdJyqkDx1yNFQ3xgVM7nxiAMPJzF5HuijVdTJF79495KFZkDmxBERcKns?cluster=devnet
+cast juror A (real Limitless holder) YES https://explorer.solana.com/tx/5VoVGipMXoari5wCeoLWM9mJD5semk3B5zTiihtUJCGnzxEeuknc2HMRJThBGoLQtJi5qsKYELNpnB2iGe2X95Xo?cluster=devnet
+cast juror B (clean, 0 shares) NO https://explorer.solana.com/tx/UPJS9gnQMHgSWSxz7E93WQpn5hn4BSxpuNuLo27AxtSiZqFcry7Rp2gWQZVdBUUiVeVicvGpnhFf8vfpZfzwcg6?cluster=devnet
+cast juror C (clean, 0 shares) NO https://explorer.solana.com/tx/xUYTcRKE7FBtpZza6KYJCr5yd6kj5H7JQXvEhdooMxrQCcf8NsYSuJKkhrjgsZqmDPFWNbgQg9Ao3sPbQX9dzQf?cluster=devnet
+verdict {"yes":0,"no":2,"excluded":1,"incomplete":false,"outcome":"NO"} https://explorer.solana.com/tx/3KSWxCTd3LN37CizsTKTw4nSg2oUshDL7UXu8HKsVmJUrQ38v6auzZBU7SorszJvVjXqEHWoyU6XKp23uadCV5WS?cluster=devnet
+devnet SOL spent 0.06760
+
+=== 2026-10-12T16:14:47.825Z attest court BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr (emitter 6hrzcMmM16aUh5D1YkaVvPoQ2q532Acb2PC8yU935ABq = 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238)
+solana tx: https://explorer.solana.com/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?cluster=devnet
+wormhole sequence 1; waiting for the guardian signature (Solana finality ~15 s) ...
+VAA: https://wormholescan.io/#/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?network=Testnet  (api https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/1)
+court BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr; VAA from Solana tx 5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 1)
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.001943858450602037 ETH; disputer 0x1f85Ce34e545fd0B0a42433CFCbd68331fcefCAE
+SaringArbitrator 0x384822075dc735ea7de0b8417c9b4403bb9d682a (https://sepolia.basescan.org/address/0x384822075dc735ea7de0b8417c9b4403bb9d682a); wormhole 0x79A1027a6A159502049F10906D333EC57E95F083, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+askQuestion: https://sepolia.basescan.org/tx/0x456bcd7aa9c131aceb63e2bfcf836193a7cc2b4d8f71529e8ab084aa54255133
+question_id 0x9c1fd757056eba950758ca3ba4b92222ee333a0198dfe6999e12027956c6baaf
+submitAnswerYES: https://sepolia.basescan.org/tx/0x7a533ada6a193f2f70d9fe562feafddc805cdfcb90ba518075e9da67e2f2cd0f
+requestArbitration: https://sepolia.basescan.org/tx/0x7be4eb4b6d850b91e0c9352e6e3e1e21d584dc918cdde2308d0a87adaf48d74e
+bindCourt: https://sepolia.basescan.org/tx/0xa21194e6303484b901f51d71f12aee8f060ec0dbbf7285b639c991363071a130
+ruleWithVaa: https://sepolia.basescan.org/tx/0x8147296f09df926865aeba6eb35215995d896c6ebbae26482fe09737033b44d2
+Reality.eth isFinalized=true resultFor=0x0000000000000000000000000000000000000000000000000000000000000000
+claimWinnings: https://sepolia.basescan.org/tx/0xc2357b444302566f3217fd0672a275c56c0480bb82bff25836fc08ba07b82147
+disputer Reality.eth balance 0 ETH
+withdraw: https://sepolia.basescan.org/tx/0xbceb11a26591e62c66b3a250e3e50546588c26b1faac39fbfecd3928f6f43042
+Reality.eth question 0x9c1fd757056eba950758ca3ba4b92222ee333a0198dfe6999e12027956c6baaf on arbitrator 0x384822075dc735ea7de0b8417c9b4403bb9d682a: resultFor = 0x0000000000000000000000000000000000000000000000000000000000000000
+

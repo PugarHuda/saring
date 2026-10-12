@@ -25,3 +25,13 @@ VAA: https://wormholescan.io/#/tx/5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHj
   Program log: Sequence: 1
   Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq consumed 44206 of 200000 compute units
   Program DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq success
+
+=== 2026-10-12T16:14:47.825Z attest court BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr (emitter 6hrzcMmM16aUh5D1YkaVvPoQ2q532Acb2PC8yU935ABq = 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238)
+solana tx: https://explorer.solana.com/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?cluster=devnet
+wormhole sequence 1; waiting for the guardian signature (Solana finality ~15 s) ...
+VAA: https://wormholescan.io/#/tx/5C5cb2Hs37Jb6acmy8zkhrdhLUszuW6potuZqKjVZVDryDjjXsbA64XvWSeU3JMdunCBi1Eh32XWtC3smofCjKJm?network=Testnet  (api https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/1)
+
+=== 2026-10-12T16:15:06.783Z attest court H7BdJraNzvNQBS6WaYxiaSK9jGrAFqVKfVVaNHSvNKU1 (emitter 6hrzcMmM16aUh5D1YkaVvPoQ2q532Acb2PC8yU935ABq = 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238)
+solana tx: https://explorer.solana.com/tx/5RHLwLv5w4qUf2wjsj4sLLzNpRFPyUD96RmPBJaf5g4M4urCPAj5mFKjinBTKPem48T6DYdQZLKeHP3fPcEQGmmq?cluster=devnet
+wormhole sequence 2; waiting for the guardian signature (Solana finality ~15 s) ...
+VAA: https://wormholescan.io/#/tx/5RHLwLv5w4qUf2wjsj4sLLzNpRFPyUD96RmPBJaf5g4M4urCPAj5mFKjinBTKPem48T6DYdQZLKeHP3fPcEQGmmq?network=Testnet  (api https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/2)

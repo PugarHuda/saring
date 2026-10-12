@@ -4,6 +4,7 @@
  * -> disputer pays requestArbitration -> bind court -> ruleWithVaa(guardian-signed VAA) -> claimWinnings + withdraw.
  *
  *   npx tsx flow-reality.ts [court]        (RPC_URL_EVM=http://127.0.0.1:8545 for an anvil-fork dry run)
+ *   ARB=0x.. npx tsx flow-reality.ts [court]   reuse a deployed SaringArbitrator (owner = deployer) instead of deploying
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -14,7 +15,6 @@ import { attest, EMITTER } from "./attest";
 
 const REALITY = "0x86b653Dc9aa6d7311109276925927087573f91CB" as const; // reality.eth deployments/84532/ETH/RealityETH-3.0.json
 const CORE = "0x79A1027a6A159502049F10906D333EC57E95F083" as const; // Wormhole core, Base Sepolia (testnet)
-const COURT = process.argv[2] ?? "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb";
 const EXPLORER = "https://sepolia.basescan.org";
 const FEE = parseEther("0.00001");
 const BOND = parseEther("0.00002");
@@ -32,7 +32,8 @@ const realityAbi = parseAbi([
   "event LogNewQuestion(bytes32 indexed question_id, address indexed user, uint256 template_id, string question, bytes32 indexed content_hash, address arbitrator, uint32 timeout, uint32 opening_ts, uint256 nonce, uint256 created)",
 ]);
 
-async function main() {
+/** Full dispute for `COURT`. `question` defaults to the demo text; `arb` reuses an arbitrator instead of deploying one. */
+export async function main(COURT: string, question?: string, arb?: Address) {
   const log = logger(__dirname, "flow-base");
   const { pub, wallet } = clients(baseSepolia, "deployer");
   const dsp = clients(baseSepolia, "disputer").wallet;
@@ -53,14 +54,13 @@ async function main() {
 
   const art = artifact(path.join(__dirname, "..", "base"), "SaringArbitrator");
   const emitter = toHex(EMITTER.toBytes());
-  const dep = await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, account("relayer").address, FEE, CORE, emitter] }));
-  const ARB = dep.contractAddress as Address;
+  const ARB = arb ?? ((await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, account("relayer").address, FEE, CORE, emitter] }))).contractAddress as Address);
   log(`SaringArbitrator ${ARB} (${EXPLORER}/address/${ARB}); wormhole ${CORE}, saringEmitter ${emitter}`);
 
   if ((await pub.getBalance({ address: disputer })) < parseEther("0.0001"))
     await send("fundDisputer", wallet.sendTransaction({ to: disputer, value: parseEther("0.0002") }));
 
-  const question = `Saring x Wormhole demo: is the claim judged by Saring court ${COURT} true? ${new Date().toISOString()}␟saring␟en`;
+  question ??= `Saring x Wormhole demo: is the claim judged by Saring court ${COURT} true? ${new Date().toISOString()}␟saring␟en`;
   const ask = await send("askQuestion", wallet.writeContract({ address: REALITY, abi: realityAbi, functionName: "askQuestion", args: [0n, question, ARB, 86400, 0, BigInt(Date.now())] }));
   const ev = ask.logs.map((l) => { try { return decodeEventLog({ abi: realityAbi, ...l }); } catch { return null; } }).find((e) => e?.eventName === "LogNewQuestion");
   const qid = (ev!.args as any).question_id as Hex;
@@ -69,11 +69,11 @@ async function main() {
   await send("submitAnswerYES", wallet.writeContract({ address: REALITY, abi: realityAbi, functionName: "submitAnswer", args: [qid, YES, 0n], value: BOND }));
   await send("requestArbitration", dsp.writeContract({ address: ARB, abi: art.abi, functionName: "requestArbitration", args: [qid, BOND], value: FEE }));
   await send("bindCourt", wallet.writeContract({ address: ARB, abi: art.abi, functionName: "bindCourt", args: [qid, courtToBytes32(COURT)] }));
-  await finish(ARB, qid, att.vaa);
+  return { ARB, qid, ...(await finish(ARB, qid, att.vaa, COURT)) };
 }
 
 /** After bindCourt. Resume a run with `ARB=0x.. QID=0x.. npx tsx flow-reality.ts`. */
-async function finish(ARB: Address, qid: Hex, vaa: Hex) {
+export async function finish(ARB: Address, qid: Hex, vaa: Hex, COURT: string) {
   const log = logger(__dirname, "flow-base");
   const { pub, wallet } = clients(baseSepolia, "deployer");
   const dsp = clients(baseSepolia, "disputer").wallet;
@@ -107,10 +107,14 @@ async function finish(ARB: Address, qid: Hex, vaa: Hex) {
   await send("claimWinnings", dsp.writeContract({ address: REALITY, abi: realityAbi, functionName: "claimWinnings", args: [qid, [h1, ZERO32], [disputer, me], [0n, BOND], [answer, YES]] }));
   log(`disputer Reality.eth balance ${formatEther(await pub.readContract({ address: REALITY, abi: realityAbi, functionName: "balanceOf", args: [disputer] }))} ETH`);
   await send("withdraw", dsp.writeContract({ address: REALITY, abi: realityAbi, functionName: "withdraw" }));
+  return { answer };
 }
 
-const resume = () => finish(process.env.ARB as Address, process.env.QID as Hex, JSON.parse(fs.readFileSync(path.join(__dirname, "out", `vaa-${COURT}.json`), "utf8")).vaa);
-(process.env.QID ? resume() : main()).catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (require.main === module) {
+  const COURT = process.argv[2] ?? "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb";
+  const resume = () => finish(process.env.ARB as Address, process.env.QID as Hex, JSON.parse(fs.readFileSync(path.join(__dirname, "out", `vaa-${COURT}.json`), "utf8")).vaa, COURT);
+  (process.env.QID ? resume() : main(COURT, undefined, process.env.ARB as Address | undefined)).catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
