@@ -1,0 +1,42 @@
+{
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "verifiedWith": "UFVK in a view-only wallet (no spending key)",
+  "minBond": "0.01000000 TAZ",
+  "allowlist": [
+    "b8d4f9086abffc0e767cc6a9405a4040d8d91db79183afdc33a6218c09de6393",
+    "3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+    "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e"
+  ],
+  "bonds": [
+    {
+      "commitment": "b8d4f9086abffc0e767cc6a9405a4040d8d91db79183afdc33a6218c09de6393",
+      "seatKey": "3mK2rdKKcffi9VbNGfs4b6VBRQC39fAjzfh9oceLQNDz",
+      "zat": 1000000,
+      "time": 1791821839,
+      "txids": [
+        "b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8"
+      ],
+      "amount": "0.01000000 TAZ"
+    },
+    {
+      "commitment": "3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+      "seatKey": "4MZEmGU2PUJmR4BrH1YcsR6iBYknQSsZgLu2XGAPaPF6",
+      "zat": 1000000,
+      "time": 1791821839,
+      "txids": [
+        "7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8"
+      ],
+      "amount": "0.01000000 TAZ"
+    },
+    {
+      "commitment": "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+      "seatKey": "DAUSo6C5sJWo8qFKM5b35u5EAF3fUK6ok8QMoJYWRGXB",
+      "zat": 1000000,
+      "time": 1791821839,
+      "txids": [
+        "d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233"
+      ],
+      "amount": "0.01000000 TAZ"
+    }
+  ]
+}

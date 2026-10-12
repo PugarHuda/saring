@@ -1,57 +1,30 @@
-juror1 attempt 1: Error: Insufficient balance (have 0, need 1010000 including fee)
 {
   "juror": "juror1",
-  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
-  "commitment": "3da1ca63e643eda177a662e890788e20f19a344d378dc5e19262aed6e3d5fd7e",
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "commitment": "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+  "seatKey": "DAUSo6C5sJWo8qFKM5b35u5EAF3fUK6ok8QMoJYWRGXB",
   "bond": "0.01000000 TAZ",
-  "txid": "5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e",
-  "explorer": "https://testnet.zecblock.com/tx/5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e",
-  "at": "2026-10-12T10:10:40.009Z"
+  "txid": "d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233",
+  "explorer": "https://testnet.zecblock.com/tx/d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233",
+  "at": "2026-10-12T16:15:56.875Z"
 }
-juror2 attempt 1: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 2: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 3: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 4: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 5: Error: code: 'Unknown error', message: "transport error", source: tonic::transport::Error(Transport, hyper::Error(Io, Custom { kind: UnexpectedEof, error: "peer closed connection without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof" }))
-juror2 attempt 6: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 7: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 8: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 9: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 10: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 11: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 12: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 13: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 14: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 15: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 16: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 17: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 18: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 19: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 20: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 21: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 22: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 23: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 24: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 25: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 26: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 27: Error: Insufficient balance (have 0, need 1010000 including fee)
-juror2 attempt 28: Error: Insufficient balance (have 0, need 1010000 including fee)
 {
   "juror": "juror2",
-  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
-  "commitment": "baabb70b0393cda1a38e6a36551fc4ccde8036cd09703d10c4ccb8eb7eaef9d8",
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "commitment": "3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+  "seatKey": "4MZEmGU2PUJmR4BrH1YcsR6iBYknQSsZgLu2XGAPaPF6",
   "bond": "0.01000000 TAZ",
-  "txid": "971faa3c8a8c18afd738549333f51c29c2474d27f9630d3dc804d70d19b78c57",
-  "explorer": "https://testnet.zecblock.com/tx/971faa3c8a8c18afd738549333f51c29c2474d27f9630d3dc804d70d19b78c57",
-  "at": "2026-10-12T10:27:35.832Z"
+  "txid": "7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8",
+  "explorer": "https://testnet.zecblock.com/tx/7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8",
+  "at": "2026-10-12T16:16:07.527Z"
 }
 {
   "juror": "juror3",
-  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
-  "commitment": "95a632656cb859ee6338206b6ead90fc17b7f3a516113ca0663ea575a32d532b",
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "commitment": "b8d4f9086abffc0e767cc6a9405a4040d8d91db79183afdc33a6218c09de6393",
+  "seatKey": "3mK2rdKKcffi9VbNGfs4b6VBRQC39fAjzfh9oceLQNDz",
   "bond": "0.01000000 TAZ",
-  "txid": "e6c5ef6943b2735a782eae77cb72e9fa17f44c737f6a7afc748d2426c68b207b",
-  "explorer": "https://testnet.zecblock.com/tx/e6c5ef6943b2735a782eae77cb72e9fa17f44c737f6a7afc748d2426c68b207b",
-  "at": "2026-10-12T10:27:46.762Z"
+  "txid": "b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8",
+  "explorer": "https://testnet.zecblock.com/tx/b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8",
+  "at": "2026-10-12T16:16:17.465Z"
 }
-registered juror4, commitment de731c4daed138bbb86f8492f0db829820c6bf51319ddf7b05c965c6bc9b9696, no bond posted

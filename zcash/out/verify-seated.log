@@ -1,0 +1,17 @@
+# Saring court 8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm
+
+Verdict on chain: yes 0, no 2, excluded 0 -> **NO**. Slashed: 0.01000000 TAZ. Result: **ALL CHECKS PASS**.
+
+| juror commitment | bond | bond tx | seat tx | cast tx | status | refund | reward | payout tx |
+|---|---|---|---|---|---|---|---|---|
+| `b8d4f9086abf…` | 0.01000000 TAZ | [b3adcffe…](https://testnet.zecblock.com/tx/b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8) | [5Mk4Ytcx…](https://explorer.solana.com/tx/5Mk4YtcxW4yoQxBsH31EJeQ5eYB9Bqg24PT4EYEeneGEDiNLHZ6VWd7qBvXKJfJR3xKgcYNGziZPqjMyfDh4SqPv?cluster=devnet) | - | NO-SHOW (slashed) | - | - | - |
+| `373028515419…` | 0.01000000 TAZ | [7ef24c11…](https://testnet.zecblock.com/tx/7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8) | [3tx81A39…](https://explorer.solana.com/tx/3tx81A396XEXoVx6guk6iDbohTbNmgCdWk5qB665gA6oKpkASN41CQSxxEMT4vGhWx11Axv9MwVzJAtQuoxQUYhQ?cluster=devnet) | [5nRmJLgk…](https://explorer.solana.com/tx/5nRmJLgkGurYWCGKvFRUHtcswLu8VVzhjMfmwLvHwgFjPGVULSViHunFQVXRzj7Wyg6harDLCgnRiaztnBc4NAZs?cluster=devnet) | voted | - | - | - |
+| `540ef5c66bf2…` | 0.01000000 TAZ | [d1148bfd…](https://testnet.zecblock.com/tx/d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233) | [28cmeuTt…](https://explorer.solana.com/tx/28cmeuTtyT4wbpY4DvaVVEs1NJgMupYFnEP2LDuBLwqopBnGL9YQBpoH5JzBJmccbG4uEYrJ1UBh7cSveVcH3CSV?cluster=devnet) | [5FoeZ1FG…](https://explorer.solana.com/tx/5FoeZ1FGMGobrWrN5Sif58LT6scJqmEV9Vo14ZT5qBzxRHExFwQ92nPhxAtDnPfgGRU79KMVAiRBPLtXMWvfDq3p?cluster=devnet) | voted | - | - | - |
+
+| check | result |
+|---|---|
+| seat 540ef5c66bf2 has a bond >= 0.01000000 TAZ naming its seat key, mined before seating | pass |
+| seat 373028515419 has a bond >= 0.01000000 TAZ naming its seat key, mined before seating | pass |
+| seat b8d4f9086abf has a bond >= 0.01000000 TAZ naming its seat key, mined before seating | pass |
+| seats that cast == ballots in the on-chain tally (yes+no+excluded) | pass |
+

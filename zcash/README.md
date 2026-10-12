@@ -1,107 +1,123 @@
-# Saring x Zcash: shielded juror bonds and rewards
+# Saring x Zcash: shielded juror bonds, slashing, and committed payouts
 
 Saring is a conflict-blind jury for prediction-market disputes (Solana devnet program
 `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`, ballots tallied in Arcium MPC, jurors who hold
 a position in the disputed market are dropped inside MPC). This folder moves the jury's
-money to Zcash: jurors post a **bond** and receive their **refund + reward** as shielded ZEC
-with encrypted memos. A briber who watches Solana sees commitments and an aggregate verdict;
-a briber who watches Zcash sees opaque shielded actions. Neither chain links a payment to a
-juror, an amount, or a vote, so "pay me later if you vote YES" cannot be checked from outside.
+money to Zcash. Jurors post a shielded **bond**. Jurors who vote get it back, and counted jurors
+get a **reward**. A juror who is seated and never votes is **slashed**, and the forfeited bond goes
+to the jurors who did vote. Every payment is shielded ZEC with an encrypted memo. A briber watching
+Solana sees commitments and an aggregate verdict; one watching Zcash sees opaque shielded actions.
 
-Everything below ran on Zcash testnet (NU7 / Ironwood pool) and Solana devnet. No mocks.
+Everything below ran on Zcash testnet (NU7, Ironwood pool) and Solana devnet. No mocks.
 
-## Flow
+## Design
 
-| step | script | chain |
+Identifiers:
+
+- `c = sha256(jurorId_le32 ‖ salt ‖ court)`: the juror's commitment, fresh per court so it can't be linked across courts.
+- **seat key**: a fresh Solana keypair per juror per court, not linked to the juror's identity.
+- **payout address**: the Orchard-family receiver of the juror's UA. A payment lands there, and a
+  viewing key recovers exactly that string from an outgoing note.
+- `u = sha256("saring-ua:" ‖ court ‖ ":" ‖ c ‖ ":" ‖ address)`: the payout-address commitment.
+  A UA carries enough entropy that it can't be brute-forced, so it needs no salt.
+
+| step | what happens | where | script |
+|---|---|---|---|
+| 1 | operator opens a court | Solana | `court.ts open` |
+| 2 | operator publishes its **UFVK** (viewing key, cannot spend) | repo | `audit.ts publish-key` |
+| 3 | juror bonds 0.01 TAZ from its own wallet. Memo `saring-bond:<court>:<c>:<seat key>`, encrypted to the operator. The juror wrote this memo, so only that seat key can act for `c`. | Zcash | `bond.ts` |
+| 4 | operator verifies bonds with a view-only wallet and builds the allowlist | Zcash | `verify-bonds.ts` |
+| 5 | **seat**: the `add_juror` tx also carries an SPL memo `saring-seat:<c>:<u>` that the seat key signs. The payout address is committed on chain by the juror, in the same tx that seats it. | Solana + MPC | `court.ts seat` |
+| 6 | **cast**: the `cast` tx carries the memo `saring-cast:<c>`, signed by the same seat key. Who voted becomes public; how they voted stays encrypted. | Solana + MPC | `court.ts seat` |
+| 7 | **payout**: the operator rebuilds seats and casts from the court account's own transactions and requires `#cast == yes+no+excluded`. Seated jurors who never cast are slashed. Voters get their bond back. Counted voters get `REWARD + slashed/#counted`. Every output must go to an address that opens `u`, otherwise nothing is paid. Everything goes out in one shielded tx with memos `saring-refund:<court>:<c>` and `saring-reward:<court>:<verdict>:<c>`. | Zcash | `payout.ts` |
+| 8 | **verify**: anyone imports the published UFVK into a fresh view-only wallet and rechecks everything against Solana. Output is a JSON + markdown report that holds hashes and booleans, never addresses. | both | `audit.ts verify` |
+
+The policy is one pure function (`zec.ts payoutPolicy`). It is self-tested and used by `payout.ts`;
+`audit.ts verify` recomputes the expected amounts independently.
+
+## Trust model, before → after
+
+| concern | v1 (previous run) | v2 (this run) |
 |---|---|---|
-| 1. operator opens a court | `court.ts open "<question>"` | Solana devnet |
-| 2. juror registers: random salt, `commitment = sha256(jurorId_le32 ‖ salt)`; operator privately learns `{jurorId, salt, UA}` | `bond.ts <wallet> <court> [--register-only]` | off-chain |
-| 3. juror posts a 0.01 TAZ bond to the operator's Unified Address, memo `saring-bond:<court>:<commitment>` (encrypted to the operator) | `bond.ts <wallet> <court>` | Zcash |
-| 4. operator verifies bonds with a **view-only** wallet (UFVK, no spending key) and builds the allowlist | `verify-bonds.ts <court>` | Zcash (trial decryption) |
-| 5. only bonded commitments are seated; ballots cast and tallied in MPC; conflicted ballots dropped | `court.ts seat <court> [conflicted]` | Solana devnet + Arcium |
-| 6. operator reads the verdict from chain (`sdk/src/venue.ts readCourtVerdict`), cross-checks its seating record against the on-chain tally, then pays everything in **one** shielded tx: bond refund to every bonded juror (`saring-refund:<court>`), reward to every counted juror (`saring-reward:<court>:<verdict>`). Conflicted jurors get the refund, no reward. Refuses to pay a court twice. | `payout.ts <court>` | Zcash |
-| 7. juror sees amount + decrypted memo in their own wallet; an auditor given the operator's UFVK rebuilds the whole ledger; anyone else sees only shielded actions | `audit.ts juror <w>` / `audit.ts auditor` / `audit.ts public <txid…>` | Zcash |
-
-Slashing is not implemented: every bond is refunded. No bond means no seat (juror4 in the run).
-A conflicted juror loses only the reward. Slashing a no-show would just mean leaving its bond
-out of the payout, since the operator already holds it.
+| where rewards go | operator's private juror→UA map; it could pay itself | the juror commits `u` on Solana with a key named in its own bond memo; the operator pays only an address that opens `u`; the verifier checks every output |
+| who gets slashed | nobody; every bond refunded | derived from on-chain state: seats whose seat-key-signed `cast` never appeared on the court; requires `#cast == yes+no+excluded` |
+| bond checks | the operator alone | anyone with the published UFVK: bond amount, seat key matches the seat-memo signer, bond mined before seating |
+| payout checks | the operator's own ledger | anyone with the published UFVK: per-juror refund equals the bond, no-shows got nothing, reward count `== yes+no`, reward amount `== base + slashed/counted`, verdict in memo `==` chain, recipient opens `u` |
+| what stays trusted | | which voters were **conflicted** (MPC reveals only the count; the verifier checks the count, the operator picks who). The operator still has to *send* the payout (it can stall, but it can't redirect without failing verification). Liveness of MPC callbacks. |
 
 ## What is public vs private
 
-| | Solana devnet (anyone) | Zcash explorer (anyone) | operator (UFVK) | juror (own wallet) |
+| | Solana devnet (anyone) | Zcash explorer (anyone) | UFVK holder (verifier) | juror |
 |---|---|---|---|---|
-| juror identity | commitment / jurorId only | nothing | jurorId ↔ UA map | itself |
-| individual votes | encrypted, never revealed | nothing | nothing (MPC) | own vote |
-| who was conflicted | count only (`excluded`) | nothing | yes (it scripted the demo) | n/a |
-| bond amounts | nothing | nothing (net pool balance = fee) | yes | own |
-| reward amounts / recipients | nothing | nothing | yes | own |
-| memos (court, verdict) | n/a | nothing | yes | own |
-| verdict | yes | nothing | yes | yes (memo) |
+| juror identity | `c` and seat key only (jurorId is encrypted to the MXE) | nothing | `c` | itself |
+| votes | encrypted; who cast is public | nothing | nothing | own vote |
+| payout address | `u` (a hash) | nothing | the Orchard receiver it paid | own |
+| bond / payout amounts, memos | nothing | nothing (net value balance = fee) | yes | own |
+| verdict | yes | nothing | yes | memo |
 
-`out/public-view.json` is the explorer API's decoding of each tx: zero transparent inputs or
-outputs, N Ironwood actions, and a net shielded value balance equal to the fee.
+Publishing the UFVK opens the **operator's** ledger to the public verifier. Jurors stay pseudonymous
+(`c` and seat key). The verify report itself never contains an address.
 
 ## Run it
 
-Needs: `zcash-devtool` (librustzcash light wallet) built with the NU7 testnet patch at
-`~/tools/zcash-devtool/target/release/zcash-devtool`; wallets `operator`, `juror1..4` created
-with `zcash-devtool wallet -w ~/.saring-zcash/<name> init --network test ...` (seed encrypted
-to `~/.saring-zcash/<name>.age`); devnet SOL in `~/.config/solana/id.json`; TAZ from
-https://faucet.testnet.valargroup.dev (0.125 TAZ/day).
+You need: `zcash-devtool` built with the NU7 testnet patch at `~/tools/zcash-devtool/target/release/zcash-devtool`,
+wallets `operator` and `juror1..4` in `~/.saring-zcash` (seeds age-encrypted), devnet SOL, and TAZ from
+https://faucet.testnet.valargroup.dev.
 
 ```bash
-alias zr='node_modules/.bin/ts-node --transpile-only -O "{\"module\":\"commonjs\",\"esModuleInterop\":true}"'
-zr zcash/zec.ts                              # self-check (memo decoding, commitments)
-zr zcash/court.ts open "Saring x Zcash: did the bonded jury convene?"
-zr zcash/seed-demo-wallets.ts                # demo only: faucet-funded juror1 seeds the others
+alias zr='node_modules/.bin/ts-node --transpile-only -O "{\"module\":\"commonjs\",\"resolveJsonModule\":true,\"esModuleInterop\":true}"'
+zr zcash/zec.ts                                   # self-check: memos, commitments, slashing policy
+zr zcash/court.ts open "Saring x Zcash v2: slashing + committed payouts"
+zr zcash/audit.ts publish-key                     # out/operator-viewing-key.json (UFVK only)
 for j in juror1 juror2 juror3; do zr zcash/bond.ts $j <court>; done
-zr zcash/bond.ts juror4 <court> --register-only   # registers, never bonds -> never seated
 zr zcash/verify-bonds.ts <court>
-zr zcash/court.ts seat <court> juror3        # juror3 plays the conflicted juror
+zr zcash/court.ts seat <court> --noshow juror3    # juror4 has no bond -> not seated
+zr zcash/audit.ts verify <court>                  # anyone: bonds vs seats, before payout
 zr zcash/payout.ts <court>
+zr zcash/audit.ts verify <court>                  # anyone: payouts, slashing, commitments
 zr zcash/audit.ts juror juror1; zr zcash/audit.ts auditor; zr zcash/audit.ts public <txid...>
 ```
 
-## The run (Oct 12 2026)
+## The run (Oct 12 2026, v2)
 
-Court `HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM` (courtId 1582894422), Solana devnet.
-Four jurors registered, three bonded, juror3 played the conflicted juror.
+Court [`8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm`](https://explorer.solana.com/address/8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm?cluster=devnet)
+(courtId 47423838). juror1..3 bonded and were seated. juror3 never voted. juror4 registered without bonding and was not seated.
 
 | what | tx |
 |---|---|
-| demo seeding (juror1 → juror2, juror3, operator) | [0d72ed66…547e](https://testnet.zecblock.com/tx/0d72ed66d770a2f9c043f2d6026d063195dfaafa96f6875eb065b3377c2b547e) |
-| bond juror1, 0.01 TAZ | [5edea8ce…902e](https://testnet.zecblock.com/tx/5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e) |
-| bond juror2, 0.01 TAZ | [971faa3c…8c57](https://testnet.zecblock.com/tx/971faa3c8a8c18afd738549333f51c29c2474d27f9630d3dc804d70d19b78c57) |
-| bond juror3, 0.01 TAZ | [e6c5ef69…207b](https://testnet.zecblock.com/tx/e6c5ef6943b2735a782eae77cb72e9fa17f44c737f6a7afc748d2426c68b207b) |
-| juror4 | registered, no bond, not seated, received nothing |
-| seat / cast / resolve | Solana devnet links in `out/court-HRA5….json` ([resolve](https://explorer.solana.com/tx/jDzuH11xH8TKDUX8KCunWrXUiAYxhwQDz78CFAjyZRrtDHw8XQPqmFWjHrpSiA5DwQKU1HgBjwU27kZ64ka8VX4?cluster=devnet)) |
-| verdict on chain | `yes 0, no 2, excluded 1, outcome NO` (juror3's YES dropped in MPC) |
-| payout: 3 refunds + 2 rewards, one tx, 0.04 TAZ | [752e543c…aa85](https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85) |
+| bond juror1 (`540ef5c6…`), 0.01 TAZ | [d1148bfd…d233](https://testnet.zecblock.com/tx/d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233) |
+| bond juror2 (`37302851…`), 0.01 TAZ | [7ef24c11…5de8](https://testnet.zecblock.com/tx/7ef24c11ae595f88ce1ba084dd8183057eca43bd03703fbece3cfa58f8475de8) |
+| bond juror3 (`b8d4f908…`), 0.01 TAZ | [b3adcffe…21f8](https://testnet.zecblock.com/tx/b3adcffe4650c690b85f75ff31558aeeee9a9f8ddf76cf075baf8f5c35ab21f8) |
+| seat + address commitment juror1 / juror2 / juror3 | [28cmeuTt…](https://explorer.solana.com/tx/28cmeuTtyT4wbpY4DvaVVEs1NJgMupYFnEP2LDuBLwqopBnGL9YQBpoH5JzBJmccbG4uEYrJ1UBh7cSveVcH3CSV?cluster=devnet) / [3tx81A39…](https://explorer.solana.com/tx/3tx81A396XEXoVx6guk6iDbohTbNmgCdWk5qB665gA6oKpkASN41CQSxxEMT4vGhWx11Axv9MwVzJAtQuoxQUYhQ?cluster=devnet) / [5Mk4Ytcx…](https://explorer.solana.com/tx/5Mk4YtcxW4yoQxBsH31EJeQ5eYB9Bqg24PT4EYEeneGEDiNLHZ6VWd7qBvXKJfJR3xKgcYNGziZPqjMyfDh4SqPv?cluster=devnet) |
+| cast juror1 / juror2 (juror3: none) | [5FoeZ1FG…](https://explorer.solana.com/tx/5FoeZ1FGMGobrWrN5Sif58LT6scJqmEV9Vo14ZT5qBzxRHExFwQ92nPhxAtDnPfgGRU79KMVAiRBPLtXMWvfDq3p?cluster=devnet) / [5nRmJLgk…](https://explorer.solana.com/tx/5nRmJLgkGurYWCGKvFRUHtcswLu8VVzhjMfmwLvHwgFjPGVULSViHunFQVXRzj7Wyg6harDLCgnRiaztnBc4NAZs?cluster=devnet) |
+| resolve: `yes 0, no 2, excluded 0 → NO` | [67Hbskrd…](https://explorer.solana.com/tx/67HbskRdN5a6p5UeEpxyMyQBtH9C66qADjiMcxE7JeMZkpHhW1o54YrBmsY3w6WGXK3F6eHdEeaYJJy26F5hgJsw?cluster=devnet) |
+| payout, one tx: 2 refunds of 0.01, 2 rewards of 0.01 (0.005 base + 0.005 slashed share); juror3 gets nothing | [9a7d57ae…755b](https://testnet.zecblock.com/tx/9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b) |
 
-Receiver side (`out/receipts-juror1.json`, juror1's own wallet):
-`0.005 TAZ  "saring-reward:HRA5…h7FM:NO"` and `0.01 TAZ  "saring-refund:HRA5…h7FM"`.
-juror3 (conflicted) got only the refund (`out/receipts-juror3.json`); juror4 got nothing.
+Public verifier report: [`out/verify-8bX2…GNFm.md`](out/verify-8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm.md)
+(and `.json`), produced from `out/operator-viewing-key.json` plus Solana alone. Pre-payout check: `out/verify-seated.log`.
+Receipts (juror1's own wallet, `out/receipts-juror1.json`): `0.01 TAZ "saring-refund:8bX2…GNFm:540ef5c6…"` and
+`0.01 TAZ "saring-reward:8bX2…GNFm:NO:540ef5c6…"`. `out/receipts-juror3.json` has nothing from this court.
+Auditor ledger (`out/audit.json`): 3 bonds = 0.03, 2 refunds = 0.02, 2 rewards = 0.02, kept/slashed 0.01.
+Explorer view (`out/public-view.json`): the payout is 5 Ironwood actions, 0 transparent inputs and outputs, and a net value
+balance of 0.00025 (the fee). No address, amount or memo is visible.
 
-Auditor with the operator's UFVK only (`out/audit.json`): 3 bonds = 0.03, 3 refunds = 0.03,
-2 rewards = 0.01, verdict in memos `NO`, refunds match bonds.
-
-Public view (`out/public-view.json`): the payout tx is 6 Ironwood actions, 0 transparent
-inputs/outputs, net value balance 0.0003 (the fee). No address, amount or memo.
-
-Logs: `out/bonds.log`, `out/verify-bonds.log`, `out/court-seat.log`, `out/payout.log`, `out/audit.log`.
+Previous run (v1, no slashing, no commitments): court `HRA5oPAf…h7FM`, payout
+[752e543c…aa85](https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85).
 
 ## Limits
 
-- Testnet only. The Zcash testnet ran the NU7 upgrade (new Ironwood shielded pool, tx v6);
-  stock `zcash-devtool` did not know the activation height, so it is built with a local patch.
-  Notes land in the **Ironwood** pool (Orchard-family actions). ZecBlock is the explorer that
-  follows the NU7 chain; testnet.zcashexplorer.app was stuck on the old fork.
-- The operator is trusted with the juror → UA map and the seating record (who was conflicted
-  in the scripted dispute). It cannot see votes (MPC), but it knows who it paid. A production
-  version would let each juror claim with a ZK proof of "my commitment was counted" instead.
-- Light-wallet sync only scans compact blocks, which carry no memos; `zec.ts` runs
-  `enhance` after `sync` to fetch full transactions so memos decrypt.
-- Bridging is out of scope: the court lives on Solana, the money on Zcash, and the operator
-  is the bridge (reads the Solana verdict, signs the Zcash payout).
-- Demo wallets were seeded from one faucet drip (`out/seed-demo-wallets.json`); in practice
-  each juror funds its own wallet.
+- Testnet only. The testnet ran NU7 (Ironwood pool, tx v6), so `zcash-devtool` is built with a local
+  activation-height patch. ZecBlock is the explorer that follows that chain.
+- **Conflicted jurors are picked by the operator.** MPC publishes only `excluded`. The verifier checks
+  that count and that conflicted jurors were voters, but can't tell which voters they were. Fixing
+  this needs MPC to output per-seat flags encrypted to each seat.
+- A juror who casts a ballot with a wrong key "shows up" on chain while MPC silently ignores the
+  ballot. Then `#cast != yes+no+excluded`, and payout refuses to slash anyone until that is resolved by hand.
+- The demo holds every juror's keys (seat keys, wallets) on one machine. In production each juror holds
+  its own key and co-signs the operator-paid seat and cast transactions.
+- Publishing the operator UFVK exposes all of that operator account's history. A production version
+  would use one account per court (one key per court).
+- The operator still sends the payout. It can stall, but it can't redirect or skip a juror without the
+  public verifier flagging it. Slashed-share dust (`slashed mod #counted` zatoshis) stays with the operator.
+- A lightwalletd broadcast failure leaves a created tx in the wallet until it expires. `payout.ts` treats expired
+  unmined txs as not paid, so a rerun after expiry is safe (this happened once in this run).

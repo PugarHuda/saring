@@ -1,0 +1,26 @@
+{
+  "courtId": 47423838,
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "question": "Saring x Zcash v2: slashing + committed payouts",
+  "open": {
+    "queue": "https://explorer.solana.com/tx/66bLkzMNMdX33w57SYZsM81ccPEbbS1fgfvcJJBTqiBnNNoZsbMVKjG1KGPYzJhHy8YEH2MvQ6bDp4jffFy8BQQJ?cluster=devnet",
+    "callback": "https://explorer.solana.com/tx/53MLUbctKu36HEoVZAjtdwyfEZDxnQvBbNbyyHAbLAGr4fHVG83cUatvWYYp6ZLMj5KXNbqcQ8gih5wFNCnMC4nR?cluster=devnet"
+  },
+  "seatedCount": 3,
+  "notSeatedCount": 1,
+  "txs": {
+    "seat 540ef5c66bf2": "https://explorer.solana.com/tx/28cmeuTtyT4wbpY4DvaVVEs1NJgMupYFnEP2LDuBLwqopBnGL9YQBpoH5JzBJmccbG4uEYrJ1UBh7cSveVcH3CSV?cluster=devnet",
+    "seat 373028515419": "https://explorer.solana.com/tx/3tx81A396XEXoVx6guk6iDbohTbNmgCdWk5qB665gA6oKpkASN41CQSxxEMT4vGhWx11Axv9MwVzJAtQuoxQUYhQ?cluster=devnet",
+    "seat b8d4f9086abf": "https://explorer.solana.com/tx/5Mk4YtcxW4yoQxBsH31EJeQ5eYB9Bqg24PT4EYEeneGEDiNLHZ6VWd7qBvXKJfJR3xKgcYNGziZPqjMyfDh4SqPv?cluster=devnet",
+    "cast 540ef5c66bf2": "https://explorer.solana.com/tx/5FoeZ1FGMGobrWrN5Sif58LT6scJqmEV9Vo14ZT5qBzxRHExFwQ92nPhxAtDnPfgGRU79KMVAiRBPLtXMWvfDq3p?cluster=devnet",
+    "cast 373028515419": "https://explorer.solana.com/tx/5nRmJLgkGurYWCGKvFRUHtcswLu8VVzhjMfmwLvHwgFjPGVULSViHunFQVXRzj7Wyg6harDLCgnRiaztnBc4NAZs?cluster=devnet",
+    "resolve": "https://explorer.solana.com/tx/67HbskRdN5a6p5UeEpxyMyQBtH9C66qADjiMcxE7JeMZkpHhW1o54YrBmsY3w6WGXK3F6eHdEeaYJJy26F5hgJsw?cluster=devnet"
+  },
+  "verdict": {
+    "yes": 0,
+    "no": 2,
+    "excluded": 0,
+    "incomplete": false,
+    "outcome": "NO"
+  }
+}

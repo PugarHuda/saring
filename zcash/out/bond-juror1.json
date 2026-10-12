@@ -1,9 +1,10 @@
 {
   "juror": "juror1",
-  "court": "HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
-  "commitment": "3da1ca63e643eda177a662e890788e20f19a344d378dc5e19262aed6e3d5fd7e",
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "commitment": "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+  "seatKey": "DAUSo6C5sJWo8qFKM5b35u5EAF3fUK6ok8QMoJYWRGXB",
   "bond": "0.01000000 TAZ",
-  "txid": "5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e",
-  "explorer": "https://testnet.zecblock.com/tx/5edea8cec97f12eb584a366e4705b951bce6c07eb48067d9fdd643c339f8902e",
-  "at": "2026-10-12T10:10:40.009Z"
+  "txid": "d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233",
+  "explorer": "https://testnet.zecblock.com/tx/d1148bfd1f69c7f4450959c5d4fcb09e0e3589b1a812bfe6dfe14375a880d233",
+  "at": "2026-10-12T16:15:56.875Z"
 }

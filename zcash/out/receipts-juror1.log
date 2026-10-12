@@ -22,5 +22,21 @@
     "amount": "0.01000000 TAZ",
     "memo": "saring-refund:HRA5oPAf4HPqKUu4sj3FpWDzuhvSJPDRD2xajSgLh7FM",
     "explorer": "https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85"
+  },
+  {
+    "txid": "9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b",
+    "height": 4492767,
+    "pool": "ironwood",
+    "amount": "0.01000000 TAZ",
+    "memo": "saring-refund:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+    "explorer": "https://testnet.zecblock.com/tx/9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b"
+  },
+  {
+    "txid": "9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b",
+    "height": 4492767,
+    "pool": "ironwood",
+    "amount": "0.01000000 TAZ",
+    "memo": "saring-reward:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:NO:540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+    "explorer": "https://testnet.zecblock.com/tx/9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b"
   }
 ]

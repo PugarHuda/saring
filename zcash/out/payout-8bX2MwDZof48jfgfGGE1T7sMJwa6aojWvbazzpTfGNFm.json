@@ -1,0 +1,50 @@
+{
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "verdict": {
+    "resolved": true,
+    "yes": 0,
+    "no": 2,
+    "excluded": 0,
+    "incomplete": false,
+    "outcome": "NO"
+  },
+  "policy": "voters: bond refunded; counted voters: reward + equal share of slashed bonds; seated no-shows: bond slashed; conflicted: refund only",
+  "noShowsSlashed": [
+    "b8d4f9086abffc0e767cc6a9405a4040d8d91db79183afdc33a6218c09de6393"
+  ],
+  "slashed": "0.01000000 TAZ",
+  "slashSharePerCountedJuror": "0.00500000 TAZ",
+  "payments": [
+    {
+      "kind": "refund",
+      "juror": "3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-refund:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+      "addressOpensOnChainCommitment": true
+    },
+    {
+      "kind": "refund",
+      "juror": "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-refund:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+      "addressOpensOnChainCommitment": true
+    },
+    {
+      "kind": "reward",
+      "juror": "3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-reward:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:NO:3730285154192e5c01a885589cd613799513f01923eea61ccf8a83884b4d0236",
+      "addressOpensOnChainCommitment": true
+    },
+    {
+      "kind": "reward",
+      "juror": "540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+      "amount": "0.01000000 TAZ",
+      "memo": "saring-reward:8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm:NO:540ef5c66bf2356dbf8ab904a636a107014c7fee97a889a7ff2a65f844b21d7e",
+      "addressOpensOnChainCommitment": true
+    }
+  ],
+  "total": "0.04000000 TAZ",
+  "txid": "9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b",
+  "explorer": "https://testnet.zecblock.com/tx/9a7d57aee89f19209d32b48c7e5dc54168904b0f7d4520b7efa769156d0b755b"
+}

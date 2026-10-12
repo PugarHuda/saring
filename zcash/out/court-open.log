@@ -1,0 +1,9 @@
+{
+  "courtId": 47423838,
+  "court": "8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm",
+  "question": "Saring x Zcash v2: slashing + committed payouts",
+  "open": {
+    "queue": "https://explorer.solana.com/tx/66bLkzMNMdX33w57SYZsM81ccPEbbS1fgfvcJJBTqiBnNNoZsbMVKjG1KGPYzJhHy8YEH2MvQ6bDp4jffFy8BQQJ?cluster=devnet",
+    "callback": "https://explorer.solana.com/tx/53MLUbctKu36HEoVZAjtdwyfEZDxnQvBbNbyyHAbLAGr4fHVG83cUatvWYYp6ZLMj5KXNbqcQ8gih5wFNCnMC4nR?cluster=devnet"
+  }
+}
