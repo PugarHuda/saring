@@ -11,3 +11,6 @@ encrypted-ixs/src/main.rs
 artifacts/
 conflict-report/cache
 __pycache__
+.env.local
+.env
+app/dist
