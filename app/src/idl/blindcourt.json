@@ -10,7 +10,9 @@
     {
       "name": "add_juror",
       "docs": [
-        "Seats an encrypted juror id. Authority only (stands in for sortition + SAS)."
+        "Seats a juror: encrypted (id, key). The ciphertext can come from the juror's",
+        "own browser key, so the authority relays a seat whose ballot key it never sees.",
+        "Authority only (stands in for sortition + identity attestation)."
       ],
       "discriminator": [
         21,
@@ -102,6 +104,7 @@
         },
         {
           "name": "court_acc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -145,6 +148,15 @@
           }
         },
         {
+          "name": "juror_key",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
           "name": "pubkey",
           "type": {
             "array": [
@@ -160,16 +172,16 @@
       ]
     },
     {
-      "name": "add_juror_callback",
+      "name": "add_juror_v3_callback",
       "discriminator": [
-        125,
-        37,
-        113,
-        113,
-        50,
-        194,
+        169,
+        242,
         201,
-        163
+        180,
+        140,
+        227,
+        237,
+        77
       ],
       "accounts": [
         {
@@ -208,7 +220,7 @@
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "AddJurorOutput"
+                      "name": "AddJurorV3Output"
                     }
                   }
                 }
@@ -219,10 +231,125 @@
       ]
     },
     {
+      "name": "bet",
+      "docs": [
+        "Stakes `lamports` on YES (`yes = true`) or NO while the court is unresolved.",
+        "Bets are public; the court authority mirrors bettors into the court with",
+        "`record_positions`, so a bettor who also sits on the jury is excluded."
+      ],
+      "discriminator": [
+        94,
+        203,
+        166,
+        126,
+        20,
+        243,
+        169,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "bettor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "court_acc",
+          "relations": [
+            "market"
+          ]
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "court_acc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "bettor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "yes",
+          "type": "bool"
+        },
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "cast",
       "docs": [
-        "Casts or overwrites an encrypted ballot. Any payer can submit it (relayable),",
-        "so the signer reveals nothing about who the juror is."
+        "Casts or overwrites an encrypted ballot (id, key, new_key, yes). It only counts",
+        "inside MPC if `key` is the seat's current key; a non-zero `new_key` rotates it.",
+        "Any payer can relay it, so the signer reveals nothing about who the juror is."
       ],
       "discriminator": [
         8,
@@ -320,6 +447,7 @@
         },
         {
           "name": "court_acc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -363,6 +491,24 @@
           }
         },
         {
+          "name": "key",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "new_key",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
           "name": "yes",
           "type": {
             "array": [
@@ -387,16 +533,16 @@
       ]
     },
     {
-      "name": "cast_callback",
+      "name": "cast_v3_callback",
       "discriminator": [
-        181,
+        216,
+        111,
+        28,
+        185,
+        246,
+        232,
         8,
-        243,
-        95,
-        145,
-        78,
-        116,
-        176
+        84
       ],
       "accounts": [
         {
@@ -435,7 +581,7 @@
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "CastOutput"
+                      "name": "CastV3Output"
                     }
                   }
                 }
@@ -444,6 +590,112 @@
           }
         }
       ]
+    },
+    {
+      "name": "claim",
+      "docs": [
+        "Pays a bettor after the verdict: winners split the whole pool pro rata;",
+        "a tie, an empty winning side or an incomplete verdict refunds every stake."
+      ],
+      "discriminator": [
+        62,
+        198,
+        214,
+        193,
+        213,
+        159,
+        108,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "bettor",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "bet"
+          ]
+        },
+        {
+          "name": "court_acc",
+          "relations": [
+            "market"
+          ]
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "court_acc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "bettor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "create_court",
@@ -581,16 +833,136 @@
       ]
     },
     {
-      "name": "init_add_juror_comp_def",
+      "name": "create_market",
+      "docs": [
+        "Opens a YES/NO pari-mutuel market that settles on `court`'s verdict."
+      ],
       "discriminator": [
-        230,
+        103,
+        226,
+        97,
+        235,
+        200,
+        188,
+        251,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "court_acc"
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "court_acc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_add_juror_v3_comp_def",
+      "discriminator": [
+        117,
+        13,
+        30,
+        134,
+        10,
+        25,
+        234,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mxe_account",
+          "writable": true
+        },
+        {
+          "name": "comp_def_account",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table",
+          "writable": true
+        },
+        {
+          "name": "lut_program",
+          "address": "AddressLookupTab1e1111111111111111111111111"
+        },
+        {
+          "name": "arcium_program",
+          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_cast_v3_comp_def",
+      "discriminator": [
         192,
-        207,
-        209,
-        41,
-        189,
-        152,
-        184
+        91,
+        13,
+        229,
+        93,
+        39,
+        25,
+        74
       ],
       "accounts": [
         {
@@ -626,61 +998,16 @@
       "args": []
     },
     {
-      "name": "init_cast_comp_def",
+      "name": "init_court_v3_callback",
       "discriminator": [
-        40,
-        81,
-        108,
-        158,
-        154,
-        129,
-        180,
-        153
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "mxe_account",
-          "writable": true
-        },
-        {
-          "name": "comp_def_account",
-          "writable": true
-        },
-        {
-          "name": "address_lookup_table",
-          "writable": true
-        },
-        {
-          "name": "lut_program",
-          "address": "AddressLookupTab1e1111111111111111111111111"
-        },
-        {
-          "name": "arcium_program",
-          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "init_court_callback",
-      "discriminator": [
-        35,
-        233,
-        42,
-        224,
-        127,
-        205,
-        231,
-        193
+        112,
+        88,
+        43,
+        73,
+        13,
+        110,
+        138,
+        75
       ],
       "accounts": [
         {
@@ -719,7 +1046,7 @@
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "InitCourtOutput"
+                      "name": "InitCourtV3Output"
                     }
                   }
                 }
@@ -730,61 +1057,61 @@
       ]
     },
     {
-      "name": "init_init_court_comp_def",
+      "name": "init_init_court_v3_comp_def",
+      "discriminator": [
+        63,
+        90,
+        48,
+        71,
+        170,
+        62,
+        178,
+        244
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mxe_account",
+          "writable": true
+        },
+        {
+          "name": "comp_def_account",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table",
+          "writable": true
+        },
+        {
+          "name": "lut_program",
+          "address": "AddressLookupTab1e1111111111111111111111111"
+        },
+        {
+          "name": "arcium_program",
+          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_record_positions_v3_comp_def",
       "discriminator": [
         164,
-        95,
-        19,
+        29,
         43,
-        4,
-        150,
-        103,
-        127
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "mxe_account",
-          "writable": true
-        },
-        {
-          "name": "comp_def_account",
-          "writable": true
-        },
-        {
-          "name": "address_lookup_table",
-          "writable": true
-        },
-        {
-          "name": "lut_program",
-          "address": "AddressLookupTab1e1111111111111111111111111"
-        },
-        {
-          "name": "arcium_program",
-          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "init_record_positions_comp_def",
-      "discriminator": [
-        28,
-        202,
-        203,
-        168,
+        41,
         113,
-        20,
-        95,
-        170
+        178,
+        199,
+        74
       ],
       "accounts": [
         {
@@ -820,16 +1147,16 @@
       "args": []
     },
     {
-      "name": "init_resolve_comp_def",
+      "name": "init_resolve_v3_comp_def",
       "discriminator": [
-        226,
-        115,
-        111,
-        57,
-        156,
-        201,
-        212,
-        143
+        49,
+        252,
+        168,
+        184,
+        39,
+        161,
+        20,
+        37
       ],
       "accounts": [
         {
@@ -967,6 +1294,7 @@
         },
         {
           "name": "court_acc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1030,16 +1358,16 @@
       ]
     },
     {
-      "name": "record_positions_callback",
+      "name": "record_positions_v3_callback",
       "discriminator": [
-        246,
-        54,
-        179,
-        211,
-        56,
-        42,
-        49,
-        211
+        83,
+        209,
+        149,
+        113,
+        158,
+        62,
+        0,
+        155
       ],
       "accounts": [
         {
@@ -1078,13 +1406,68 @@
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "RecordPositionsOutput"
+                      "name": "RecordPositionsV3Output"
                     }
                   }
                 }
               ]
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "reset_pending",
+      "docs": [
+        "Releases the lock after an aborted computation (its callback never cleared it).",
+        "Authority only."
+      ],
+      "discriminator": [
+        28,
+        246,
+        186,
+        73,
+        123,
+        119,
+        210,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "court_acc",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  114,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              },
+              {
+                "kind": "arg",
+                "path": "_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "_id",
+          "type": "u32"
         }
       ]
     },
@@ -1183,6 +1566,7 @@
         },
         {
           "name": "court_acc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1219,16 +1603,16 @@
       ]
     },
     {
-      "name": "resolve_callback",
+      "name": "resolve_v3_callback",
       "discriminator": [
-        0,
-        130,
-        202,
-        130,
-        180,
-        116,
-        172,
-        193
+        174,
+        182,
+        140,
+        4,
+        23,
+        151,
+        5,
+        100
       ],
       "accounts": [
         {
@@ -1267,7 +1651,7 @@
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "ResolveOutput"
+                      "name": "ResolveV3Output"
                     }
                   }
                 }
@@ -1293,6 +1677,19 @@
       ]
     },
     {
+      "name": "BetAccount",
+      "discriminator": [
+        117,
+        187,
+        165,
+        174,
+        194,
+        28,
+        119,
+        76
+      ]
+    },
+    {
       "name": "CourtAccount",
       "discriminator": [
         7,
@@ -1303,6 +1700,19 @@
         108,
         213,
         97
+      ]
+    },
+    {
+      "name": "MarketAccount",
+      "discriminator": [
+        201,
+        78,
+        187,
+        225,
+        240,
+        198,
+        201,
+        251
       ]
     }
   ],
@@ -1318,6 +1728,32 @@
         65,
         23,
         134
+      ]
+    },
+    {
+      "name": "BetEvent",
+      "discriminator": [
+        123,
+        52,
+        73,
+        185,
+        152,
+        169,
+        40,
+        128
+      ]
+    },
+    {
+      "name": "ClaimEvent",
+      "discriminator": [
+        93,
+        15,
+        70,
+        170,
+        48,
+        140,
+        212,
+        219
       ]
     },
     {
@@ -1354,6 +1790,46 @@
       "code": 6003,
       "name": "AlreadyResolved",
       "msg": "Court already resolved"
+    },
+    {
+      "code": 6004,
+      "name": "ComputationPending",
+      "msg": "Another computation is still pending for this court"
+    },
+    {
+      "code": 6005,
+      "name": "MarketTooLong",
+      "msg": "Market text is longer than 64 bytes"
+    },
+    {
+      "code": 6006,
+      "name": "NotResolved",
+      "msg": "Court not resolved yet"
+    },
+    {
+      "code": 6007,
+      "name": "ZeroStake",
+      "msg": "Stake must be positive"
+    },
+    {
+      "code": 6008,
+      "name": "SideMismatch",
+      "msg": "A bettor can only add to the side they already backed"
+    },
+    {
+      "code": 6009,
+      "name": "AlreadyClaimed",
+      "msg": "Already claimed"
+    },
+    {
+      "code": 6010,
+      "name": "WrongCourt",
+      "msg": "Market belongs to a different court"
+    },
+    {
+      "code": 6011,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
     }
   ],
   "types": [
@@ -1382,7 +1858,7 @@
       }
     },
     {
-      "name": "AddJurorOutput",
+      "name": "AddJurorV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1398,7 +1874,7 @@
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -1446,7 +1922,63 @@
       }
     },
     {
-      "name": "CastOutput",
+      "name": "BetAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes",
+            "type": "bool"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BetEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes",
+            "type": "bool"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CastV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1462,7 +1994,7 @@
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -1505,6 +2037,26 @@
                 }
               }
             ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "payout",
+            "type": "u64"
           }
         ]
       }
@@ -1793,7 +2345,7 @@
                     32
                   ]
                 },
-                11
+                13
               ]
             }
           },
@@ -1828,6 +2380,20 @@
           {
             "name": "excluded",
             "type": "u8"
+          },
+          {
+            "name": "pending",
+            "docs": [
+              "A computation is queued and its callback has not landed yet."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "incomplete",
+            "docs": [
+              "A slot overflowed, so the conflict check may be incomplete; markets refund."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -1857,7 +2423,7 @@
       }
     },
     {
-      "name": "InitCourtOutput",
+      "name": "InitCourtV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1873,7 +2439,7 @@
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -2099,6 +2665,34 @@
                 }
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "court_acc",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes_pool",
+            "type": "u64"
+          },
+          {
+            "name": "no_pool",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
           }
         ]
       }
@@ -2347,7 +2941,7 @@
       }
     },
     {
-      "name": "RecordPositionsOutput",
+      "name": "RecordPositionsV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -2363,7 +2957,7 @@
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -2373,7 +2967,7 @@
       }
     },
     {
-      "name": "ResolveOutput",
+      "name": "ResolveV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -2385,7 +2979,7 @@
             "name": "field_0",
             "type": {
               "defined": {
-                "name": "ResolveOutputStruct0"
+                "name": "ResolveV3OutputStruct0"
               }
             }
           }
@@ -2393,7 +2987,7 @@
       }
     },
     {
-      "name": "ResolveOutputStruct0",
+      "name": "ResolveV3OutputStruct0",
       "type": {
         "kind": "struct",
         "fields": [
@@ -2408,6 +3002,10 @@
           {
             "name": "field_2",
             "type": "u8"
+          },
+          {
+            "name": "field_3",
+            "type": "bool"
           }
         ]
       }
@@ -2565,6 +3163,10 @@
           {
             "name": "excluded",
             "type": "u8"
+          },
+          {
+            "name": "incomplete",
+            "type": "bool"
           }
         ]
       }

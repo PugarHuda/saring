@@ -157,7 +157,7 @@ td .muted { display: block; font-size: 0.8rem; }
 .verdict .fine { margin-top: auto; }
 .verdict.blind { border-color: rgba(187, 166, 255, 0.35); }
 .verdict.resolved { border-color: rgba(143, 230, 184, 0.45); }
-.tally { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 16px; }
+.tally { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
 .tally div { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
 .tally dt { font-size: 0.76rem; color: var(--dim); }
 .tally dd { margin: 0; font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
@@ -259,3 +259,28 @@ td .muted { display: block; font-size: 0.8rem; }
 .tag.sealed { color: var(--dim); }
 .tag.conflicted { color: var(--bad); border-color: rgba(255, 157, 143, 0.45); }
 .tag.clean { color: var(--ok); border-color: rgba(143, 230, 184, 0.4); }
+
+/* your seat + step tags */
+.side { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+.side .wallet { position: static; }
+.seat { margin: 0; padding: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.seat h3 { margin: 0; font-size: 1.05rem; }
+.seat:disabled .seg span { opacity: 0.55; cursor: not-allowed; }
+.field { display: grid; gap: 8px; }
+.field-label { font-weight: 600; font-size: 0.9rem; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg span {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+  font: 600 0.84rem var(--sans); border: 1px solid var(--line-strong); background: rgba(255, 255, 255, 0.04);
+}
+.seg input:checked + span { color: var(--plum); background: var(--ink); border-color: var(--ink); }
+.seg input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 3px; }
+tr.you td { background: rgba(241, 207, 142, 0.06); }
+.payout { font-size: 0.9rem; margin-bottom: 12px; }
+.tl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--dim); }
+.kind.mpc { color: var(--lilac); border-color: rgba(187, 166, 255, 0.4); }
+.kind.key { color: var(--gold); border-color: rgba(241, 207, 142, 0.4); }
+@media (max-width: 1020px) { .side { position: static; } }

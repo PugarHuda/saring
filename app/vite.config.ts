@@ -12,7 +12,8 @@ export default defineConfig({
   base: "./",
   define: { global: "globalThis" },
   // ../panta/panta.ts lives outside the app root; one web3.js copy for both.
-  server: { fs: { allow: [".."] } },
+  // /api (RPC proxy, faucet) is served by Vercel; in dev, forward it to the hosted deployment.
+  server: { fs: { allow: [".."] }, proxy: { "/api": { target: "https://saring-silk.vercel.app", changeOrigin: true, configure: (p) => p.on("proxyReq", (r) => r.removeHeader("origin")) } } },
   resolve: {
     dedupe: ["@solana/web3.js"],
     alias: [

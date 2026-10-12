@@ -38,7 +38,7 @@ import * as os from "os";
 import { expect } from "chai";
 import { DEMO_MARKET, allTraders, holdsPosition, identityId, marketHolders, marketQuestion } from "../panta/panta";
 
-const CIRCUITS = ["init_court", "add_juror", "record_positions", "cast", "resolve"];
+const CIRCUITS = ["init_court_v3", "add_juror_v3", "record_positions_v3", "cast_v3", "resolve_v3"];
 const BATCH = 6;
 // Fresh court per run so devnet re-runs don't collide with an existing PDA.
 const COURT_ID = Math.floor(Math.random() * 2 ** 31);
@@ -77,7 +77,7 @@ describe("Blindcourt", () => {
     await build(offset)
       .accountsPartial(queueAccounts(circuit, offset))
       .rpc({ skipPreflight: true, commitment: "confirmed" });
-    await awaitComputationFinalization(provider, offset, program.programId, "confirmed");
+    await awaitComputationFinalization(provider, offset, program.programId, "confirmed", 300_000);
   }
 
   it("excludes jurors who hold a position in a real Panta market, without revealing who", async () => {
@@ -106,49 +106,94 @@ describe("Blindcourt", () => {
       return { ct: cipher.encrypt(vals, nonce), nonce: new anchor.BN(deserializeLE(nonce).toString()) };
     };
 
-    await run("init_court", (o) => program.methods.createCourt(o, COURT_ID, question.slice(0, 64)));
+    await run("init_court_v3", (o) => program.methods.createCourt(o, COURT_ID, question.slice(0, 64)));
     console.log("court opened", courtPDA.toBase58());
 
+    // Each seat gets its own secret ballot key (31-bit, non-zero), chosen client-side.
+    const newKey = () => BigInt((randomBytes(4).readUInt32LE() >>> 1) || 1);
+    const keys = new Map<string, bigint>();
     for (const w of [...conflicted, ...clean]) {
-      const { ct, nonce } = enc([BigInt(await identityId(w))]);
-      await run("add_juror", (o) =>
-        program.methods.addJuror(o, COURT_ID, Array.from(ct[0]), Array.from(pub), nonce)
+      keys.set(w, newKey());
+      const { ct, nonce } = enc([BigInt(await identityId(w)), keys.get(w)!]);
+      await run("add_juror_v3", (o) =>
+        program.methods.addJuror(o, COURT_ID, Array.from(ct[0]), Array.from(ct[1]), Array.from(pub), nonce)
       );
     }
-    console.log("5 jurors seated (encrypted)");
+    console.log("5 jurors seated with secret ballot keys (encrypted)");
 
-    const holderIds = await Promise.all(holders.map((h) => identityId(h.owner)));
-    for (let i = 0; i < holderIds.length; i += BATCH) {
-      const batch = holderIds.slice(i, i + BATCH);
+    // A market that settles on this court; its bettors are mirrored into the court too.
+    const [marketPDA] = PublicKey.findProgramAddressSync([Buffer.from("market"), courtPDA.toBuffer()], program.programId);
+    const [vaultPDA] = PublicKey.findProgramAddressSync([Buffer.from("vault"), marketPDA.toBuffer()], program.programId);
+    await program.methods.createMarket().accountsPartial({ courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
+      .rpc({ commitment: "confirmed" });
+    const rival = anchor.web3.Keypair.generate();
+    await provider.sendAndConfirm(new anchor.web3.Transaction().add(anchor.web3.SystemProgram.transfer({
+      fromPubkey: owner.publicKey, toPubkey: rival.publicKey, lamports: 30_000_000,
+    })), [], { commitment: "confirmed" });
+    const bet = (who: anchor.web3.Keypair, yes: boolean, lamports: number) =>
+      program.methods.bet(yes, new anchor.BN(lamports))
+        .accountsPartial({ bettor: who.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
+        .signers([who]).rpc({ commitment: "confirmed" });
+    await bet(owner, false, 20_000_000); // 0.02 SOL on NO
+    await bet(rival, true, 10_000_000); // 0.01 SOL on YES
+    console.log("market opened: 0.02 SOL on NO, 0.01 SOL on YES");
+
+    const positionIds = [
+      ...(await Promise.all(holders.map((h) => identityId(h.owner)))),
+      await identityId(owner.publicKey.toBase58()),
+      await identityId(rival.publicKey.toBase58()),
+    ];
+    for (let i = 0; i < positionIds.length; i += BATCH) {
+      const batch = positionIds.slice(i, i + BATCH);
       while (batch.length < BATCH) batch.push(0);
       const { ct, nonce } = enc(batch.map(BigInt));
-      await run("record_positions", (o) =>
+      await run("record_positions_v3", (o) =>
         program.methods
           .recordPositions(o, COURT_ID, ct.map((c) => Array.from(c)), Array.from(pub), nonce)
           .accountsPartial({ authority: owner.publicKey, courtAcc: courtPDA })
       );
     }
-    console.log(`${holderIds.length} Panta positions mirrored (encrypted)`);
+    console.log(`${positionIds.length} positions mirrored (42 Panta holders + 2 bettors, encrypted)`);
 
-    const cast = async (wallet: string, yes: boolean) => {
-      const { ct, nonce } = enc([BigInt(await identityId(wallet)), BigInt(yes)]);
-      await run("cast", (o) =>
+    const cast = async (wallet: string, key: bigint, yes: boolean, rotateTo = 0n) => {
+      const { ct, nonce } = enc([BigInt(await identityId(wallet)), key, rotateTo, BigInt(yes)]);
+      await run("cast_v3", (o) =>
         program.methods
-          .cast(o, COURT_ID, Array.from(ct[0]), Array.from(ct[1]), Array.from(pub), nonce)
+          .cast(o, COURT_ID, Array.from(ct[0]), Array.from(ct[1]), Array.from(ct[2]), Array.from(ct[3]), Array.from(pub), nonce)
           .accountsPartial({ authority: owner.publicKey, courtAcc: courtPDA })
       );
     };
-    for (const w of conflicted) await cast(w, true);
-    await cast(clean[0], true); // bribed: shows the briber this receipt...
-    await cast(clean[0], false); // ...then silently overwrites it
-    await cast(clean[1], false);
-    console.log("ballots cast");
+    for (const w of conflicted) await cast(w, keys.get(w)!, true);
+    const [bribed, honest] = clean;
+    const receiptKey = keys.get(bribed)!;
+    await cast(bribed, receiptKey, true); // the "receipt" shown to the briber, with the key handed over
+    await cast(bribed, receiptKey, false, newKey()); // silently votes NO and rotates the key
+    await cast(bribed, receiptKey, true); // briber re-sends YES with the stale key: ignored
+    await cast(honest, keys.get(honest)!, false);
+    await cast(honest, newKey(), true); // outsider overwrite attempt with a guessed key: ignored
+    console.log("ballots cast (incl. a stale-key bribe and a forged overwrite, both ignored in MPC)");
 
-    await run("resolve", (o) => program.methods.resolve(o, COURT_ID));
+    await run("resolve_v3", (o) => program.methods.resolve(o, COURT_ID));
     const court = await program.account.courtAccount.fetch(courtPDA);
-    console.log(`verdict: yes=${court.yes} no=${court.no} excluded=${court.excluded}`);
+    console.log(`verdict: yes=${court.yes} no=${court.no} excluded=${court.excluded} incomplete=${court.incomplete}`);
     expect(court.resolved).to.equal(true);
+    expect(court.incomplete).to.equal(false);
     expect([court.yes, court.no, court.excluded]).to.deep.equal([0, 2, 3]);
+
+    // Settlement: NO won, so the NO bettor takes the whole 0.03 SOL pool.
+    const before = await provider.connection.getBalance(owner.publicKey);
+    await program.methods.claim()
+      .accountsPartial({ bettor: owner.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
+      .rpc({ commitment: "confirmed" });
+    const gained = (await provider.connection.getBalance(owner.publicKey)) - before;
+    console.log(`claim paid ${gained / 1e9} SOL (minus fee) to the NO bettor`);
+    expect(gained).to.be.greaterThan(29_000_000);
+    await program.methods.claim()
+      .accountsPartial({ bettor: rival.publicKey, courtAcc: courtPDA, market: marketPDA, vault: vaultPDA })
+      .signers([rival]).rpc({ commitment: "confirmed" });
+    const bal = await provider.connection.getBalance(vaultPDA);
+    expect(bal).to.equal(0);
+    console.log("losing bettor claimed 0; vault empty");
   });
 
   async function initCompDef(circuit: string) {

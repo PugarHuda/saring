@@ -1,14 +1,18 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type AnchorHTMLAttributes } from "react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import type { BN } from "@anchor-lang/core";
 import {
+  DEFAULT_CHOICE,
   PROGRAM_ID,
   awaitStep,
+  buildSteps,
   courtPda,
   explorerAddr,
   explorerMainnetAddr,
   explorerTx,
   fetchMxePublicKey,
+  finalBallots,
+  isMpc,
   loadBurner,
   loadScenario,
   makeClient,
@@ -16,7 +20,9 @@ import {
   newCourtId,
   queueStep,
   pantaMarketUrl,
+  readBet,
   readVerdict,
+  type Choice,
   type Scenario,
   type ScriptStep,
   type Verdict,
@@ -33,9 +39,12 @@ interface StepState {
   finalizeSig?: string;
   error?: string;
 }
+type Bet = Awaited<ReturnType<typeof readBet>>;
 
 const fresh = (script: ScriptStep[]): StepState[] => script.map(() => ({ status: "waiting" }));
 const short = (s: string) => `${s.slice(0, 4)}…${s.slice(-4)}`;
+const sol = (lamports: number) => `${+(lamports / LAMPORTS_PER_SOL).toFixed(4)} SOL`;
+const word = (yes: number, no: number) => (yes > no ? "YES" : no > yes ? "NO" : "TIE");
 const STATUS_LABEL: Record<Status, string> = {
   waiting: "Waiting",
   sending: "Sending",
@@ -46,12 +55,57 @@ const STATUS_LABEL: Record<Status, string> = {
 
 const REPORT = "https://pugarhuda.github.io/saring/";
 const REPO = "https://github.com/PugarHuda/saring";
+const RUN_COST = 0.08; // SOL, plus the bet if any
+const FAUCET_COOLDOWN_MS = 10 * 60_000; // matches app/api/faucet.js
+const LAST_KEY = "saring.last.v1";
 
-/** Each juror's ballots in order, derived from the scripted casts (nothing hardcoded). */
-function ballots(sc: Scenario) {
-  const by = new Map<string, boolean[]>();
-  for (const st of sc.steps) if (st.action.kind === "cast") by.set(st.action.wallet, [...(by.get(st.action.wallet) ?? []), st.action.yes]);
-  return by;
+/** External link: always a new tab, no referrer. */
+const Ext = (p: AnchorHTMLAttributes<HTMLAnchorElement>) => <a target="_blank" rel="noreferrer" {...p} />;
+
+/** The last finished run, so a reload still shows its verdict and explorer links. */
+interface Last {
+  courtId: number;
+  choice: Choice;
+  verdict: Verdict;
+  bet: Bet;
+  steps: Pick<StepState, "status" | "queueSig" | "finalizeSig">[];
+}
+function loadLast(): Last | null {
+  try {
+    return JSON.parse(localStorage.getItem(LAST_KEY) ?? "null");
+  } catch {
+    return null;
+  }
+}
+function saveLast(l: Last | null) {
+  try {
+    if (l) localStorage.setItem(LAST_KEY, JSON.stringify(l));
+    else localStorage.removeItem(LAST_KEY);
+  } catch {
+    /* storage blocked: the result just won't survive a reload */
+  }
+}
+
+/** Normal jury: every juror's latest ballot counts, no key check. Saring: counted ballots minus conflicted jurors. */
+function tallies(sc: Scenario) {
+  const latest = new Map<string, boolean>();
+  for (const s of sc.steps) if (s.action.kind === "cast") latest.set(s.action.wallet, s.action.yes);
+  const counted = finalBallots(sc.steps);
+  const expected = { yes: 0, no: 0, excluded: 0 };
+  for (const j of sc.jurors) {
+    if (j.conflicted) expected.excluded++;
+    else if (counted.has(j.wallet)) expected[counted.get(j.wallet) ? "yes" : "no"]++;
+  }
+  const normalYes = [...latest.values()].filter(Boolean).length;
+  return { normal: { yes: normalYes, no: latest.size - normalYes }, expected };
+}
+
+/** Mirrors the program's claim(): ties, incomplete verdicts and empty winning pools refund. */
+function payout(v: Verdict, b: NonNullable<Bet>) {
+  const yesWins = v.yes > v.no;
+  const winPool = yesWins ? b.yesPool : b.noPool;
+  if (v.incomplete || v.yes === v.no || winPool === 0) return b.amount;
+  return b.yes === yesWins ? Math.floor((b.amount * (b.yesPool + b.noPool)) / winPool) : 0;
 }
 
 // Every figure here is copied from the Conflict Report (docs/index.html).
@@ -65,24 +119,31 @@ const STATS = [
 export default function App() {
   const burner = useMemo(loadBurner, []);
   const client = useMemo(() => makeClient(burner), [burner]);
+  const last = useMemo(loadLast, []);
 
   const [balance, setBalance] = useState<number | null>(null);
   const [programLive, setProgramLive] = useState<boolean | null>(null);
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [scenarioErr, setScenarioErr] = useState("");
+  const [choice, setChoice] = useState<Choice>(last?.choice ?? DEFAULT_CHOICE);
+  const choiceRef = useRef(choice);
   const [steps, setSteps] = useState<StepState[]>([]);
   const stepsRef = useRef(steps);
   const [courtId, setCourtId] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [bet, setBet] = useState<Bet>(null);
   const [notice, setNotice] = useState("");
+  const [faucetBusy, setFaucetBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [godView, setGodView] = useState(false);
+  const verdictRef = useRef<HTMLElement>(null);
 
-  const patch = (i: number, p: Partial<StepState>) => {
-    stepsRef.current = stepsRef.current.map((s, j) => (j === i ? { ...s, ...p } : s));
-    setSteps(stepsRef.current);
+  const setStepStates = (s: StepState[]) => {
+    stepsRef.current = s;
+    setSteps(s);
   };
+  const patch = (i: number, p: Partial<StepState>) => setStepStates(stepsRef.current.map((s, j) => (j === i ? { ...s, ...p } : s)));
 
   const refreshBalance = useCallback(async () => {
     try {
@@ -96,14 +157,19 @@ export default function App() {
 
   const loadCase = useCallback(() => {
     setScenarioErr("");
-    loadScenario()
+    loadScenario(burner.publicKey, choiceRef.current)
       .then((sc) => {
-        stepsRef.current = fresh(sc.steps);
-        setSteps(stepsRef.current);
+        // Restore the last finished run if it matches this script.
+        if (last && last.steps.length === sc.steps.length) {
+          setStepStates(last.steps.map((s) => ({ ...s })));
+          setCourtId(last.courtId);
+          setVerdict(last.verdict);
+          setBet(last.bet);
+        } else setStepStates(fresh(sc.steps));
         setScenario(sc);
       })
       .catch((e) => setScenarioErr(e instanceof Error ? e.message : String(e)));
-  }, []);
+  }, [burner, last]);
   useEffect(loadCase, [loadCase]);
 
   useEffect(() => {
@@ -114,8 +180,32 @@ export default function App() {
       .catch(() => setProgramLive(null));
   }, [client, refreshBalance]);
 
+  // Leaving mid-run abandons a half-built court.
+  useEffect(() => {
+    if (!running) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [running]);
+
+  const started = steps.some((s) => s.status !== "waiting");
+
+  function choose(c: Choice) {
+    if (!scenario || running || started) return;
+    choiceRef.current = c;
+    setChoice(c);
+    const sc = { ...scenario };
+    sc.steps = buildSteps(sc, c);
+    setStepStates(fresh(sc.steps));
+    setScenario(sc);
+  }
+
   // Our own devnet faucet (app/api/faucet.js): enough SOL for one run.
   async function airdrop() {
+    setFaucetBusy(true);
     setNotice("Requesting devnet SOL…");
     try {
       const r = await fetch("/api/faucet", {
@@ -123,12 +213,14 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address: burner.publicKey.toBase58() }),
       });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      setNotice("Devnet SOL received. You can run the dispute.");
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+      setNotice(`Received ${j.sol ?? 0.12} devnet SOL. You can run the dispute.`);
     } catch (e) {
-      setNotice(`The faucet refused: ${(e as Error).message}. Use faucet.solana.com with the address above.`);
+      setNotice(`The faucet said: ${(e as Error).message}. You can also use faucet.solana.com with the address above.`);
     }
+    // The server rate-limits for 10 minutes either way; don't let the button invite retries.
+    setTimeout(() => setFaucetBusy(false), FAUCET_COOLDOWN_MS);
     refreshBalance();
   }
 
@@ -152,19 +244,36 @@ export default function App() {
       for (let i = 0; i < SCRIPT.length; i++) {
         const s = stepsRef.current[i];
         if (s.status === "finalized") continue;
+        const action = SCRIPT[i].action;
+        if (!isMpc(action)) {
+          // Plain transaction: confirmed when queueStep returns, no callback.
+          patch(i, { status: "sending", error: undefined });
+          patch(i, { status: "finalized", queueSig: await queueStep(client, id, mxePub, action, newComputationOffset()) });
+          continue;
+        }
         let offset = s.offset;
         // A step whose queue tx landed is only re-awaited, never re-sent (re-seating a juror would double-count).
         if (!s.queueSig || !offset) {
           offset = newComputationOffset();
           patch(i, { status: "sending", offset, error: undefined });
-          const queueSig = await queueStep(client, id, mxePub, SCRIPT[i].action, offset);
-          patch(i, { queueSig });
+          patch(i, { queueSig: await queueStep(client, id, mxePub, action, offset) });
         }
         patch(i, { status: "queued", error: undefined });
-        const finalizeSig = await awaitStep(client, offset);
-        patch(i, { status: "finalized", finalizeSig });
+        patch(i, { status: "finalized", finalizeSig: await awaitStep(client, offset) });
       }
-      setVerdict(await readVerdict(client, id));
+      const v = await readVerdict(client, id);
+      const b = choiceRef.current.bet !== null ? await readBet(client, id) : null;
+      setVerdict(v);
+      setBet(b);
+      saveLast({
+        courtId: id,
+        choice: choiceRef.current,
+        verdict: v,
+        bet: b,
+        steps: stepsRef.current.map(({ status, queueSig, finalizeSig }) => ({ status, queueSig, finalizeSig })),
+      });
+      // On a narrow screen the verdict sits far above the timeline.
+      if (window.matchMedia("(max-width: 1020px)").matches) verdictRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (e) {
       const i = stepsRef.current.findIndex((s) => s.status === "sending" || s.status === "queued");
       const msg = e instanceof Error ? e.message : String(e);
@@ -177,22 +286,29 @@ export default function App() {
   }
 
   function reset() {
-    stepsRef.current = fresh(SCRIPT);
-    setSteps(stepsRef.current);
+    if (scenario) {
+      const sc = { ...scenario };
+      sc.steps = buildSteps(sc, choiceRef.current); // fresh secret keys for the new court
+      setScenario(sc);
+      setStepStates(fresh(sc.steps));
+    }
     setCourtId(null);
     setVerdict(null);
+    setBet(null);
     setNotice("");
+    saveLast(null);
   }
 
   const done = steps.filter((s) => s.status === "finalized").length;
   const failed = steps.some((s) => s.status === "failed");
   const current = steps.findIndex((s) => s.status === "sending" || s.status === "queued");
-  const lowFunds = balance !== null && balance < 0.1;
-  const votes = scenario ? ballots(scenario) : new Map<string, boolean[]>();
-  const finalYes = [...votes.values()].filter((b) => b[b.length - 1]).length;
-  const bribedYes = [...votes.values()].filter((b) => b[0]).length; // if every first ballot (the bribe receipt) held
+  const need = RUN_COST + (choice.bet !== null ? 0.01 : 0);
+  const lowFunds = balance !== null && balance < need && done < SCRIPT.length;
+  const t = scenario ? tallies(scenario) : null;
   const conflicted = scenario?.jurors.filter((j) => j.conflicted).length ?? 0;
-  const outcome = verdict?.resolved ? (verdict.yes > verdict.no ? "YES" : verdict.no > verdict.yes ? "NO" : "TIE") : null;
+  const resolved = !!verdict?.resolved;
+  const shown = resolved ? verdict! : t?.expected;
+  const outcome = resolved ? (verdict!.incomplete ? "VOID" : word(verdict!.yes, verdict!.no)) : null;
 
   return (
     <div className="frame">
@@ -208,12 +324,12 @@ export default function App() {
           <a href="#case">The case</a>
           <a href="#run">Live demo</a>
           <a href="#privacy">Privacy</a>
-          <a href={REPORT}>Conflict Report</a>
+          <Ext href={REPORT}>Conflict Report</Ext>
         </nav>
         <div className="nav-cta">
-          <a className="pill ghost" href={REPO}>
+          <Ext className="pill ghost" href={REPO}>
             GitHub
-          </a>
+          </Ext>
           <a className="pill" href="#run">
             Run on devnet
           </a>
@@ -240,9 +356,9 @@ export default function App() {
               <a className="pill big" href="#run">
                 Run a dispute on devnet
               </a>
-              <a className="pill ghost big" href={REPORT}>
+              <Ext className="pill ghost big" href={REPORT}>
                 Read the Conflict Report
-              </a>
+              </Ext>
             </div>
           </div>
 
@@ -273,12 +389,12 @@ export default function App() {
             {scenario ? (
               <p>
                 The disputed Panta market asks{" "}
-                <a href={pantaMarketUrl(scenario.market)} target="_blank" rel="noreferrer">
+                <Ext href={pantaMarketUrl(scenario.market)}>
                   <strong>“{scenario.question}”</strong>
-                </a>{" "}
-                {scenario.holderCount} wallets hold a position (read from Solana mainnet via Panta’s program). The jurors
-                below are real Panta traders; their ballots are scripted, since we don’t hold their keys. On chain every
-                juror id, position and ballot is a ciphertext.
+                </Ext>{" "}
+                {scenario.holderCount} wallets have a position in it ({scenario.openHolderCount} still open), read from
+                Solana mainnet via Panta’s program. Five jurors are real Panta traders whose ballots are scripted, since
+                we don’t hold their keys. The sixth is you. On chain every juror id, position and ballot is a ciphertext.
               </p>
             ) : (
               <p role="status">
@@ -286,7 +402,7 @@ export default function App() {
                   <>
                     Could not read the Panta market from Solana mainnet
                     {/(403|429)/.test(scenarioErr)
-                      ? ". The public RPC refused the request; set VITE_MAINNET_RPC_URL to a dedicated mainnet RPC."
+                      ? ". The mainnet RPC is busy right now; try again in a moment."
                       : `: ${scenarioErr.slice(0, 160)}`}{" "}
                     <button type="button" className="pill ghost sm" onClick={loadCase}>
                       Try again
@@ -319,45 +435,50 @@ export default function App() {
                 </span>
               </div>
               <table>
-                <caption className="sr-only">Jurors, whether they hold a position, and their final ballots</caption>
+                <caption className="sr-only">Jurors, whether they hold a position, and their final counted ballots</caption>
                 <thead>
                   <tr>
                     <th scope="col">Juror wallet</th>
                     <th scope="col">Conflict</th>
-                    <th scope="col">Final ballot</th>
+                    <th scope="col">Counted ballot</th>
                   </tr>
                 </thead>
                 <tbody>
                   {scenario
                     ? scenario.jurors.map((j) => {
-                        const b = votes.get(j.wallet) ?? [];
-                        const last = b[b.length - 1];
+                        const casts = SCRIPT.flatMap((s) => (s.action.kind === "cast" && s.action.wallet === j.wallet ? [s.action] : []));
+                        const counted = casts.filter((c) => c.counts);
+                        const final = counted[counted.length - 1];
+                        const ignored = casts.length - counted.length;
                         return (
-                          <tr key={j.wallet}>
+                          <tr key={j.wallet} className={j.you ? "you" : undefined}>
                             <td>
-                              <a href={explorerMainnetAddr(j.wallet)} target="_blank" rel="noreferrer">
-                                {short(j.wallet)}
-                              </a>
+                              <Ext href={explorerMainnetAddr(j.wallet)}>{j.you ? `You · ${short(j.wallet)}` : short(j.wallet)}</Ext>
                             </td>
                             <td>
                               {godView ? (
                                 <span className={`tag ${j.conflicted ? "conflicted" : "clean"}`}>
-                                  {j.conflicted ? "Conflicted" : "Clean"}
+                                  {j.conflicted ? (j.you ? "Conflicted: you bet" : "Conflicted") : "Clean"}
                                 </span>
                               ) : (
                                 <span className="tag sealed">Encrypted</span>
                               )}
                             </td>
                             <td>
-                              {last === undefined ? "None" : last ? "YES" : "NO"}
-                              {b.length > 1 && b[0] !== last && (
-                                <span className="muted">after a bribed {b[0] ? "YES" : "NO"}, silently overwritten</span>
+                              {final === undefined ? "None" : final.yes ? "YES" : "NO"}
+                              {counted.length > 1 && counted[0].yes !== final?.yes && (
+                                <span className="muted">after a bribed {counted[0].yes ? "YES" : "NO"}, silently overwritten</span>
+                              )}
+                              {ignored > 0 && (
+                                <span className="muted">
+                                  {ignored === 1 ? "a ballot" : `${ignored} ballots`} with a wrong key ignored inside MPC
+                                </span>
                               )}
                             </td>
                           </tr>
                         );
                       })
-                    : [0, 1, 2, 3, 4].map((i) => (
+                    : [0, 1, 2, 3, 4, 5].map((i) => (
                         <tr key={i} className="skeleton" aria-hidden="true">
                           <td>········</td>
                           <td>···</td>
@@ -371,58 +492,70 @@ export default function App() {
             <div className="versus">
               <article className="glass verdict">
                 <h3>A normal jury</h3>
-                {scenario ? (
+                {t ? (
                   <>
-                    <p className={`word ${finalYes * 2 > votes.size ? "bad" : "ok"}`}>
-                      {finalYes * 2 > votes.size ? "YES" : finalYes * 2 < votes.size ? "NO" : "TIE"}
-                    </p>
+                    <p className={`word ${t.normal.yes > t.normal.no ? "bad" : "ok"}`}>{word(t.normal.yes, t.normal.no)}</p>
                     <p className="score">
-                      {finalYes} – {votes.size - finalYes}
+                      {t.normal.yes} – {t.normal.no}
                     </p>
                     <p className="fine">
-                      Conflicted votes count. If the bribe holds it is {bribedYes} – {votes.size - bribedYes}, and the
-                      briber can check, because ballots are public.
+                      Every juror’s latest ballot counts and nothing checks keys: the conflicted votes, the briber’s
+                      re-sent YES and the forged YES all land, and the briber can verify the ballot they paid for.
                     </p>
                   </>
                 ) : (
                   <p className="word pending">?</p>
                 )}
               </article>
-              <article className={`glass verdict blind ${outcome ? "resolved" : ""}`} aria-live="polite">
-                <h3>Saring</h3>
-                {verdict?.resolved ? (
+              <article ref={verdictRef} className={`glass verdict blind ${resolved ? "resolved" : ""}`} aria-live="polite">
+                <h3>Saring{resolved ? "" : " · Expected"}</h3>
+                {shown ? (
                   <>
-                    <p className={`word ${outcome === "NO" ? "ok" : "bad"}`}>{outcome}</p>
+                    <p className={`word ${resolved ? (outcome === "NO" ? "ok" : "bad") : "pending"}`}>
+                      {outcome ?? word(shown.yes, shown.no)}
+                    </p>
                     <p className="score">
-                      {verdict.yes} – {verdict.no}
+                      {shown.yes} – {shown.no}
                     </p>
                     <dl className="tally">
                       <div>
                         <dt>Yes</dt>
-                        <dd>{verdict.yes}</dd>
+                        <dd>{shown.yes}</dd>
                       </div>
                       <div>
                         <dt>No</dt>
-                        <dd>{verdict.no}</dd>
+                        <dd>{shown.no}</dd>
                       </div>
                       <div>
                         <dt>Excluded</dt>
-                        <dd>{verdict.excluded}</dd>
+                        <dd>{shown.excluded}</dd>
+                      </div>
+                      <div>
+                        <dt>Incomplete</dt>
+                        <dd>{resolved && verdict!.incomplete ? "Yes" : "No"}</dd>
                       </div>
                     </dl>
+                    {resolved && verdict!.incomplete && <p className="bad">Incomplete: market refunds.</p>}
+                    {resolved && bet && (
+                      <p className="payout">
+                        You bet {sol(bet.amount)} on {bet.yes ? "YES" : "NO"}. Pools: YES {sol(bet.yesPool)}, NO{" "}
+                        {sol(bet.noPool)}. Payout {sol(payout(verdict!, bet))}
+                        {bet.claimed ? ", claimed." : ", not claimed yet."}
+                      </p>
+                    )}
                     <p className="fine">
-                      Read from the court account on devnet. {verdict.excluded} jurors were excluded; their identities
-                      were never revealed.
+                      {resolved
+                        ? `Read from the court account on devnet. ${verdict!.excluded} jurors were excluded; their identities were never revealed.`
+                        : "Expected from the script: conflicted jurors (and you, if you bet) are dropped, wrong-key ballots ignored. Run the dispute to read the real tally from chain."}
                     </p>
+                    {resolved && courtId !== null && (
+                      <Ext className="fine" href={explorerAddr(courtPda(burner.publicKey, courtId).toBase58())}>
+                        Court account on Explorer
+                      </Ext>
+                    )}
                   </>
                 ) : (
-                  <>
-                    <p className="word pending">?</p>
-                    <p className="fine">
-                      Not run yet. Run the dispute below; the tally is read from the court account once the MPC resolve
-                      finalizes.
-                    </p>
-                  </>
+                  <p className="word pending">?</p>
                 )}
               </article>
             </div>
@@ -433,77 +566,120 @@ export default function App() {
           <div className="block-head">
             <h2 id="run-h">Run the dispute on devnet</h2>
             <p>
-              {scenario ? `${SCRIPT.length} steps. ` : ""}Each step is a real devnet transaction that queues an Arcium MPC computation and waits
-              for its signed callback.
+              {scenario ? `${SCRIPT.length} steps, about 2–4 minutes. ` : "About 2–4 minutes. "}MPC steps queue an Arcium
+              computation and wait for its signed callback; market steps are plain devnet transactions.
             </p>
           </div>
 
           <div className="run-grid">
-            <aside className="glass wallet" aria-label="Burner wallet">
-              <h3>Burner wallet</h3>
-              <p className="fine">Stored in this browser. Fund it with about 0.5 devnet SOL.</p>
-              <code className="addr">{burner.publicKey.toBase58()}</code>
-              <p className="balance">
-                <span className="fine">Balance</span>
-                <strong>{balance === null ? "…" : `${balance.toFixed(3)} SOL`}</strong>
-              </p>
-              <div className="btn-row">
-                <button type="button" className="pill ghost sm" onClick={refreshBalance}>
-                  Refresh
-                </button>
-                <button type="button" className="pill ghost sm" onClick={copyAddress}>
-                  {copied ? "Copied" : "Copy address"}
-                </button>
-                <button type="button" className="pill ghost sm" onClick={airdrop}>
-                  Get devnet SOL
-                </button>
-              </div>
-              <a className="fine" href="https://faucet.solana.com" target="_blank" rel="noreferrer">
-                Or use faucet.solana.com
-              </a>
-
-              <div className="run-actions">
-                <button type="button" className="pill big" onClick={run} disabled={!scenario || running || done === SCRIPT.length || lowFunds}>
-                  {!scenario
-                    ? "Loading the case…"
-                    : running
-                    ? `Running ${done}/${SCRIPT.length}`
-                    : failed
-                      ? "Retry from the failed step"
-                      : done === SCRIPT.length
-                        ? "Dispute resolved"
-                        : done
-                          ? "Continue"
-                          : "Run the dispute"}
-                </button>
-                {!running && done > 0 && (
-                  <button type="button" className="pill ghost" onClick={reset}>
-                    Start a new court
-                  </button>
+            <div className="side">
+              <fieldset className="glass seat" disabled={!scenario || running || started}>
+                <legend className="sr-only">Your seat</legend>
+                <h3>Your seat: juror #6</h3>
+                <div className="field">
+                  <span className="field-label" id="vote-l">
+                    Your vote
+                  </span>
+                  <div className="seg" role="radiogroup" aria-labelledby="vote-l">
+                    {[true, false].map((v) => (
+                      <label key={String(v)}>
+                        <input type="radio" name="vote" checked={choice.vote === v} onChange={() => choose({ ...choice, vote: v })} />
+                        <span>{v ? "YES" : "NO"}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="fine">Encrypted in this browser and seated with your own secret key.</p>
+                </div>
+                <div className="field">
+                  <span className="field-label" id="bet-l">
+                    Also bet 0.01 SOL on this market
+                  </span>
+                  <div className="seg" role="radiogroup" aria-labelledby="bet-l">
+                    {([null, true, false] as const).map((b) => (
+                      <label key={String(b)}>
+                        <input type="radio" name="bet" checked={choice.bet === b} onChange={() => choose({ ...choice, bet: b })} />
+                        <span>{b === null ? "No bet" : b ? "YES" : "NO"}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="fine">If you bet, you hold a position, so MPC silently drops your ballot (excluded goes up by one).</p>
+                </div>
+                {t && (
+                  <p className="fine">
+                    Expected Saring tally: <strong>{t.expected.yes} – {t.expected.no}</strong>, {t.expected.excluded} excluded.
+                  </p>
                 )}
-              </div>
-              {lowFunds && <p className="fine bad">Balance is under 0.1 SOL. Fund the wallet first.</p>}
-              {courtId !== null && (
-                <a className="fine" href={explorerAddr(courtPda(burner.publicKey, courtId).toBase58())} target="_blank" rel="noreferrer">
-                  Court account on Explorer
-                </a>
-              )}
-              {notice && (
-                <p className="notice" role="status">
-                  {notice}
+                {started && !running && <p className="fine">Locked for this court. Start a new court to change it.</p>}
+              </fieldset>
+
+              <aside className="glass wallet" aria-label="Burner wallet">
+                <h3>Burner wallet</h3>
+                <p className="fine">
+                  Stored in this browser. Get devnet SOL gives this wallet 0.12 SOL, enough for one run (~0.08 SOL).
                 </p>
-              )}
-              <div
-                className="meter"
-                role="progressbar"
-                aria-label="Steps finalized"
-                aria-valuemin={0}
-                aria-valuemax={SCRIPT.length}
-                aria-valuenow={done}
-              >
-                <div style={{ width: `${SCRIPT.length ? (done / SCRIPT.length) * 100 : 0}%` }} />
-              </div>
-            </aside>
+                <code className="addr">{burner.publicKey.toBase58()}</code>
+                <p className="balance">
+                  <span className="fine">Balance</span>
+                  <strong>{balance === null ? "…" : `${balance.toFixed(3)} SOL`}</strong>
+                </p>
+                <div className="btn-row">
+                  <button type="button" className="pill ghost sm" onClick={refreshBalance}>
+                    Refresh
+                  </button>
+                  <button type="button" className="pill ghost sm" onClick={copyAddress}>
+                    {copied ? "Copied" : "Copy address"}
+                  </button>
+                  <button type="button" className="pill ghost sm" onClick={airdrop} disabled={faucetBusy}>
+                    Get devnet SOL
+                  </button>
+                </div>
+                <Ext className="fine" href="https://faucet.solana.com">
+                  Or use faucet.solana.com
+                </Ext>
+
+                <div className="run-actions">
+                  <button type="button" className="pill big" onClick={run} disabled={!scenario || running || done === SCRIPT.length || lowFunds}>
+                    {!scenario
+                      ? "Loading the case…"
+                      : running
+                        ? `Running ${done}/${SCRIPT.length}`
+                        : failed
+                          ? "Retry from the failed step"
+                          : done === SCRIPT.length
+                            ? "Dispute resolved"
+                            : done
+                              ? "Continue"
+                              : "Run the dispute"}
+                  </button>
+                  {!running && started && (
+                    <button type="button" className="pill ghost" onClick={reset}>
+                      Start a new court
+                    </button>
+                  )}
+                </div>
+                {lowFunds && <p className="fine bad">Balance is under {need.toFixed(2)} SOL. Fund the wallet first.</p>}
+                {courtId !== null && (
+                  <Ext className="fine" href={explorerAddr(courtPda(burner.publicKey, courtId).toBase58())}>
+                    Court account on Explorer
+                  </Ext>
+                )}
+                {notice && (
+                  <p className="notice" role="status">
+                    {notice}
+                  </p>
+                )}
+                <div
+                  className="meter"
+                  role="progressbar"
+                  aria-label="Steps finalized"
+                  aria-valuemin={0}
+                  aria-valuemax={SCRIPT.length}
+                  aria-valuenow={done}
+                >
+                  <div style={{ width: `${SCRIPT.length ? (done / SCRIPT.length) * 100 : 0}%` }} />
+                </div>
+              </aside>
+            </div>
 
             <div className="timeline-wrap">
               <p className="sr-only" aria-live="polite">
@@ -513,6 +689,9 @@ export default function App() {
               <ol className="timeline">
                 {SCRIPT.map((s, i) => {
                   const st = steps[i];
+                  const mpc = isMpc(s.action);
+                  const a = s.action;
+                  const key = a.kind === "cast" ? (!a.counts ? "Ignored inside MPC" : a.newKey ? "Key rotated inside MPC" : null) : null;
                   return (
                     <li key={i} className={`tl ${st.status}`}>
                       <span className="node" aria-hidden="true">
@@ -521,21 +700,21 @@ export default function App() {
                       <div className="glass tl-card">
                         <div className="tl-top">
                           <span className="tl-title">{s.title}</span>
-                          <span className="badge">{STATUS_LABEL[st.status]}</span>
+                          <span className="badge">{mpc || st.status !== "finalized" ? STATUS_LABEL[st.status] : "Confirmed"}</span>
                         </div>
                         <p className="tl-note">{s.note}</p>
+                        <p className="tl-tags">
+                          <span className={`kind ${mpc ? "mpc" : "tx"}`}>{mpc ? "MPC" : "Transaction"}</span>
+                          {key && <span className="kind key">{key}</span>}
+                        </p>
                         {(st.queueSig || st.finalizeSig) && (
                           <p className="tl-links">
                             {st.queueSig && (
-                              <a href={explorerTx(st.queueSig)} target="_blank" rel="noreferrer">
-                                Queue tx {short(st.queueSig)}
-                              </a>
+                              <Ext href={explorerTx(st.queueSig)}>
+                                {mpc ? "Queue tx" : "Transaction"} {short(st.queueSig)}
+                              </Ext>
                             )}
-                            {st.finalizeSig && (
-                              <a href={explorerTx(st.finalizeSig)} target="_blank" rel="noreferrer">
-                                MPC callback {short(st.finalizeSig)}
-                              </a>
-                            )}
+                            {st.finalizeSig && <Ext href={explorerTx(st.finalizeSig)}>MPC callback {short(st.finalizeSig)}</Ext>}
                           </p>
                         )}
                         {st.error && <p className="tl-error">{st.error}</p>}
@@ -563,7 +742,7 @@ export default function App() {
               <ul>
                 <li>Which juror ids sit on the jury</li>
                 <li>Which traders hold a position</li>
-                <li>Each juror’s ballot, and whether it was overwritten</li>
+                <li>Each juror’s ballot and secret key, and whether the ballot was overwritten</li>
                 <li>Which jurors were excluded as conflicted</li>
               </ul>
             </article>
@@ -571,26 +750,28 @@ export default function App() {
               <h3>Published</h3>
               <ul>
                 <li>
-                  Three numbers: <code>yes</code>, <code>no</code>, <code>excluded</code>
+                  The tally: <code>yes</code>, <code>no</code>, <code>excluded</code> and an <code>incomplete</code> flag
                 </li>
                 <li>That each step ran, through Arcium-signed callbacks</li>
+                <li>Bets in the court’s market, which settles on the tally</li>
               </ul>
               <p className="fine">
-                Any relayer can overwrite a ballot, so a bribed juror can show a YES receipt and quietly change it.
+                A ballot only counts with the seat’s current secret key, and a juror can rotate it silently, so a key
+                handed to a briber is worthless.
               </p>
             </article>
           </div>
           <p className="fine limits">
-            MVP limits: the court authority seats jurors, ids are small integers, and a second wallet evades the filter.
-            The README has the roadmap.
+            MVP limits: the court authority seats jurors and relays positions, so it knows both lists; ids and keys are
+            32-bit; a second wallet evades the filter.
           </p>
         </section>
       </main>
 
       <footer className="foot">
         <div className="foot-links">
-          <a href={REPORT}>Conflict Report: how often UMA voters judged markets they traded</a>
-          <a href={REPO}>Source on GitHub</a>
+          <Ext href={REPORT}>Conflict Report: how often UMA voters judged markets they traded</Ext>
+          <Ext href={REPO}>Source on GitHub</Ext>
         </div>
         <p className="powered">
           <span>Powered by</span>

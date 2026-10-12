@@ -16,7 +16,9 @@ export type Blindcourt = {
     {
       "name": "addJuror",
       "docs": [
-        "Seats an encrypted juror id. Authority only (stands in for sortition + SAS)."
+        "Seats a juror: encrypted (id, key). The ciphertext can come from the juror's",
+        "own browser key, so the authority relays a seat whose ballot key it never sees.",
+        "Authority only (stands in for sortition + identity attestation)."
       ],
       "discriminator": [
         21,
@@ -108,6 +110,7 @@ export type Blindcourt = {
         },
         {
           "name": "courtAcc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -151,6 +154,15 @@ export type Blindcourt = {
           }
         },
         {
+          "name": "jurorKey",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
           "name": "pubkey",
           "type": {
             "array": [
@@ -166,16 +178,16 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "addJurorCallback",
+      "name": "addJurorV3Callback",
       "discriminator": [
-        125,
-        37,
-        113,
-        113,
-        50,
-        194,
+        169,
+        242,
         201,
-        163
+        180,
+        140,
+        227,
+        237,
+        77
       ],
       "accounts": [
         {
@@ -214,7 +226,7 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "addJurorOutput"
+                      "name": "addJurorV3Output"
                     }
                   }
                 }
@@ -225,10 +237,125 @@ export type Blindcourt = {
       ]
     },
     {
+      "name": "bet",
+      "docs": [
+        "Stakes `lamports` on YES (`yes = true`) or NO while the court is unresolved.",
+        "Bets are public; the court authority mirrors bettors into the court with",
+        "`record_positions`, so a bettor who also sits on the jury is excluded."
+      ],
+      "discriminator": [
+        94,
+        203,
+        166,
+        126,
+        20,
+        243,
+        169,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "bettor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "courtAcc",
+          "relations": [
+            "market"
+          ]
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "courtAcc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "bettor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "yes",
+          "type": "bool"
+        },
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "cast",
       "docs": [
-        "Casts or overwrites an encrypted ballot. Any payer can submit it (relayable),",
-        "so the signer reveals nothing about who the juror is."
+        "Casts or overwrites an encrypted ballot (id, key, new_key, yes). It only counts",
+        "inside MPC if `key` is the seat's current key; a non-zero `new_key` rotates it.",
+        "Any payer can relay it, so the signer reveals nothing about who the juror is."
       ],
       "discriminator": [
         8,
@@ -326,6 +453,7 @@ export type Blindcourt = {
         },
         {
           "name": "courtAcc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -369,6 +497,24 @@ export type Blindcourt = {
           }
         },
         {
+          "name": "key",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "newKey",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
           "name": "yes",
           "type": {
             "array": [
@@ -393,16 +539,16 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "castCallback",
+      "name": "castV3Callback",
       "discriminator": [
-        181,
+        216,
+        111,
+        28,
+        185,
+        246,
+        232,
         8,
-        243,
-        95,
-        145,
-        78,
-        116,
-        176
+        84
       ],
       "accounts": [
         {
@@ -441,7 +587,7 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "castOutput"
+                      "name": "castV3Output"
                     }
                   }
                 }
@@ -450,6 +596,112 @@ export type Blindcourt = {
           }
         }
       ]
+    },
+    {
+      "name": "claim",
+      "docs": [
+        "Pays a bettor after the verdict: winners split the whole pool pro rata;",
+        "a tie, an empty winning side or an incomplete verdict refunds every stake."
+      ],
+      "discriminator": [
+        62,
+        198,
+        214,
+        193,
+        213,
+        159,
+        108,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "bettor",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "bet"
+          ]
+        },
+        {
+          "name": "courtAcc",
+          "relations": [
+            "market"
+          ]
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "courtAcc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bet",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "bettor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "createCourt",
@@ -587,16 +839,136 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "initAddJurorCompDef",
+      "name": "createMarket",
+      "docs": [
+        "Opens a YES/NO pari-mutuel market that settles on `court`'s verdict."
+      ],
       "discriminator": [
-        230,
+        103,
+        226,
+        97,
+        235,
+        200,
+        188,
+        251,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "courtAcc"
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "courtAcc"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initAddJurorV3CompDef",
+      "discriminator": [
+        117,
+        13,
+        30,
+        134,
+        10,
+        25,
+        234,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mxeAccount",
+          "writable": true
+        },
+        {
+          "name": "compDefAccount",
+          "writable": true
+        },
+        {
+          "name": "addressLookupTable",
+          "writable": true
+        },
+        {
+          "name": "lutProgram",
+          "address": "AddressLookupTab1e1111111111111111111111111"
+        },
+        {
+          "name": "arciumProgram",
+          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initCastV3CompDef",
+      "discriminator": [
         192,
-        207,
-        209,
-        41,
-        189,
-        152,
-        184
+        91,
+        13,
+        229,
+        93,
+        39,
+        25,
+        74
       ],
       "accounts": [
         {
@@ -632,61 +1004,16 @@ export type Blindcourt = {
       "args": []
     },
     {
-      "name": "initCastCompDef",
+      "name": "initCourtV3Callback",
       "discriminator": [
-        40,
-        81,
-        108,
-        158,
-        154,
-        129,
-        180,
-        153
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "mxeAccount",
-          "writable": true
-        },
-        {
-          "name": "compDefAccount",
-          "writable": true
-        },
-        {
-          "name": "addressLookupTable",
-          "writable": true
-        },
-        {
-          "name": "lutProgram",
-          "address": "AddressLookupTab1e1111111111111111111111111"
-        },
-        {
-          "name": "arciumProgram",
-          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initCourtCallback",
-      "discriminator": [
-        35,
-        233,
-        42,
-        224,
-        127,
-        205,
-        231,
-        193
+        112,
+        88,
+        43,
+        73,
+        13,
+        110,
+        138,
+        75
       ],
       "accounts": [
         {
@@ -725,7 +1052,7 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "initCourtOutput"
+                      "name": "initCourtV3Output"
                     }
                   }
                 }
@@ -736,61 +1063,61 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "initInitCourtCompDef",
+      "name": "initInitCourtV3CompDef",
+      "discriminator": [
+        63,
+        90,
+        48,
+        71,
+        170,
+        62,
+        178,
+        244
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mxeAccount",
+          "writable": true
+        },
+        {
+          "name": "compDefAccount",
+          "writable": true
+        },
+        {
+          "name": "addressLookupTable",
+          "writable": true
+        },
+        {
+          "name": "lutProgram",
+          "address": "AddressLookupTab1e1111111111111111111111111"
+        },
+        {
+          "name": "arciumProgram",
+          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initRecordPositionsV3CompDef",
       "discriminator": [
         164,
-        95,
-        19,
+        29,
         43,
-        4,
-        150,
-        103,
-        127
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "mxeAccount",
-          "writable": true
-        },
-        {
-          "name": "compDefAccount",
-          "writable": true
-        },
-        {
-          "name": "addressLookupTable",
-          "writable": true
-        },
-        {
-          "name": "lutProgram",
-          "address": "AddressLookupTab1e1111111111111111111111111"
-        },
-        {
-          "name": "arciumProgram",
-          "address": "Arcj82pX7HxYKLR92qvgZUAd7vGS1k4hQvAFcPATFdEQ"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initRecordPositionsCompDef",
-      "discriminator": [
-        28,
-        202,
-        203,
-        168,
+        41,
         113,
-        20,
-        95,
-        170
+        178,
+        199,
+        74
       ],
       "accounts": [
         {
@@ -826,16 +1153,16 @@ export type Blindcourt = {
       "args": []
     },
     {
-      "name": "initResolveCompDef",
+      "name": "initResolveV3CompDef",
       "discriminator": [
-        226,
-        115,
-        111,
-        57,
-        156,
-        201,
-        212,
-        143
+        49,
+        252,
+        168,
+        184,
+        39,
+        161,
+        20,
+        37
       ],
       "accounts": [
         {
@@ -973,6 +1300,7 @@ export type Blindcourt = {
         },
         {
           "name": "courtAcc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1036,16 +1364,16 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "recordPositionsCallback",
+      "name": "recordPositionsV3Callback",
       "discriminator": [
-        246,
-        54,
-        179,
-        211,
-        56,
-        42,
-        49,
-        211
+        83,
+        209,
+        149,
+        113,
+        158,
+        62,
+        0,
+        155
       ],
       "accounts": [
         {
@@ -1084,13 +1412,68 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "recordPositionsOutput"
+                      "name": "recordPositionsV3Output"
                     }
                   }
                 }
               ]
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "resetPending",
+      "docs": [
+        "Releases the lock after an aborted computation (its callback never cleared it).",
+        "Authority only."
+      ],
+      "discriminator": [
+        28,
+        246,
+        186,
+        73,
+        123,
+        119,
+        210,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "courtAcc",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  114,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "u32"
         }
       ]
     },
@@ -1189,6 +1572,7 @@ export type Blindcourt = {
         },
         {
           "name": "courtAcc",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1225,16 +1609,16 @@ export type Blindcourt = {
       ]
     },
     {
-      "name": "resolveCallback",
+      "name": "resolveV3Callback",
       "discriminator": [
-        0,
-        130,
-        202,
-        130,
-        180,
-        116,
-        172,
-        193
+        174,
+        182,
+        140,
+        4,
+        23,
+        151,
+        5,
+        100
       ],
       "accounts": [
         {
@@ -1273,7 +1657,7 @@ export type Blindcourt = {
                   "kind": "type",
                   "type": {
                     "defined": {
-                      "name": "resolveOutput"
+                      "name": "resolveV3Output"
                     }
                   }
                 }
@@ -1299,6 +1683,19 @@ export type Blindcourt = {
       ]
     },
     {
+      "name": "betAccount",
+      "discriminator": [
+        117,
+        187,
+        165,
+        174,
+        194,
+        28,
+        119,
+        76
+      ]
+    },
+    {
       "name": "courtAccount",
       "discriminator": [
         7,
@@ -1309,6 +1706,19 @@ export type Blindcourt = {
         108,
         213,
         97
+      ]
+    },
+    {
+      "name": "marketAccount",
+      "discriminator": [
+        201,
+        78,
+        187,
+        225,
+        240,
+        198,
+        201,
+        251
       ]
     }
   ],
@@ -1324,6 +1734,32 @@ export type Blindcourt = {
         65,
         23,
         134
+      ]
+    },
+    {
+      "name": "betEvent",
+      "discriminator": [
+        123,
+        52,
+        73,
+        185,
+        152,
+        169,
+        40,
+        128
+      ]
+    },
+    {
+      "name": "claimEvent",
+      "discriminator": [
+        93,
+        15,
+        70,
+        170,
+        48,
+        140,
+        212,
+        219
       ]
     },
     {
@@ -1360,6 +1796,46 @@ export type Blindcourt = {
       "code": 6003,
       "name": "alreadyResolved",
       "msg": "Court already resolved"
+    },
+    {
+      "code": 6004,
+      "name": "computationPending",
+      "msg": "Another computation is still pending for this court"
+    },
+    {
+      "code": 6005,
+      "name": "marketTooLong",
+      "msg": "Market text is longer than 64 bytes"
+    },
+    {
+      "code": 6006,
+      "name": "notResolved",
+      "msg": "Court not resolved yet"
+    },
+    {
+      "code": 6007,
+      "name": "zeroStake",
+      "msg": "Stake must be positive"
+    },
+    {
+      "code": 6008,
+      "name": "sideMismatch",
+      "msg": "A bettor can only add to the side they already backed"
+    },
+    {
+      "code": 6009,
+      "name": "alreadyClaimed",
+      "msg": "Already claimed"
+    },
+    {
+      "code": 6010,
+      "name": "wrongCourt",
+      "msg": "Market belongs to a different court"
+    },
+    {
+      "code": 6011,
+      "name": "overflow",
+      "msg": "Arithmetic overflow"
     }
   ],
   "types": [
@@ -1388,7 +1864,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "addJurorOutput",
+      "name": "addJurorV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1404,7 +1880,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -1452,7 +1928,63 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "castOutput",
+      "name": "betAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes",
+            "type": "bool"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "betEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes",
+            "type": "bool"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "castV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1468,7 +2000,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -1511,6 +2043,26 @@ export type Blindcourt = {
                 }
               }
             ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "claimEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "bettor",
+            "type": "pubkey"
+          },
+          {
+            "name": "payout",
+            "type": "u64"
           }
         ]
       }
@@ -1799,7 +2351,7 @@ export type Blindcourt = {
                     32
                   ]
                 },
-                11
+                13
               ]
             }
           },
@@ -1834,6 +2386,20 @@ export type Blindcourt = {
           {
             "name": "excluded",
             "type": "u8"
+          },
+          {
+            "name": "pending",
+            "docs": [
+              "A computation is queued and its callback has not landed yet."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "incomplete",
+            "docs": [
+              "A slot overflowed, so the conflict check may be incomplete; markets refund."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -1863,7 +2429,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "initCourtOutput",
+      "name": "initCourtV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -1879,7 +2445,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -2105,6 +2671,34 @@ export type Blindcourt = {
                 }
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "marketAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "courtAcc",
+            "type": "pubkey"
+          },
+          {
+            "name": "yesPool",
+            "type": "u64"
+          },
+          {
+            "name": "noPool",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultBump",
+            "type": "u8"
           }
         ]
       }
@@ -2353,7 +2947,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "recordPositionsOutput",
+      "name": "recordPositionsV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -2369,7 +2963,7 @@ export type Blindcourt = {
                 "generics": [
                   {
                     "kind": "const",
-                    "value": "11"
+                    "value": "13"
                   }
                 ]
               }
@@ -2379,7 +2973,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "resolveOutput",
+      "name": "resolveV3Output",
       "docs": [
         "The output of the callback instruction. Provided as a struct with ordered fields",
         "as anchor does not support tuples and tuple structs yet."
@@ -2391,7 +2985,7 @@ export type Blindcourt = {
             "name": "field0",
             "type": {
               "defined": {
-                "name": "resolveOutputStruct0"
+                "name": "resolveV3OutputStruct0"
               }
             }
           }
@@ -2399,7 +2993,7 @@ export type Blindcourt = {
       }
     },
     {
-      "name": "resolveOutputStruct0",
+      "name": "resolveV3OutputStruct0",
       "type": {
         "kind": "struct",
         "fields": [
@@ -2414,6 +3008,10 @@ export type Blindcourt = {
           {
             "name": "field2",
             "type": "u8"
+          },
+          {
+            "name": "field3",
+            "type": "bool"
           }
         ]
       }
@@ -2571,6 +3169,10 @@ export type Blindcourt = {
           {
             "name": "excluded",
             "type": "u8"
+          },
+          {
+            "name": "incomplete",
+            "type": "bool"
           }
         ]
       }
