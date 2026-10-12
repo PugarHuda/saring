@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type AnchorHTMLAttributes } from "react";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, type PublicKey } from "@solana/web3.js";
 import type { BN } from "@anchor-lang/core";
 import {
   DEFAULT_CHOICE,
@@ -32,6 +32,7 @@ import {
   type Verdict,
 } from "./court";
 import { walletPositions } from "./pantaApi";
+import { PANTA_PROGRAM_ID, buildPantaSettle, simulatePantaSettle, verdictToYesWins, type PantaSettle, type SimResult } from "./pantaSettle";
 
 // three.js is heavy: load it after first paint so the page is usable immediately.
 const Blob = lazy(() => import("./Blob"));
@@ -181,6 +182,11 @@ export default function App() {
   // Panta API's view of each juror wallet: market ids it lists, or "error". Cached across markets.
   const [apiPos, setApiPos] = useState<Record<string, string[] | "error">>({});
   const apiPosRef = useRef(apiPos);
+
+  // Dev-only: lets a local check open the Settle on Panta panel without a 3-minute devnet run.
+  useEffect(() => {
+    if (import.meta.env.DEV) (window as unknown as { __saringVerdict?: typeof setVerdict }).__saringVerdict = setVerdict;
+  }, []);
 
   const setStepStates = (s: StepState[]) => {
     stepsRef.current = s;
@@ -829,6 +835,10 @@ export default function App() {
               </article>
             </div>
           </div>
+
+          {resolved && scenario && (
+            <SettleOnPanta key={`${scenario.market}:${verdict!.yes}:${verdict!.no}:${verdict!.incomplete}`} market={scenario.market} verdict={verdict!} oracle={burner.publicKey} />
+          )}
         </section>
 
         <section id="run" className="block" aria-labelledby="run-h">
@@ -1063,5 +1073,136 @@ export default function App() {
         <p className="fine">Devnet demo. Not audited. No real funds.</p>
       </footer>
     </div>
+  );
+}
+
+/**
+ * After a verdict: builds Panta's real settlement instruction for the replayed market and
+ * simulates it on mainnet (unsigned). Panta's program runs it up to its oracle check.
+ */
+function SettleOnPanta({ market, verdict, oracle }: { market: string; verdict: Verdict; oracle: PublicKey }) {
+  const mapped = verdictToYesWins(verdict);
+  const [built, setBuilt] = useState<PantaSettle | null>(null);
+  const [buildErr, setBuildErr] = useState("");
+  const [sim, setSim] = useState<SimResult | null>(null);
+  const [simErr, setSimErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const yesWins = "yesWins" in mapped ? mapped.yesWins : null;
+
+  const build = useCallback(() => {
+    if (yesWins === null) return;
+    setBuildErr("");
+    withTimeout(buildPantaSettle(market, yesWins, oracle))
+      .then(setBuilt)
+      .catch((e) => setBuildErr(e instanceof Error ? e.message : String(e)));
+  }, [market, yesWins, oracle]);
+  useEffect(build, [build]);
+
+  async function simulate() {
+    if (!built) return;
+    setBusy(true);
+    setSimErr("");
+    try {
+      setSim(await withTimeout(simulatePantaSettle(built)));
+    } catch (e) {
+      setSimErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const ae = sim?.anchorError;
+  return (
+    <article className="glass settle" aria-labelledby="settle-h">
+      <div className="picker-top">
+        <h3 id="settle-h">Settle on Panta</h3>
+        <Ext className="fine" href={explorerMainnetAddr(PANTA_PROGRAM_ID.toBase58())}>
+          Panta program {short(PANTA_PROGRAM_ID.toBase58())} on Explorer
+        </Ext>
+      </div>
+      <p className="settle-why">Today one oracle key settles Panta disputes; Saring’s verdict can replace it.</p>
+      <p className="fine">
+        Verdict {verdict.yes}–{verdict.no}
+        {verdict.incomplete ? ", incomplete" : ""} →{" "}
+        {yesWins === null ? <strong className="bad">no settlement</strong> : <code>yes_wins = {String(yesWins)}</code>}
+      </p>
+      {"refuse" in mapped ? (
+        <p className="notice">{mapped.refuse}</p>
+      ) : buildErr ? (
+        <p className="notice" role="status">
+          Could not build the instruction: {buildErr.slice(0, 200)}{" "}
+          <button type="button" className="pill ghost sm" onClick={build}>
+            Try again
+          </button>
+        </p>
+      ) : !built ? (
+        <p className="fine" role="status">
+          Building Panta’s instruction from its IDL and the market’s mainnet history…
+        </p>
+      ) : (
+        <>
+          <p className="fine">
+            <code>{built.name}(yes_wins: {String(built.yesWins)})</code> on <code>{short(PANTA_PROGRAM_ID.toBase58())}</code>, data{" "}
+            <code>{built.dataHex}</code>. Fee payer in simulation: Panta’s treasury{" "}
+            <code>{short(built.feePayer.toBase58())}</code> (signatures are not checked).
+          </p>
+          <div className="settle-table" tabIndex={0} role="region" aria-label="Instruction accounts (scrolls sideways)">
+            <table>
+              <caption className="sr-only">Accounts of Panta’s {built.name} instruction</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Account</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Resolved from</th>
+                </tr>
+              </thead>
+              <tbody>
+                {built.accounts.map((a) => (
+                  <tr key={a.name}>
+                    <td>
+                      <code>{a.name}</code>
+                    </td>
+                    <td>
+                      <Ext href={explorerMainnetAddr(a.address)}>{short(a.address)}</Ext>
+                    </td>
+                    <td>{[a.signer && "signer", a.writable ? "writable" : "read-only"].filter(Boolean).join(", ")}</td>
+                    <td className="muted-cell">{a.source}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="btn-row">
+            <button type="button" className="pill" onClick={simulate} disabled={busy}>
+              {busy ? "Simulating on mainnet…" : sim ? "Simulate again" : "Simulate on mainnet"}
+            </button>
+          </div>
+          <div role="status" aria-live="polite">
+            {simErr && <p className="notice">Simulation request failed: {simErr.slice(0, 200)}</p>}
+            {sim && (
+              <div className="settle-result">
+                <p className={ae?.code === 6025 || sim.err === null ? "ok" : "bad"}>
+                  {sim.err === null
+                    ? "Panta’s program accepted the instruction end to end in simulation."
+                    : ae?.code === 6025
+                      ? "Panta’s program accepted every account and argument and stopped at its oracle check (Unauthorized 6025): only Panta’s oracle key can sign this. Signed by Panta, Saring’s verdict settles this market."
+                      : ae
+                        ? `Panta’s program stopped at ${ae.name} (${ae.code}): ${ae.msg}. It did not reach the oracle check, so this run does not show the verdict plugging in.`
+                        : `The simulation failed before Panta’s program judged it: ${JSON.stringify(sim.err)}.`}
+                </p>
+                <p className="fine">
+                  Compute units: {sim.unitsConsumed ?? "n/a"} · simulated on Solana mainnet, nothing signed or sent.
+                </p>
+                <details>
+                  <summary>Program logs ({sim.logs.length})</summary>
+                  <pre className="logs">{sim.logs.join("\n")}</pre>
+                </details>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </article>
   );
 }

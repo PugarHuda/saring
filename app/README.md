@@ -31,6 +31,17 @@ Before running, the visitor picks their own ballot (YES/NO) and whether to also 
 
 MPC steps link the queue transaction and the successful callback; plain transactions link once. The last finished run (market, court id and address, verdict, links) is kept in `localStorage` under the burner's pubkey, so a reload still shows it; a saved court the current program (v3.1) can't read is dropped silently.
 
+## Settle on Panta (mainnet simulation)
+
+Once a court resolves, the "Settle on Panta" panel turns the chain verdict into Panta's own settlement instruction for the replayed market and simulates it on Solana mainnet from the browser (`src/pantaSettle.ts`, a port of `sdk/src/panta.ts`). Today one oracle key settles Panta disputes; Saring's verdict can replace it.
+
+- Verdict → `yes_wins`: majority YES/NO only. A tie or an incomplete verdict is refused, with the reason shown.
+- Instruction: `resolve_event` (or `resolve_event_usdc` for USDC markets), encoded from Panta's IDL (`src/idl/panta.json`, trimmed from Panta's published `balr_market` IDL). Seeded PDAs and fixed program addresses come from the IDL; `usdc_mint` and the treasury from Panta's `MarketConfig`; the seedless `vault` / `vault_authority` is read from the market's recent Panta transactions, decoded with the same IDL. The panel lists every account with its role and where it came from.
+- Simulation: `simulateTransaction` with `sigVerify: false, replaceRecentBlockhash: true`. Nothing is signed or sent. The oracle is the visitor's court authority key and Panta's treasury is the fee payer, since the burner holds no mainnet SOL.
+- Expected result: Panta's program accepts every account and argument and stops at its oracle check, `Unauthorized (6025)`. Only Panta's oracle key can sign the same instruction. Any other outcome (an earlier Anchor error, or a failure to resolve the accounts) is shown as it is, with the logs and compute units.
+
+RPC: about 4–8 mainnet calls through `/api/rpc?net=mainnet` (`getSignaturesForAddress`, a few `getTransaction`, `getAccountInfo`, `simulateTransaction`), one at a time.
+
 ## Run
 
 ```bash

@@ -306,3 +306,18 @@ tr.you td { background: rgba(241, 207, 142, 0.06); }
 .facts dt { font-size: 0.74rem; color: var(--dim); }
 .facts dd { margin: 0; font-weight: 600; font-size: 0.9rem; overflow-wrap: anywhere; }
 .tl-hint { margin-bottom: 14px; }
+
+/* Settle on Panta: verdict -> Panta's instruction, simulated on mainnet */
+.settle { padding: 20px 22px; margin-top: 20px; display: grid; gap: 12px; min-width: 0; border-color: rgba(159, 196, 255, 0.35); }
+.settle h3 { margin: 0; }
+.settle-why { font-weight: 600; }
+.settle .notice { width: auto; }
+.settle-table { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+.settle-table th, .settle-table td { padding: 10px 12px; font-size: 0.84rem; }
+.settle-table td:first-child { font-weight: 600; }
+.settle-table td:nth-child(2) { white-space: nowrap; }
+.settle-table .muted-cell { color: var(--muted); min-width: 16ch; }
+.settle-result { display: grid; gap: 8px; }
+.settle-result details summary { cursor: pointer; font-size: 0.86rem; color: var(--muted); min-height: 32px; display: flex; align-items: center; }
+.logs { margin: 6px 0 0; padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); font: 0.74rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow-y: auto; }
+.settle code { overflow-wrap: anywhere; }
