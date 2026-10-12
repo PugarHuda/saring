@@ -27,6 +27,10 @@ function allowed(net, call) {
     return net === "mainnet" && program === PANTA_PROGRAM && Array.isArray(filters)
       && filters.some((f) => f?.dataSize === 202) && filters.some((f) => f?.memcmp);
   }
+  // Mainnet simulation is read-only (nothing is signed or landed): the app uses
+  // it to show that a verdict-built Panta settlement passes everything but
+  // Panta's oracle signature check.
+  if (call.method === "simulateTransaction") return true;
   return READ.has(call.method) || (net === "devnet" && DEVNET_WRITE.has(call.method));
 }
 
