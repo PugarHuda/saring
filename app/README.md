@@ -1,4 +1,4 @@
-# Blindcourt web demo
+# Saring web demo
 
 Runs the `tests/blindcourt.ts` scenario from the browser against Solana devnet and the Arcium devnet cluster (offset 456): open a court, seat 5 encrypted jurors, record 5 encrypted positions, cast 7 ballots (including the bribed overwrite), resolve, then read `yes / no / excluded` from the court account.
 

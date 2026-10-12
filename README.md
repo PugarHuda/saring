@@ -1,5 +1,7 @@
 # Saring
 
+**Live demo: https://saring-silk.vercel.app** · Conflict Report: https://pugarhuda.github.io/saring/
+
 **A conflict-blind jury for prediction-market disputes, on Solana with Arcium MPC.**
 
 *Saring* is Indonesian for "filter". Jurors who hold a position in the disputed market are dropped silently. The chain only ever sees ciphertexts: not who sits on the jury, not who traded, and not which jurors were excluded. The MPC never reveals which jurors were excluded. (In this MVP the court authority seats the jurors and relays the positions, so it knows both lists. See [Limitations](#limitations-mvp-and-roadmap).) The only public output is `(yes, no, excluded)`.
