@@ -13,6 +13,23 @@ Built for Colosseum's Crypto World's Fair (Sep 14 to Oct 12, 2026). MIT-licensed
 - **Real Panta data:** the demo dispute is a real [Panta](https://panta.market) market. Its holders are read from Panta's program on Solana mainnet (see [Panta integration](#panta-integration)).
 - **Conflict Report:** https://pugarhuda.github.io/saring/
 
+## Chain integrations
+
+The court itself (encrypted state, MPC tally, settlement market) runs only on Solana devnet with Arcium. Each other chain either feeds it real data, pays for it, or consumes its verdict. Status is as of 2026-10-12: **Live** means it ran on a public network and the links below show it; **Pending** means the code is built and tested but the public-network run hasn't happened yet.
+
+| Chain | Folder | What Saring does there | Status | Proof |
+|---|---|---|---|---|
+| **Solana devnet + Arcium** | [`programs/`](programs/), [`encrypted-ixs/`](encrypted-ixs/), [`app/`](app/) | The court: encrypted holder set, jury, ballots and seat keys; MPC drops conflicted jurors; pari-mutuel market pays on the verdict | **Live** | [program `3CeQ…KyfHy`](https://explorer.solana.com/address/3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy?cluster=devnet), [web app](https://saring-silk.vercel.app) |
+| **Solana mainnet (Panta, via Solami)** | [`panta/`](panta/) | Reads real Panta holders; scans Panta's whole history (4 disputes, every one settled by a Panta admin key); live feed and stats over Solami gRPC/RPC, shown as a live panel in the app | **Live** (reads only; Solami Mirage refused for our key) | [`panta/README.md`](panta/README.md) |
+| **Tempo (Moderato testnet)** | [`tempo/`](tempo/) | Dispute fee paid in pathUSD with the court id as TIP-20 memo; MPP 402 pay-per-court (payment opens a real devnet court); `SaringMarket` settles only on a relayer-signed EIP-712 verdict | **Live** | [market `0x256E…0446`](https://explore.testnet.tempo.xyz/address/0x256EebAd0930Fe8e899B5E7C239130db50Af0446), [settle tx](https://explore.testnet.tempo.xyz/tx/0x05a3e4459f2988318d887d027fd94047ffe3c630d6c7fc85b02b42992dd5340d) |
+| **Ethereum L1** | [`ethereum/`](ethereum/) | Rebuilds UMA VotingV2 votes from L1 logs with no indexer: 4,079 of 4,121 Conflict Report tallies match exactly (42 differences explained), 96/96 top-10 and 70/70 case-study conflict rows confirmed on chain. `UmaConflictRegistry` commits the conflicted-voter set as a Merkle root | Verification **Live** (mainnet reads); registry **Pending** Sepolia deploy (needs testnet ETH; tests and local deploy pass) | [`ethereum/README.md`](ethereum/README.md) |
+| **Zcash (NU7 testnet)** | [`zcash/`](zcash/) | Juror bonds and refunds + rewards as shielded ZEC with encrypted memos, tied to devnet court `HRA5…h7FM` | **Live** | [payout tx `752e543c…`](https://testnet.zecblock.com/tx/752e543cd8ef2d4e35511c09afe89d89d164df4c3adb4f1dc909d64b5e03aa85) |
+| **Hyperliquid (HIP-4, mainnet reads)** | [`hyperliquid/`](hyperliquid/) | Real holders of HIP-4 question #391 mirrored into devnet court `FoRH…zPQBv`; verdict NO with the holder-juror dropped; `settleOutcome` action built from the verdict | Court **Live**; `settleOutcome` printed, **not submitted** (needs the deployer's permission) | [resolve tx](https://explorer.solana.com/tx/5vskW3KgJ9WYKgkzy8773i3tF7aFpUwqvviLNYodNyAjm8oCkNCVwKz7wF5nfNSw3BN31t8uCjTU6xZCHNFgGfNX?cluster=devnet) |
+| **Arbitrum (Sepolia)** | [`arbitrum/`](arbitrum/) | `SaringEscalationManager`: UMA OOv3 disputes go to a Saring court instead of the DVM | **Pending** testnet run (6/6 Foundry tests incl. a fork test against the real OOv3; full flow rehearsed on a fork) | [`arbitrum/README.md`](arbitrum/README.md) |
+| **Base (Sepolia + mainnet reads)** | [`base/`](base/) | `SaringArbitrator` as a Reality.eth v3 arbitrator; real Limitless market holders read from Base mainnet | Holders **Live**; arbitrator **Pending** testnet run (5/5 Foundry tests incl. a fork test against the real Reality.eth; flow rehearsed on a fork) | [`base/README.md`](base/README.md) |
+
+Not integrated: Robinhood Chain, because neither UMA nor Reality.eth is deployed there.
+
 ---
 
 ## Why
@@ -173,6 +190,12 @@ tests/blindcourt.ts             end-to-end Panta dispute + market (localnet or d
 app/                            web app (Vite + React + three.js), runs the dispute on devnet
 conflict-report/                Conflict Report pipeline (Python) and site source
 docs/                           published Conflict Report (GitHub Pages)
+tempo/                          Tempo: memo fees, MPP pay-per-court, SaringMarket settled by verdict
+ethereum/                       Ethereum L1: UMA votes rebuilt from logs, UmaConflictRegistry
+zcash/                          Zcash: shielded juror bonds, refunds and rewards
+hyperliquid/                    Hyperliquid HIP-4: real holders mirrored into a court
+arbitrum/                       Arbitrum: UMA OOv3 escalation manager
+base/                           Base: Reality.eth v3 arbitrator, real Limitless holders
 ```
 
 ## Docs
