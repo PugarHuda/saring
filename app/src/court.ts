@@ -20,7 +20,10 @@ import idl from "./idl/blindcourt.json";
 import type { Blindcourt } from "./idl/blindcourt";
 
 export const CLUSTER_OFFSET = 456; // Arcium devnet cluster
-export const RPC_URL: string = import.meta.env.VITE_RPC_URL || "https://api.devnet.solana.com";
+// RPC goes through the same-origin proxy (app/api/rpc.js) so the provider key
+// stays server-side. VITE_RPC_URL overrides it for local dev.
+const proxy = (net: string) => `${globalThis.location?.origin ?? ""}/api/rpc?net=${net}`;
+export const RPC_URL: string = import.meta.env.VITE_RPC_URL || proxy("devnet");
 export const PROGRAM_ID = new PublicKey(idl.address);
 const FINALIZE_TIMEOUT_MS = 300_000;
 
@@ -71,7 +74,7 @@ export type Client = ReturnType<typeof makeClient>;
 
 // ---------- scenario (built from real Panta data on Solana mainnet) ----------
 
-export const MAINNET_RPC_URL: string = import.meta.env.VITE_MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com";
+export const MAINNET_RPC_URL: string = import.meta.env.VITE_MAINNET_RPC_URL || proxy("mainnet");
 export { DEMO_MARKET as PANTA_MARKET };
 export const pantaMarketUrl = (m: string) => `https://explorer.solana.com/address/${m}`;
 export const explorerMainnetAddr = (a: string) => `https://explorer.solana.com/address/${a}`;
@@ -252,7 +255,30 @@ export async function queueStep(c: Client, courtId: number, mxePub: Uint8Array, 
       b = m.resolve(offset, courtId);
       break;
   }
-  return b.accountsPartial(queueAccounts(CIRCUIT[a.kind], offset)).rpc({ skipPreflight: true, commitment: "confirmed" });
+  const tx = await b.accountsPartial(queueAccounts(CIRCUIT[a.kind], offset)).transaction();
+  return sendAndPoll(c, tx);
+}
+
+/**
+ * Signs, sends and confirms by polling getSignatureStatuses over HTTP. Anchor's
+ * `.rpc()` confirms over a websocket, which the serverless RPC proxy can't carry.
+ */
+async function sendAndPoll(c: Client, tx: Transaction): Promise<string> {
+  const { blockhash, lastValidBlockHeight } = await c.connection.getLatestBlockhash("confirmed");
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = c.authority;
+  const signed = await c.provider.wallet.signTransaction(tx);
+  const raw = signed.serialize();
+  const sig = await c.connection.sendRawTransaction(raw, { skipPreflight: true, maxRetries: 5 });
+  while ((await c.connection.getBlockHeight("confirmed")) <= lastValidBlockHeight) {
+    const { value } = await c.connection.getSignatureStatuses([sig]);
+    const s = value[0];
+    if (s?.err) throw new Error(`Transaction ${sig} failed: ${JSON.stringify(s.err)}`);
+    if (s?.confirmationStatus === "confirmed" || s?.confirmationStatus === "finalized") return sig;
+    await c.connection.sendRawTransaction(raw, { skipPreflight: true }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  throw new Error(`Transaction ${sig} expired before confirmation`);
 }
 
 /** Waits for the MPC callback; returns the finalize tx signature. */
