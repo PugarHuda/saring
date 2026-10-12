@@ -1,0 +1,210 @@
+{
+ "generated_utc": "2026-10-11T10:41:29+00:00",
+ "window_start": "2025-01-01",
+ "uma_yes_no_requests_resolved": 4421,
+ "mapped_to_polymarket": 4093,
+ "disputes_with_votes": 4093,
+ "unique_voters": 6197,
+ "voters_probed_for_link": 6197,
+ "voters_with_activity_fetched": 6197,
+ "unique_markets": 3566,
+ "voters_linked_to_polymarket_wallet": 3742,
+ "voters_linked_via_eoa": 4,
+ "voters_linked_via_safe": 3741,
+ "disputes_with_conflicted_voter": 834,
+ "pct_disputes_with_conflicted_voter": 20.38,
+ "conflicted_vote_rows": 2256,
+ "unique_conflicted_voters": 405,
+ "conflicted_token_pct_all_disputes": 0.004,
+ "conflicted_token_pct_median_when_present": 0.01,
+ "max_conflicted_pct": 1.32,
+ "self_serving_share_of_conflicted_votes": 0.472,
+ "outcome_flips_if_conflicted_removed": 0,
+ "disputes_falling_below_supermajority_if_removed": 0,
+ "disputes_market_volume_ge_1M": 644,
+ "pct_of_those_with_conflicted_voter": 65.68,
+ "unique_markets_with_conflicted_voter": 558,
+ "total_conflicted_position_cost_usdc": 8032067,
+ "top20_disputes_by_volume": [
+  {
+   "market": "MicroStrategy sells any Bitcoin by May 31, 2026?",
+   "vote_round_end_utc": "2026-06-03",
+   "volume_usd": 375813105,
+   "voters": 607,
+   "conflicted_voters": 14,
+   "conflicted_pct": 0.13,
+   "outcome_flips": false
+  },
+  {
+   "market": "MicroStrategy sells any Bitcoin by May 31, 2026?",
+   "vote_round_end_utc": "2026-06-03",
+   "volume_usd": 375813105,
+   "voters": 607,
+   "conflicted_voters": 14,
+   "conflicted_pct": 0.13,
+   "outcome_flips": false
+  },
+  {
+   "market": "US forces enter Iran by April 30?",
+   "vote_round_end_utc": "2026-04-06",
+   "volume_usd": 269049107,
+   "voters": 619,
+   "conflicted_voters": 6,
+   "conflicted_pct": 0.04,
+   "outcome_flips": false
+  },
+  {
+   "market": "US forces enter Iran by April 30?",
+   "vote_round_end_utc": "2026-04-08",
+   "volume_usd": 269049107,
+   "voters": 635,
+   "conflicted_voters": 11,
+   "conflicted_pct": 0.08,
+   "outcome_flips": false
+  },
+  {
+   "market": "Will Zelenskyy wear a suit before July?",
+   "vote_round_end_utc": "2025-06-02",
+   "volume_usd": 242231180,
+   "voters": 256,
+   "conflicted_voters": 1,
+   "conflicted_pct": 0.01,
+   "outcome_flips": false
+  },
+  {
+   "market": "Will Zelenskyy wear a suit before July?",
+   "vote_round_end_utc": "2025-06-04",
+   "volume_usd": 242231180,
+   "voters": 193,
+   "conflicted_voters": 1,
+   "conflicted_pct": 0.01,
+   "outcome_flips": false
+  },
+  {
+   "market": "Will Zelenskyy wear a suit before July?",
+   "vote_round_end_utc": "2025-06-28",
+   "volume_usd": 242231180,
+   "voters": 286,
+   "conflicted_voters": 11,
+   "conflicted_pct": 0.08,
+   "outcome_flips": false
+  },
+  {
+   "market": "Will Zelenskyy wear a suit before July?",
+   "vote_round_end_utc": "2025-07-04",
+   "volume_usd": 242231180,
+   "voters": 287,
+   "conflicted_voters": 18,
+   "conflicted_pct": 0.09,
+   "outcome_flips": false
+  },
+  {
+   "market": "Will Zelenskyy wear a suit before July?",
+   "vote_round_end_utc": "2025-07-08",
+   "volume_usd": 242231180,
+   "voters": 243,
+   "conflicted_voters": 19,
+   "conflicted_pct": 0.14,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran ceasefire extended by April 22, 2026?",
+   "vote_round_end_utc": "2026-04-26",
+   "volume_usd": 203621392,
+   "voters": 612,
+   "conflicted_voters": 1,
+   "conflicted_pct": 0.01,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran ceasefire extended by April 22, 2026?",
+   "vote_round_end_utc": "2026-04-26",
+   "volume_usd": 203621392,
+   "voters": 612,
+   "conflicted_voters": 1,
+   "conflicted_pct": 0.01,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran ceasefire extended by April 22, 2026?",
+   "vote_round_end_utc": "2026-04-30",
+   "volume_usd": 203621392,
+   "voters": 328,
+   "conflicted_voters": 2,
+   "conflicted_pct": 0.01,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran permanent peace deal by June 15, 2026?",
+   "vote_round_end_utc": "2026-06-17",
+   "volume_usd": 177370818,
+   "voters": 562,
+   "conflicted_voters": 8,
+   "conflicted_pct": 0.05,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran permanent peace deal by June 15, 2026?",
+   "vote_round_end_utc": "2026-06-17",
+   "volume_usd": 177370818,
+   "voters": 562,
+   "conflicted_voters": 8,
+   "conflicted_pct": 0.05,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran ceasefire by April 7?",
+   "vote_round_end_utc": "2026-04-10",
+   "volume_usd": 173696184,
+   "voters": 635,
+   "conflicted_voters": 4,
+   "conflicted_pct": 0.03,
+   "outcome_flips": false
+  },
+  {
+   "market": "US x Iran ceasefire by April 7?",
+   "vote_round_end_utc": "2026-04-10",
+   "volume_usd": 173696184,
+   "voters": 636,
+   "conflicted_voters": 4,
+   "conflicted_pct": 0.03,
+   "outcome_flips": false
+  },
+  {
+   "market": "US government shutdown Saturday?",
+   "vote_round_end_utc": "2026-02-03",
+   "volume_usd": 157296576,
+   "voters": 641,
+   "conflicted_voters": 25,
+   "conflicted_pct": 0.09,
+   "outcome_flips": false
+  },
+  {
+   "market": "US government shutdown Saturday?",
+   "vote_round_end_utc": "2026-02-03",
+   "volume_usd": 157296576,
+   "voters": 643,
+   "conflicted_voters": 25,
+   "conflicted_pct": 0.09,
+   "outcome_flips": false
+  },
+  {
+   "market": "Russia x Ukraine ceasefire by May 31, 2026?",
+   "vote_round_end_utc": "2026-05-10",
+   "volume_usd": 141250713,
+   "voters": 364,
+   "conflicted_voters": 1,
+   "conflicted_pct": 0.02,
+   "outcome_flips": false
+  },
+  {
+   "market": "Khamenei out as Supreme Leader of Iran by February 28?",
+   "vote_round_end_utc": "2026-03-03",
+   "volume_usd": 131114971,
+   "voters": 633,
+   "conflicted_voters": 12,
+   "conflicted_pct": 0.04,
+   "outcome_flips": false
+  }
+ ]
+}

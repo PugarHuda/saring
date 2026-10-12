@@ -32,23 +32,23 @@
   resolved "https://registry.yarnpkg.com/@anchor-lang/errors/-/errors-1.1.2.tgz#25d5685ed03aadf3acfe47a4795bd28b5aef699a"
   integrity sha512-+l5fLYF79t7LAYz+YbjjLzmjj6U1za6Q0cH4GBMWx4vUijlPTkm9Oj/cyDPLJG6Hsx+VFxceh7/+qbca5nnEmg==
 
-"@arcium-hq/client@0.13.2":
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/@arcium-hq/client/-/client-0.13.2.tgz#1bc3370d137127bc0743900c9724142c7b4c49d4"
-  integrity sha512-lAS/iRsYFoPlGaePl2d/6wOOexQn+cy7JfDCmoKYy3oIJk6zvbo8fB+lamZetiHX2S/EH/5GRpZxax3h7RAl8A==
+"@arcium-hq/client@0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@arcium-hq/client/-/client-0.15.0.tgz#e8f2a73f135cc00b0aaa4ddea03b5e95865db268"
+  integrity sha512-/CICRfTzbab7L3h68ZP8zbELDeAT7jebGjY3PTJyiKkl2iIyqjEpRdEqMuxkMIzwDhAHMKj3ua6RumBUexosXQ==
   dependencies:
     "@anchor-lang/core" "^1.0.2"
     "@noble/curves" "^1.9.5"
     "@noble/hashes" "^1.7.1"
     "@solana/web3.js" "^1.95.4"
 
-"@arcium-hq/reader@0.13.2":
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/@arcium-hq/reader/-/reader-0.13.2.tgz#3f41d72d8f5ce2254fe9943f309fe88aaae864b5"
-  integrity sha512-381/R0p0laqT37O5N9rSov1m9GAJXxnQacsreQXfAeiMrbaU/+xbztQzvyfzrjxRL8f5RcueJN0fX36WSVEw/g==
+"@arcium-hq/reader@0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@arcium-hq/reader/-/reader-0.15.0.tgz#259eec6ebfd7c323277a51e85265d578877aa8b5"
+  integrity sha512-aVRYbqZua8szk9GlFAGNdbb0wKpVk4B9MYQ24fKuJJ4WCwMxxZH1yJgYakwMZFABlWIvcA+k1vl8Gu2Xqe7P5w==
   dependencies:
     "@anchor-lang/core" "^1.0.2"
-    "@arcium-hq/client" "0.13.2"
+    "@arcium-hq/client" "0.15.0"
     "@noble/curves" "^1.9.5"
     "@noble/hashes" "^1.7.1"
 
