@@ -35,6 +35,38 @@ The same contract also runs on Ethereum Sepolia against UMA's OOv3 there. See [`
 Foundry is now 10/10, including fork tests with the real VAA for the positive case, a tampered payload, a wrong emitter and a wrong court.
 The older EIP-712 deployment `0xd96e40e3…` below is kept as history.
 
+## Kleros v2 adapter: `SaringArbitratorV2` (IArbitratorV2)
+
+Why Arbitrum: Kleros v2 and Precog live here. `SaringArbitratorV2` implements Kleros v2's own arbitrator standard,
+`IArbitratorV2` (vendored from kleros/kleros-v2 `contracts/src/arbitration/interfaces/`, with the same events and signatures:
+`createDispute`, `arbitrationCost`, `currentRuling`, `DisputeCreation`, `Ruling`, `RulingExecuted`). Any `IArbitrableV2` written
+for KlerosCore can point at it and get its ruling from a Saring court. The verdict arrives as a Wormhole VAA, checked by the
+same `SaringWormhole.verdictFromVaa` as `resolveWithVaa` above (guardian signatures via the core bridge, the Solana emitter PDA, and the 45-byte payload).
+
+- Binary disputes only (`_numberOfChoices == 2`). Ruling 1 = YES majority, 2 = NO majority, 0 = refused (a tie, or an incomplete conflict check; a tie also sets `tied`). There are no appeals, so `overridden` is always false.
+- The fee is a flat ETH `arbitrationCost`, forwarded to the operator. The ERC20 overloads revert with `TokenNotAccepted`, which is what KlerosCore does for a token it has not accepted.
+- The operator calls `bindCourt(disputeID, court)` once the Saring court is open on Solana. Anyone may then call `ruleWithVaa(disputeID, vaa)`, which pushes the ruling into `arbitrable.rule()`.
+- `SaringEscrow` is a minimal `IArbitrableV2`. A payer locks ETH for a payee, and either party can dispute by paying `arbitrationCost`. Ruling 1 pays the payee, 2 refunds the payer, and 0 splits the amount.
+
+**Live on Arbitrum Sepolia** (both Sourcify exact match): `SaringArbitratorV2` [`0xc2b4805d…5ba5`](https://sepolia.arbiscan.io/address/0xc2b4805da6899d788b179f12eb19136bd73f5ba5),
+`SaringEscrow` [`0x31ee6aaa…6766`](https://sepolia.arbiscan.io/address/0x31ee6aaa1d24b0b18bbb4cf22c879a22fcea6766).
+`flow-kleros.ts` used court `24gQ…YGb` (resolved NO) and its recorded VAA:
+[deploy arbitrator](https://sepolia.arbiscan.io/tx/0xb659f59d7fdbf24deae251a3fbd734bdaeb38d3ad44800506f5ca5be264110bd),
+[deploy escrow](https://sepolia.arbiscan.io/tx/0x309659d408062f02893b15c433a24d9fcd0fcce9b1568ab856c084d3c3ce4712),
+[open 0.0001 ETH deal](https://sepolia.arbiscan.io/tx/0x32bccc1fbbb2043a4c8ea319f8a439c958a7182ab227263d22220c9a4cda9c83),
+[dispute → createDispute](https://sepolia.arbiscan.io/tx/0xa8c952b2654df3ea2681362af7ad5092e103c7bae776861f4b3a27e3227e9df3),
+[bindCourt](https://sepolia.arbiscan.io/tx/0x45c87523614febe1046b5a683df279647d64d54fd72125f18232bf5aceeddc37),
+[ruleWithVaa → rule(0, 2) → payer refunded](https://sepolia.arbiscan.io/tx/0x4a9da88971511f607a2d45a18866e6dd7dd5ceb2cbab5f78d65226352e18eeea).
+`currentRuling(0)` returned `(2, false, false)` and the escrow ended empty. The whole run cost 0.000042 ETH in gas (`out/flow-kleros.log`).
+Foundry: 7/7 pass (`out/forge-test-kleros.log`). The fork tests use the real VAA and the real core bridge. They cover the full flow, a tampered VAA,
+a wrong emitter (a genuine VAA from another emitter, and our VAA against an arbitrator expecting a different emitter) and a wrong court. Unit tests with a mock bridge cover YES, tie, incomplete and the reject paths.
+
+```bash
+(cd contracts && forge test --match-contract SaringArbitratorV2Test)
+RPC_URL_EVM=http://127.0.0.1:8545 npx tsx flow-kleros.ts   # anvil-fork rehearsal (see Commands)
+npx tsx flow-kleros.ts [court]                             # live; needs ../wormhole/out/vaa-<court>.json
+```
+
 ## Status
 
 - **Foundry: 6/6 pass** (`out/forge-test.log`). One of them, `test_fork_realOOv3`, forks Arbitrum Sepolia and runs the full

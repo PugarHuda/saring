@@ -1,0 +1,11 @@
+No files changed, compilation skipped
+Ran 7 tests for test/SaringArbitratorV2.t.sol:SaringArbitratorV2Test
+[PASS] test_fork_vaa_fullFlow() (gas: 590054)
+[PASS] test_fork_vaa_tampered() (gas: 427924)
+[PASS] test_fork_vaa_wrongCourt() (gas: 430195)
+[PASS] test_fork_vaa_wrongEmitter() (gas: 814507)
+[PASS] test_rejects() (gas: 1083070)
+[PASS] test_releaseWithoutDispute() (gas: 521782)
+[PASS] test_rulingMapping() (gas: 1669799)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 6.01s (23.02s CPU time)
+Ran 1 test suite in 6.02s (6.01s CPU time): 7 tests passed, 0 failed, 0 skipped (7 total tests)

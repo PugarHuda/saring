@@ -9,5 +9,14 @@
   "bindCourt": "0x161d976f662f7f3c7cc5cdc1ad2e1bfac2803861846f9c35fc27276f8f187a6a",
   "disputeAssertion": "0xc1198c693e0f6eaeb42feb997d60ab77db0d05ebf3c17f400eb43323d35adc6e",
   "resolve": "0x47d123956b20235728e45363a7f72d5b9c1c36d79ceb67cb6826775f24da3324",
-  "settleAssertion": "0x60761025882c3d693c27867d0e5e8d14876642233477104ab39fec89c47cdf72"
+  "settleAssertion": "0x60761025882c3d693c27867d0e5e8d14876642233477104ab39fec89c47cdf72",
+  "kleros_deployArbitrator": "0xb659f59d7fdbf24deae251a3fbd734bdaeb38d3ad44800506f5ca5be264110bd",
+  "kleros_deployEscrow": "0x309659d408062f02893b15c433a24d9fcd0fcce9b1568ab856c084d3c3ce4712",
+  "klerosArbitrator": "0xc2b4805da6899d788b179f12eb19136bd73f5ba5",
+  "klerosEscrow": "0x31ee6aaa1d24b0b18bbb4cf22c879a22fcea6766",
+  "klerosCourt": "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb",
+  "kleros_open": "0x32bccc1fbbb2043a4c8ea319f8a439c958a7182ab227263d22220c9a4cda9c83",
+  "kleros_dispute": "0xa8c952b2654df3ea2681362af7ad5092e103c7bae776861f4b3a27e3227e9df3",
+  "kleros_bindCourt": "0x45c87523614febe1046b5a683df279647d64d54fd72125f18232bf5aceeddc37",
+  "kleros_ruleWithVaa": "0x4a9da88971511f607a2d45a18866e6dd7dd5ceb2cbab5f78d65226352e18eeea"
 }
