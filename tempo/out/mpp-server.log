@@ -5,3 +5,10 @@ MPP court endpoint on http://localhost:8787/courts, price 0.50 pathUSD -> 0xCffD
 402 challenge issued for "Tempo MPP demo: did @debar win NectarFi Frontier?"
 payment verified; opening court for "Tempo MPP demo: did @debar win NectarFi Frontier?" (authority 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ, 1.817757418 SOL)
 court opened Fy8oQL3Paip4HAZd2gVGCBrZWYGqTbgUZT3gP4BPpPek (id 129631125) queue 4ZcawvevHw7PRoejjvN2e1g9npEdTzLQsenScgHZt6RdtwcdtsZkcBNXfD7C1B7KH8fq7vy93Hvwhjt8fRW1jq83 callback 5XgJHaXPHwf4DS9xjoTGBi3pmubp5gqafrEzRY5BY42Dh4HNwXHFgHyKcMJcPSe7rWLWLJAEts8Pwpcou1WQHjci
+
+=== 2026-10-12T16:14:06.439Z ===
+MPP court endpoint on http://localhost:8788/courts, price 0.50 pathUSD -> 0xCffDaB023df861A8C72Ee2790c96242734d8FFf2
+402 challenge issued for "MPP e2e: did the venue's market resolve YES?"
+402 challenge issued for "MPP e2e: did the venue's market resolve YES?"
+payment verified; opening court for "MPP e2e: did the venue's market resolve YES?" (authority 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ, 7.489653524 SOL)
+court opened H7BdJraNzvNQBS6WaYxiaSK9jGrAFqVKfVVaNHSvNKU1 (id 1390085623) queue 4rtiYBLTUGeHtEVXbx8LUCQMRYJwgP3azmCceW9885fNe7S6UZyjvHjRXhygP5eyUdnicW3HGnSgqq8tZyTKxSaC callback 3DW7QAmNitw36WgGvdB1vnRJJQb5kchdsxJSyR9hcnoWhSHrEZ6PPy5atMEPff68tuQgcUj1x1gNfxS54Y8ahgeu; paid by Tempo tx 0x5201309197c561fdf37b1668febb0019b7d04f4577fd2b0cb6d944fc60e9bd45

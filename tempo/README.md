@@ -36,6 +36,23 @@ Reconcile output (`out/reconcile.log`): 2 payments, 1.50 USD, 0 unmatched. The f
 
 Logs are in `out/*.log`, every hash is in `out/state.json`, and `out/forge-test.log` holds the 9 passing Foundry tests (pro-rata payout, bad and tampered signature, high-s, double settle, tie, incomplete, empty winning side, claim before settle, zero bet).
 
+## One paid dispute, end to end (`mpp-e2e.ts`), 2026-10-12
+
+`npx tsx mpp-e2e.ts` runs the full machine-payable dispute in one command (`--resume` continues from the checkpoint in `out/state.json` if the Tempo RPC drops a request). Log: `out/mpp-e2e.log`. This closes the gap noted below: the paid court is now juried, resolved, attested and settled.
+
+| # | Step | Tx |
+|---|---|---|
+| 1 | Venue bot gets the 402, pays **0.50 pathUSD** over MPP; `mpp-server.ts` opens court [`H7BdJraN…NKU1`](https://explorer.solana.com/address/H7BdJraNzvNQBS6WaYxiaSK9jGrAFqVKfVVaNHSvNKU1?cluster=devnet) (id 1390085623) | Tempo [0x52013091…](https://explore.testnet.tempo.xyz/tx/0x5201309197c561fdf37b1668febb0019b7d04f4577fd2b0cb6d944fc60e9bd45), devnet [open](https://explorer.solana.com/tx/3DW7QAmNitw36WgGvdB1vnRJJQb5kchdsxJSyR9hcnoWhSHrEZ6PPy5atMEPff68tuQgcUj1x1gNfxS54Y8ahgeu?cluster=devnet) |
+| 2 | 3 jurors seated; juror A's identity is mirrored (encrypted) as a position holder | [seat A](https://explorer.solana.com/tx/2FRzme9eYqN6AqR6ut8K6dyvzVtqbxMueSrDdX5ozT59ukFAJntU3qvgBLkbNGkAoMpzqFAgokpuXC8N9Tn4GhFU?cluster=devnet), [seat B](https://explorer.solana.com/tx/3iT3VgUuzV5Q2XBcCEoZoDC5qY6JgXxD4cSs3oN8ZUfCdrBhkyHJ6koXHyNjMYDzYKYArsoohwXYQydYGwu2uouW?cluster=devnet), [seat C](https://explorer.solana.com/tx/3WyvtkcpciDWhwWzHDkPwtC5L9i7jfnvZqcnYgJ7tNDsdNEBGWbMnrkpbLNvKy3j2i4DZKpSQwTWjb2S4crAEpzF?cluster=devnet), [mirror](https://explorer.solana.com/tx/4dxdBYQEveTpQhYWKBTULQQyb7UHmX8HQQ1n7dX9NmYsqFxNR9JyBso4SY4vP29x8Ffczouenx45vDs8bfXLNgbd?cluster=devnet) |
+| 3 | Ballots A YES, B NO, C NO; Arcium MPC drops A's ballot and resolves **NO (yes 0 / no 2 / excluded 1)**; 0.063 devnet SOL total | [cast A](https://explorer.solana.com/tx/o4ugxgPPWvvLzZPLJicwp25tN2pqJMpaM1FQRYdrX2vgea27JaAPi3oYnLGkgkinBkj78cnuJFfEnnf9XFhAYeU?cluster=devnet), [cast B](https://explorer.solana.com/tx/42BzGc4e4zqpRkgJveRHBKHxp51RVZim4vTb6RopdDUXufLzNpmv9Wx7C4RNZrGcjtzdy5yDJKpjMXaYYwcwe1mA?cluster=devnet), [cast C](https://explorer.solana.com/tx/4Zc7gYeTHPKKWamcCxreStUi8Tzxe5Y6E9fgpq5ipyrDtXqfaCPqq3a3azFaZDKwrcmQ9QfxGx64HG46mv1Diy4S?cluster=devnet), [resolve](https://explorer.solana.com/tx/5hYSQ4Cj5es4yBHxkqd5HaxeYsnr2HGA6CrxcyrcBR2SosmmrAcXFNhMKk9DTTC96YWoBRZbKygtoi2Ju2yaqgSH?cluster=devnet) |
+| 4 | `saring_wormhole` posts the verdict; guardian-signed VAA seq 2 | [post](https://explorer.solana.com/tx/5RHLwLv5w4qUf2wjsj4sLLzNpRFPyUD96RmPBJaf5g4M4urCPAj5mFKjinBTKPem48T6DYdQZLKeHP3fPcEQGmmq?cluster=devnet), [Wormholescan](https://wormholescan.io/#/tx/5RHLwLv5w4qUf2wjsj4sLLzNpRFPyUD96RmPBJaf5g4M4urCPAj5mFKjinBTKPem48T6DYdQZLKeHP3fPcEQGmmq?network=Testnet) ([API](https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238/2)) |
+| 5 | Fresh `SaringMarket` [`0x4df7a5af…5eae`](https://explore.testnet.tempo.xyz/address/0x4df7a5af22bb31c5f33cf6d5a0e28859faa45eae) for this court, `relayer = address(0)` (VAA only); bets A 3 YES, B 2 NO (approve+bet in one 0x76 tx each) | [deploy](https://explore.testnet.tempo.xyz/tx/0xc627c35245159af11dd13b8cdcc5169372690441c07990f76d0347c5e8e92d11), [bet A](https://explore.testnet.tempo.xyz/tx/0x9283672603f07f26c4c694080aeb7dffd347fadca7d9ae1478715b32dadcbfdf), [bet B](https://explore.testnet.tempo.xyz/tx/0x2e373f941fceb5811d6610b5d4fdd3409a375ea4e9a4fda1877e58e16bcbda53) |
+| 6 | **`settleWithVaa` sent by a fresh zero-balance address `0x621B…8246` as a 0x76 tx with `feePayer` = operator**, fee paid in pathUSD (0.000199) out of the 402 income; outcome No | [settle](https://explore.testnet.tempo.xyz/tx/0xb9a99298e7bf68b572617cf12ecc9ea1169f14bcae537341cf00da6e3ca97893), [claim B +5.00](https://explore.testnet.tempo.xyz/tx/0xf5346c3fd006e565bf8ebfa66b38317bc6db32b6851f0a7447c54aeb9dfeecbd) |
+| 7 | Receipt: operator `transferWithMemo` 0.01 pathUSD to the payer, memo = court pubkey `0xef507d93…825e` | [receipt](https://explore.testnet.tempo.xyz/tx/0x67475ad666ffe37fd5811dcf27c152cd12c6c0476774797f5dffcfbb0461add6) |
+| 8 | `reconcile.ts`: the 0.50 payment maps (MPP ledger) to `H7Bd…NKU1`, verdict **NO (yes 0 / no 2 / excluded 1)** | `out/mpp-e2e.log` |
+
+Notes: the memo carries the court only (TIP-20 memos are 32 bytes); the verdict is read from Solana by anyone holding it. The bet-A request got a Cloudflare 502 but the tx landed; its hash was recovered from the market's logs and the run resumed.
+
 ## Setup
 
 ```bash
@@ -59,6 +76,7 @@ MPP_SECRET_KEY=$(cat ~/.saring-tempo/mpp-secret) npx tsx mpp-server.ts &
 npx tsx mpp-client.ts "question <= 64 bytes" # 402 -> pay -> court id
 npx tsx market.ts [court]                   # deploy, bet, relay, claim (needs forge build + market-abi.ts)
 npx tsx relayer.ts <court> [market]         # relay one verdict to an existing market
+npx tsx mpp-e2e.ts [question|--resume]      # 402, court, jurors, MPC, VAA, sponsored settle, receipt, reconcile
 ```
 
 `market-abi.ts` is generated from `contracts/out` after `forge build`:
@@ -70,7 +88,7 @@ npx tsx relayer.ts <court> [market]         # relay one verdict to an existing m
 - **`resolvedSlot`:** `CourtAccount` stores no resolution slot, so this field is the Solana slot at which the relayer saw the court already resolved. It is an upper bound, not the exact slot.
 - **One market per court:** markets are keyed by court pubkey, so a court can be settled once, by any submitter, but only with the relayer's signature.
 - **MPP vs memo:** MPP `charge` writes its own attribution memo, and the court doesn't exist until after payment. So MPP payments reconcile through the server's ledger (payment tx → court in `out/state.json`), while direct fees reconcile purely on-chain through the memo. The ledger is a local JSON file. Production needs a real DB, and `tempo.charge` needs a shared `store` for replay protection across instances.
-- **Not run end to end:** the MPP-opened court `Fy8o…` was opened but not juried or resolved (seating jurors and voting is out of scope here), so `relayer.ts` correctly refuses it. The market was settled on the already-resolved court `24gQ…`.
+- **Earlier MPP court:** `Fy8o…` was opened but never juried, so `relayer.ts` correctly refuses it. `mpp-e2e.ts` (above) is the run where the paid court is juried, resolved and settled.
 - **Rounding:** pro-rata division can leave a few base units of dust in the contract.
 - **Scanning:** `reconcile.ts` uses a fixed 50k-block `getLogs` window. Use an indexer at scale.
 - Testnet only: Moderato tokens have no value.
