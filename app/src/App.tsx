@@ -553,8 +553,8 @@ export default function App() {
               )}
               {options?.map((o) => (
                 <option key={o.marketId} value={o.marketId}>
-                  {`${o.title.length > 60 ? `${o.title.slice(0, 59)}…` : o.title} · ${o.holders} holders · ${
-                    o.panta ? `${o.panta.phase}/${o.panta.status} · ${usdc(o.panta.volumeUsdc)}` : "API details n/a"
+                  {`${o.title.length > 60 ? `${o.title.slice(0, 59)}…` : o.title} · ${o.holders} holders${
+                    o.panta ? ` · ${o.panta.phase}/${o.panta.status} · ${usdc(o.panta.volumeUsdc)}` : ""
                   }${o.marketId === PANTA_MARKET ? " · demo" : ""}`}
                 </option>
               ))}
