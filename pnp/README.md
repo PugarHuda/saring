@@ -31,7 +31,7 @@ Run from the repo root after `cd pnp && npm i`. Logs and JSON are in `pnp/out/`.
 | `settle_market_v2(yes_winner=false)` signed by the oracle (court authority), with a Memo in the **same tx**: `saring-court:47GB…m1hF outcome:NO (0-2, excluded 1) settles pnp-market:BBat…jK18`. The market account now reads `resolved=true, winning_token_id=No` | [62ttfBdo…](https://explorer.solana.com/tx/62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj?cluster=devnet) |
 | B (NO) redeems: 14.577 NO burned, **+20.475696 sUSD** (B 90 → 110.475696; the market vault 119.8 → 99.324304). A's YES redeem is refused by PNP (error 6006) | [66QqEECQ…](https://explorer.solana.com/tx/66QqEECQujyx4QittXnT8k1GsCPmG9TvjCsMc8z7gJm9pfDFA9tLTB4WiXrshhGXMCX7Hq58dNSvv6dp3YFXWZtE?cluster=devnet) |
 
-The full queue/callback list is in `out/court.log` and `out/court.json`. Devnet SOL spent: about 0.1 in total, including the frozen first attempt.
+The full queue/callback list is in `out/court.log` and `out/court.json`. Devnet SOL: the court itself cost 0.037. The authority wallet went from 7.397 to 7.022 SOL over the whole window (0.375), and that figure includes both market attempts, rent for the mints and accounts, trader gas, and any other jobs sharing the wallet.
 
 ## What it proves, and what it doesn't
 
