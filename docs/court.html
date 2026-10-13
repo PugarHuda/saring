@@ -88,7 +88,7 @@ const SETTLE = new Set(["0x0c07073767c6651f42f3bba3b53d1e97973c33210c3e26f3fef16
 // since = a block at or before the first Saring deployment on that chain; step = the RPC's max getLogs range.
 const CHAINS = [
   { name: "Tempo Moderato", rpc: "https://rpc.moderato.tempo.xyz", tx: "https://explore.testnet.tempo.xyz/tx/", addr: "https://explore.testnet.tempo.xyz/address/", since: 39283000, step: 99000 },
-  { name: "Base Sepolia", blockscout: "https://base-sepolia.blockscout.com", rpc: "https://sepolia.base.org", tx: "https://sepolia.basescan.org/tx/", addr: "https://sepolia.basescan.org/address/" },
+  { name: "Base Sepolia", blockscout: "https://base-sepolia.blockscout.com", rpc: "https://sepolia.base.org", logRpc: "https://base-sepolia.gateway.tenderly.co", since: 47900000, step: 490000, tx: "https://sepolia.basescan.org/tx/", addr: "https://sepolia.basescan.org/address/" },
   { name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", tx: "https://sepolia.arbiscan.io/tx/", addr: "https://sepolia.arbiscan.io/address/", since: 318455000, step: 9900000,
     // Arbiscan's Blockscout sits behind a bot challenge and the public RPC needs one address per getLogs, so the Saring contracts are listed.
     addrs: ["0x6ae4c89bb75291062b204e6ba9d43952786ec56c" /* UMA EM */, "0xc2b4805da6899d788b179f12eb19136bd73f5ba5" /* Kleros V2 SaringArbitratorV2 */] },
@@ -169,17 +169,17 @@ async function readCourt(addr) {
 }
 
 // ---------- EVM logs that carry the court in an indexed topic ----------
-async function head(c) { return Number(BigInt(await rpc(c.rpc, "eth_blockNumber", []))); }
+async function head(c, url = c.rpc) { return Number(BigInt(await rpc(url, "eth_blockNumber", []))); }
 async function logsFor(c, courtHex) {
   const pos = [[null, courtHex], [null, null, courtHex]];
   if (c.blockscout) {
     const q = (t) => getJson(`${c.blockscout}/api?module=logs&action=getLogs&fromBlock=0&toBlock=latest&${t}=${courtHex}`).then((j) => (Array.isArray(j.result) ? j.result : []));
-    return [...(await q("topic1")), ...(await q("topic2"))];
+    try { return [...(await q("topic1")), ...(await q("topic2"))]; } catch { /* Blockscout rate limit (429): fall back to eth_getLogs */ }
   }
-  const top = await head(c), jobs = [];
+  const url = c.logRpc || c.rpc, top = await head(c, url), jobs = [];
   for (let from = c.since; from <= top; from += c.step + 1) {
     const range = { fromBlock: "0x" + from.toString(16), toBlock: "0x" + Math.min(from + c.step, top).toString(16) };
-    for (const topics of pos) for (const address of c.addrs || [undefined]) jobs.push(rpc(c.rpc, "eth_getLogs", [{ ...range, topics, ...(address ? { address } : {}) }]));
+    for (const topics of pos) for (const address of c.addrs || [undefined]) jobs.push(rpc(url, "eth_getLogs", [{ ...range, topics, ...(address ? { address } : {}) }]));
   }
   return (await Promise.all(jobs)).flat();
 }
