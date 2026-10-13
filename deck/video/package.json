@@ -1,0 +1,17 @@
+{
+  "name": "saring-pitch-video",
+  "private": true,
+  "scripts": {
+    "voice": "python voice.py +4%",
+    "slides": "node shoot-slides.cjs",
+    "studio": "remotion studio src/index.tsx",
+    "render": "remotion render src/index.tsx Pitch out/saring-pitch-remotion.mp4 --codec=h264 --audio-codec=aac --concurrency=2 --crf=20"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.529",
+    "@remotion/google-fonts": "^4.0.529",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.529"
+  }
+}

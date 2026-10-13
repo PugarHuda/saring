@@ -1,0 +1,193 @@
+[
+ {
+  "id": "s01",
+  "audio": "vo/s01.mp3",
+  "dur": 6.912,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 2.632,
+    "text": "Would you let a judge rule on a case they had money on?"
+   },
+   {
+    "from": 2.632,
+    "to": 6.862,
+    "text": "In crypto prediction markets it happens constantly, and nothing stops it."
+   }
+  ]
+ },
+ {
+  "id": "s02",
+  "audio": "vo/s02.mp3",
+  "dur": 21.432,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 7.427,
+    "text": "I pulled every UMA vote on Polymarket disputes since January 2025: 4,121 disputes."
+   },
+   {
+    "from": 7.427,
+    "to": 11.538,
+    "text": "In one out of five, someone voting held a position in that exact market."
+   },
+   {
+    "from": 11.538,
+    "to": 14.723,
+    "text": "Above a million dollars of volume, it's two out of three."
+   },
+   {
+    "from": 14.723,
+    "to": 17.211,
+    "text": "Removing them flips zero outcomes."
+   },
+   {
+    "from": 17.211,
+    "to": 21.394,
+    "text": "The problem: no resolver even checks, and these numbers are a floor."
+   }
+  ]
+ },
+ {
+  "id": "s03",
+  "audio": "vo/s03.mp3",
+  "dur": 8.808,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 1.213,
+    "text": "Why not filter them?"
+   },
+   {
+    "from": 1.213,
+    "to": 3.149,
+    "text": "Because the obvious fix leaks."
+   },
+   {
+    "from": 3.149,
+    "to": 6.298,
+    "text": "Publish the jury and bribers know whom to pay."
+   },
+   {
+    "from": 6.298,
+    "to": 8.75,
+    "text": "Publish positions and you dox traders."
+   }
+  ]
+ },
+ {
+  "id": "s04",
+  "audio": "vo/s04.mp3",
+  "dur": 6.744,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 4.17,
+    "text": "Saring does the match inside Arcium's MPC network on Solana."
+   },
+   {
+    "from": 4.17,
+    "to": 6.694,
+    "text": "Conflicted jurors are dropped silently."
+   }
+  ]
+ },
+ {
+  "id": "s06",
+  "audio": "vo/s06.mp3",
+  "dur": 3.912,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 3.858,
+    "text": "The chain sees the tally and how many were excluded, never who."
+   }
+  ]
+ },
+ {
+  "id": "s05",
+  "audio": "vo/s05.mp3",
+  "dur": 28.392,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 2.247,
+    "text": "This is a real Panta market on Solana."
+   },
+   {
+    "from": 2.247,
+    "to": 8.161,
+    "text": "I read its 42 holders from mainnet and mirror them, encrypted, into a court on devnet."
+   },
+   {
+    "from": 8.161,
+    "to": 10.528,
+    "text": "Three conflicted jurors vote YES."
+   },
+   {
+    "from": 10.528,
+    "to": 15.348,
+    "text": "A bribed juror hands over his ballot key, then votes NO and rotates it."
+   },
+   {
+    "from": 15.348,
+    "to": 18.305,
+    "text": "The briber's ballot is ignored, and he can't tell."
+   },
+   {
+    "from": 18.305,
+    "to": 23.798,
+    "text": "Juror six is me: I vote NO and bet NO, so MPC drops my own ballot too."
+   },
+   {
+    "from": 23.798,
+    "to": 25.024,
+    "text": "Saring rules NO."
+   },
+   {
+    "from": 25.024,
+    "to": 28.341,
+    "text": "A plain jury would have said YES, and the market pays out."
+   }
+  ]
+ },
+ {
+  "id": "s07",
+  "audio": "vo/s07.mp3",
+  "dur": 12.744,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 12.692,
+    "text": "The verdict travels as a Wormhole message: Tempo pays per court, Zcash shields juror bonds, Ethereum logs verify the data, and it arbitrates UMA on Arbitrum and Reality.eth on Base."
+   }
+  ]
+ },
+ {
+  "id": "s11",
+  "audio": "vo/s11.mp3",
+  "dur": 16.392,
+  "cues": [
+   {
+    "from": 0.05,
+    "to": 5.877,
+    "text": "I'm Pugar Huda Mantoro, an Informatics student at Universitas Islam Indonesia, building solo."
+   },
+   {
+    "from": 5.877,
+    "to": 8.305,
+    "text": "I measured the problem before I built the fix."
+   },
+   {
+    "from": 8.305,
+    "to": 12.475,
+    "text": "It's open source and live on devnet, and you can sit on the jury yourself."
+   },
+   {
+    "from": 12.475,
+    "to": 16.334,
+    "text": "If you run a Solana prediction market, give me one market to pilot."
+   }
+  ]
+ }
+]
