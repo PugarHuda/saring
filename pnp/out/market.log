@@ -1,0 +1,52 @@
+authority/settler 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ 7.304206551 SOL; traders A 5C3hzz3GZZxi3K9qBbpZJp2uTbgMyiTwKTnRgYwULEpa B ArD9WuUizEKqP3hXQawnQLRQGoTcbSDH6NE5oXwLR6y8
+collateral mint (sUSD, 6 dp): B2KgQfnTYkmVoNircvZn46a44ApBPV2fqXtPhRLwVRFZ
+minted 1000/100/100 sUSD to authority/A/B: 3KgSCMmA4Q6W, 4LhQmw1TEAPR, 413NboduPyVo
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+🚀 Creating market with parameters:
+   Question: Saring x PNP demo: will the Saring jury rule NO on this devnet market? (settled by a conflict-blind Saring court)
+   Initial Liquidity: 100000000
+   End Time: 2026-10-13T02:55:59.000Z
+   Collateral Token Mint: B2KgQfnTYkmVoNircvZn46a44ApBPV2fqXtPhRLwVRFZ
+   Creator (for fees/ownership): 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Global Config: 33Aj8nFahhjXTmStMw6jxyu6CynwnKvPzJwrsK94TYkf
+Current Global ID: 26
+Market Extension PDA: AtArcf69tY352NnjhNRyT3NVZ4KcqQrV81KUPJitiGuS
+Custom Oracle: 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Market PDA: BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18
+✅ Market created successfully!
+Transaction signature: 5Arw4yqSpQExhLK5mP2ZJEUrhuQaDbVCNhEbDp7sD1izcWMWDSEqz1cnh48oJYeVgH8oWyEnFtEw3iQmy1HMonQJ
+
+📊 Market Details:
+------------------------
+Market ID: 26
+Question: Saring x PNP demo: will the Saring jury rule NO on this devnet market? (settled by a conflict-blind Saring court)
+Creator: 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Initial Liquidity: 100000000
+Market Reserves: 100000000
+End Time: 2026-10-13T02:55:59.000Z
+Resolved: false
+------------------------
+GO: PNP accepted the self-minted collateral. market BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18 create https://explorer.solana.com/tx/5Arw4yqSpQExhLK5mP2ZJEUrhuQaDbVCNhEbDp7sD1izcWMWDSEqz1cnh48oJYeVgH8oWyEnFtEw3iQmy1HMonQJ?cluster=devnet
+setMarketResolvable(true): https://explorer.solana.com/tx/4z7S61a9j8eUGLB2xKnk7rkCYRXTFZpb8b6pCKrZQ4HTW4Kv2DxYKK285cTNQwy3t1H4QYcFPaUGADkN9mHbTbzY?cluster=devnet
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+[buyTokensUsdc] amount_usdc= 10 decimals= 6 base_units= 10000000
+[mintDecisionTokensDerived] amount: 10000000 buyYesToken: true minimumOut: 0
+Server responded with 429 Too Many Requests.  Retrying after 500ms delay...
+Server responded with 429 Too Many Requests.  Retrying after 500ms delay...
+Server responded with 429 Too Many Requests.  Retrying after 1000ms delay...
+Server responded with 429 Too Many Requests.  Retrying after 1000ms delay...
+Message: Transaction simulation failed: Error processing Instruction 2: incorrect program id for instruction. 
+Logs: 
+[
+  "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success",
+  "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [1]",
+  "Program log: Create",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+  "Program log: Error: IncorrectProgramId",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA failed: incorrect program id for instruction",
+  "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL failed: incorrect program id for instruction"
+]. 
+Catch the `SendTransactionError` and call `getLogs()` on it for full details.
+    at _TradingModule.buyTokensUsdc (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/modules/trading.ts:444:15)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at main (/home/pugarhuda/blindcourt/pnp/market.ts:119:15)

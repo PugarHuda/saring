@@ -1,0 +1,41 @@
+# PNP Exchange market settled by a Saring verdict (Solana devnet)
+
+A real market on PNP Exchange's own deployed program (`8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb`, same ID on mainnet and devnet). It uses `pnp-sdk@0.2.11` with no fork and no mock. The market's custom oracle is the Saring court authority. Its real on-chain holders are mirrored encrypted into a new Saring court (program `3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy`, v3.2). One juror is a holder, and Arcium MPC drops that juror's ballot. The verdict then settles the PNP market, and the winning side redeems.
+
+```
+npx ts-node --transpile-only -P sdk/tsconfig.json pnp/market.ts   # mint sUSD, create market (oracle = court authority), setMarketResolvable, A buys YES, B buys NO
+npx ts-node --transpile-only -P sdk/tsconfig.json pnp/court.ts    # read holders from PNP's YES/NO mints, new court, juror A = holder, mirror, ballots, resolve
+npx ts-node --transpile-only -P sdk/tsconfig.json pnp/settle.ts   # readCourtVerdict -> settleMarket(yesWinner) -> memo -> redeem
+```
+Run from the repo root after `cd pnp && npm i`. Logs and JSON are in `pnp/out/`.
+
+## Run of 13 Oct 2026 (devnet)
+
+| Step | Link |
+|---|---|
+| PNP market (id 26) | [BBatimnY…jK18](https://explorer.solana.com/address/BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18?cluster=devnet) |
+| Self-minted collateral (sUSD, 6 dp) | [B2KgQfnT…RFZ](https://explorer.solana.com/address/B2KgQfnTYkmVoNircvZn46a44ApBPV2fqXtPhRLwVRFZ?cluster=devnet) |
+| `createMarketWithCustomOracle` (oracle = `3eDPfx…SLtQ`, the court authority) | [5Arw4yqS…](https://explorer.solana.com/tx/5Arw4yqSpQExhLK5mP2ZJEUrhuQaDbVCNhEbDp7sD1izcWMWDSEqz1cnh48oJYeVgH8oWyEnFtEw3iQmy1HMonQJ?cluster=devnet) |
+| `setMarketResolvable(true)`, same run | [4z7S61a9…](https://explorer.solana.com/tx/4z7S61a9j8eUGLB2xKnk7rkCYRXTFZpb8b6pCKrZQ4HTW4Kv2DxYKK285cTNQwy3t1H4QYcFPaUGADkN9mHbTbzY?cluster=devnet) |
+| A `5C3h…LEpa` buys YES (10 sUSD → 13.421 YES) | [54AZkLFV…](https://explorer.solana.com/tx/54AZkLFVf8bJpaMLKMhU6KFBW8PbuxK58oKGjAGZU19HirRGcXBNCxzF4Hp6CjVuv1DAjtjTEVpRdJHonJMqcrZn?cluster=devnet) |
+| B `ArD9…6y8` buys NO (10 sUSD → 14.577 NO) | [5efCGv6V…](https://explorer.solana.com/tx/5efCGv6VBK9yqy8cLZCUwtUHnQYiZC7jzukt1siCcR86VMycca4ERZe1GAv4NgrjyByjawDkfmC6gHRLG2XeD2F4?cluster=devnet) |
+| Saring court | [47GBTvB4…m1hF](https://explorer.solana.com/address/47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF?cluster=devnet) |
+| `init_court_v3` | [queue](https://explorer.solana.com/tx/3M6ZkkZEmwWRrtwc3h79FB3ciMNXwfNP91k88ZjuwtDsLxQSASuuQBkUKayVRTMJbzzFH8Y9UmJgw9gZsekhrGRr?cluster=devnet) / [callback](https://explorer.solana.com/tx/2ddqv8QLjkfHchSyr8uFjHvjCAeZqgfib6rdeFfywa8FDjohnGuXSjcSrh4aUMpTTMVDXHr9xtZoqVg5xzzN5xqU?cluster=devnet) |
+| `add_juror_v3` A (the YES holder) | [queue](https://explorer.solana.com/tx/4HMNtnooGLgkAWhB3g2yz3sZ78LrVED6MwPanhTM8U6QKuJjyf3b7GWMEjpx8UVqek8KFciuhuSWn9t43eMX1LbE?cluster=devnet) / [callback](https://explorer.solana.com/tx/5mtWcjQSizonSS14tHDv1tUcu66WD9bFJo8TWfdEnfCqs7VXvPGacUsNiPQgC35wqQFNoMZsgBWkzYia1XhkzfGp?cluster=devnet) |
+| `add_juror_v3` clean `6qhL…6Paa` | [queue](https://explorer.solana.com/tx/4ULL1Ye6H8EUUNRPSx5ke4eKYdUui7mJahMQjRXAA6EaBd8KWikZeEqutZnJGPUksrKmBdECdCh7gGJxU69UD3LX?cluster=devnet) / [callback](https://explorer.solana.com/tx/4ZPgNPJeUiGxpfE3sdQXMiFwQGcfEF1fJKoqiahYno9ZtyTbWqYVMuRUKbZfupssjfhaw7SnxNhY3j4FFJcpifrX?cluster=devnet) |
+| `add_juror_v3` clean `Ed9w…K8bK` | [queue](https://explorer.solana.com/tx/3EJ3zXLDEdZE4knUYH9N5XPTSD47sZ8xE4XGTF396CGQqauEnVkpA9oyNmuKUoo9j3WRC8qRbLvwxhp7WkfBGUZ7?cluster=devnet) / [callback](https://explorer.solana.com/tx/2dyz168Sq97a9jFXvvXGozDQrRaKbn93oF7n6JfNxmhozXzEzx3iLNp8eBiTwZvNs1TERCj2pWNjky3WuGvnXq9N?cluster=devnet) |
+| `record_positions_v3` (both PNP holders, encrypted) | [queue](https://explorer.solana.com/tx/3mFKKHDgg7BmiRiYGHyGrFKBSj8N69hhq3qJZpUcY6qr8cp5ZTgEBAmee3wWEcv3kcZD3iHzT5FkF3EWpibHXSDR?cluster=devnet) / [callback](https://explorer.solana.com/tx/5CJwStpF4EkV6fApuenb7r6kpTXryJhc9GF6zHJCjJjyVLdR2bXp8g1yt4fLB3DZQr6cacxMhiNyoDAdz33bFy89?cluster=devnet) |
+| A casts YES (holder, dropped in MPC) | [queue](https://explorer.solana.com/tx/4SyFd7vWHodEhe3CaXJurM1qik67Dv6ZDvmuSBEnubq3tdeTJeXMaem7pqLkV9DPPeHAoAaZYGsLtBhe8XN1dV2c?cluster=devnet) / [callback](https://explorer.solana.com/tx/56cWPjRB2xZVd3rmQCfewXz4cTdhVWvFAc8paJ2oEGGWBrE65xdqqN1DnDbrWv9sLqg6o6nCt3Axg7dhT6q6BJoQ?cluster=devnet) |
+| clean jurors cast NO | [queue](https://explorer.solana.com/tx/5aGvsCRGas554MCb3L2DoHHhoZqGPTSfQNGyZQPiG38QRPehc3AqqHR9UdymDgeRu5BrYRb1ji6MpRgMBvSSFPFb?cluster=devnet) / [callback](https://explorer.solana.com/tx/2bYCQ53NzCSGvN41Vpk2HarpnqvoKY64JP3Agsz6RzyV1F8NmZywjWc9dWzrrwVsor9tE57zvfS6pbdyPdcQ4RNa?cluster=devnet), [queue](https://explorer.solana.com/tx/XPc8to9pZsgL4WNryQXZYq8BEBTvpK2dLiBk3WKWvy4bJNX2bYAkYDfjUxrmEcCDqWnwmgCBUD9mpVag1rJpdwq?cluster=devnet) / [callback](https://explorer.solana.com/tx/nKCoxWzH79AsYnm8B4M7eSs4AhhGW4XCc1hLuAUF8FPMxJHgC139VN3isKDbRjKhxBvMGw99VFy66aTW4Sdp3QF?cluster=devnet) |
+| `resolve_v3`: **yes 0, no 2, excluded 1 → NO** | [callback](https://explorer.solana.com/tx/bJvbkVWNyWNLYB1yX8cFrj8TSpYzNP75xoUXU8Tj9tS8bpWYQWHF8yNhHpQA4ae8h4cREtsvhNmLYSqS2FhEYan?cluster=devnet) |
+| `settle_market_v2(yes_winner=false)` signed by the oracle (court authority), with a Memo in the **same tx**: `saring-court:47GB…m1hF outcome:NO (0-2, excluded 1) settles pnp-market:BBat…jK18`. The market account now reads `resolved=true, winning_token_id=No` | [62ttfBdo…](https://explorer.solana.com/tx/62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj?cluster=devnet) |
+| B (NO) redeems: 14.577 NO burned, **+20.475696 sUSD** (B 90 → 110.475696; the market vault 119.8 → 99.324304). A's YES redeem is refused by PNP (error 6006) | [66QqEECQ…](https://explorer.solana.com/tx/66QqEECQujyx4QittXnT8k1GsCPmG9TvjCsMc8z7gJm9pfDFA9tLTB4WiXrshhGXMCX7Hq58dNSvv6dp3YFXWZtE?cluster=devnet) |
+
+The full queue/callback list is in `out/court.log` and `out/court.json`. Devnet SOL spent: about 0.1 in total, including the frozen first attempt.
+
+## What it proves, and what it doesn't
+
+- **Real venue, real holders.** The market lives on PNP's own program. `court.ts` derives holders from PNP's YES/NO mint PDAs (`getProgramAccounts` on the Token program, filtered by mint). It doesn't use a list we wrote by hand. Juror A is one of those holders. The court never learns which ballot was dropped, only `excluded = 1`.
+- **Honest limit: settlement is a crank.** PNP's `settleMarket` has to be signed by the market's oracle key, which is the court authority's wallet. `settle.ts` refuses to sign unless `readCourtVerdict` (`sdk/src/venue.ts`, owner-checked against the Saring program) says the court is resolved and complete with a clear majority, and the court's `authority` equals the oracle. A Memo tx then binds the court address to the settle signature. The trust is the same as the court authority today, with no new party added. The upgrade path is CPI: a Saring PDA as PNP's oracle, with `resolve` calling `settleMarket` itself. That needs a Saring program upgrade, which we didn't ship for the hackathon.
+- **pnp-sdk 0.2.11 quirks we hit.** `setMarketResolvable` omits the `market_yes_token_vault` / `market_no_token_vault` accounts that its own IDL requires. `market.ts` (`setResolvable`) passes the full account list. Devnet `global_config.buffer_period` is 300 s, so the first market (`9bEcXczb…`, `out/market-attempt1.log`) froze before the fix. The SDK's `settleMarket()` sends the admin-path `settle_market`, which fails with 6005 InvalidOwner for a custom oracle, so `settle.ts` calls `settle_market_v2`. That call also fails with 6000 before the market's `end_time`. `redeemPosition()` passes camelCase keys to a snake_case IDL builder, so `settle.ts` builds the `redeem_position_v2` account map itself. `out/settle-redeem.log` logged B's payout as 0 because it read the balance before the RPC caught up. The figures above come from the tx's token balances, and the script now waits 3 s before reading.
+- **Prior art.** internet-court-skill also uses PNP's custom oracle. Saring differs in the conflict-blind jury: holders are excluded inside MPC without anyone, the authority included, seeing which juror held what.

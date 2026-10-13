@@ -1,0 +1,7 @@
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+A already holds YES: https://explorer.solana.com/tx/54AZkLFVf8bJpaMLKMhU6KFBW8PbuxK58oKGjAGZU19HirRGcXBNCxzF4Hp6CjVuv1DAjtjTEVpRdJHonJMqcrZn?cluster=devnet
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+[buyTokensUsdc] amount_usdc= 10 decimals= 6 base_units= 10000000
+[mintDecisionTokensDerived] amount: 10000000 buyYesToken: false minimumOut: 0
+B bought NO for 10 sUSD -> 14.577 tokens: https://explorer.solana.com/tx/5efCGv6VBK9yqy8cLZCUwtUHnQYiZC7jzukt1siCcR86VMycca4ERZe1GAv4NgrjyByjawDkfmC6gHRLG2XeD2F4?cluster=devnet
+wrote pnp/out/market.json

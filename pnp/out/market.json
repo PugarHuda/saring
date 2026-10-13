@@ -1,0 +1,39 @@
+{
+  "cluster": "devnet",
+  "pnpProgram": "8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb",
+  "market": "BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18",
+  "marketId": "26",
+  "question": "Saring x PNP demo: will the Saring jury rule NO on this devnet market? (settled by a conflict-blind Saring court)",
+  "collateralMint": "B2KgQfnTYkmVoNircvZn46a44ApBPV2fqXtPhRLwVRFZ",
+  "settler": "3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ",
+  "traders": {
+    "A": {
+      "wallet": "5C3hzz3GZZxi3K9qBbpZJp2uTbgMyiTwKTnRgYwULEpa",
+      "side": "YES"
+    },
+    "B": {
+      "wallet": "ArD9WuUizEKqP3hXQawnQLRQGoTcbSDH6NE5oXwLR6y8",
+      "side": "NO"
+    }
+  },
+  "txs": {
+    "fund": "4Cu942c6jLCsDzRKLjHrRY95QhaWjKjkGNLZAM6JPWn1TjAfGibfuKRXQ2B3wR7utw9N1RSMHSahMZTXq49SPFFa",
+    "mintAndCreate": [
+      "4MtvjunyJ7HLyiguBgxWPeVbjqgF59xbMcu7Qh3sPUFAjVUeFX2CYu6yrpLbqa3ihw6e8Spd5p1f8CDJkdbt6CWp",
+      "yNPvisPiCCUhGYCe2sKHyA6rDU4QyZJR12oUQFJAQ4fiqDKMGW3R5TDfnoMFnpUCqwPU88KpQLQ9YaFhyp5k4Ue",
+      "3KgSCMmA4Q6WZstF3ZeJ3sgdfsrg2SPwRUFYmi68qFz9AumDNG9GmoHomLxodsUHi3wrxxPyhvD7xDpYyrZtepAd",
+      "5Dqan5kDsa9z67GSRxujo9juS8Fmxah9P8d2WtvPttEsPyqbgeaEdpS5h9L413jGdWSRQBDuW1MGkKhNLbTGticf",
+      "4LhQmw1TEAPRqYssZGekPKjkCPNJGDBmLB6C77xroc2u53Wyz7YZ5oYeXLCNSyUGKcBtiH7SaPgS91Lp7hGqANUp",
+      "65bSzidnM5xT2SW77j8zVCJt1VfgHB7sZHwT1ePepccXwMZ2AHoDaUD5tUQyaJW2braXREKuhew6MS7thsV9ntFc",
+      "413NboduPyVohkxGUDHfkpR84axNPUQs774jhoRRtKjmEzPsuyutRWMjnRwqSKFsh3PcPteFHTmuW5LcNzFqggJP",
+      "5Arw4yqSpQExhLK5mP2ZJEUrhuQaDbVCNhEbDp7sD1izcWMWDSEqz1cnh48oJYeVgH8oWyEnFtEw3iQmy1HMonQJ",
+      "4z7S61a9j8eUGLB2xKnk7rkCYRXTFZpb8b6pCKrZQ4HTW4Kv2DxYKK285cTNQwy3t1H4QYcFPaUGADkN9mHbTbzY",
+      "54AZkLFVf8bJpaMLKMhU6KFBW8PbuxK58oKGjAGZU19HirRGcXBNCxzF4Hp6CjVuv1DAjtjTEVpRdJHonJMqcrZn"
+    ],
+    "create": "5Arw4yqSpQExhLK5mP2ZJEUrhuQaDbVCNhEbDp7sD1izcWMWDSEqz1cnh48oJYeVgH8oWyEnFtEw3iQmy1HMonQJ",
+    "setResolvable": "4z7S61a9j8eUGLB2xKnk7rkCYRXTFZpb8b6pCKrZQ4HTW4Kv2DxYKK285cTNQwy3t1H4QYcFPaUGADkN9mHbTbzY",
+    "buyA": "54AZkLFVf8bJpaMLKMhU6KFBW8PbuxK58oKGjAGZU19HirRGcXBNCxzF4Hp6CjVuv1DAjtjTEVpRdJHonJMqcrZn",
+    "buyB": "5efCGv6VBK9yqy8cLZCUwtUHnQYiZC7jzukt1siCcR86VMycca4ERZe1GAv4NgrjyByjawDkfmC6gHRLG2XeD2F4"
+  },
+  "note": "attempt 1 (market 9bEcXczb…, out/market-attempt1.log) froze: pnp-sdk 0.2.11 setMarketResolvable omits two IDL accounts; by the fix the 300 s buffer had passed"
+}

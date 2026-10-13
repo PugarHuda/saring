@@ -1,0 +1,15 @@
+court 47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF: resolved=true yes=0 no=2 excluded=1 incomplete=false outcome=NO
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+settling PNP market BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18 -> NO wins
+market already settled; reusing the recorded settle tx and going to redeem
+settle_market_v2 (+ memo "saring-court:47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF outcome:NO (0-2, excluded 1) settles pnp-market:BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18"): https://explorer.solana.com/tx/62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj?cluster=devnet
+PNP market account: resolved=true winning_token_id={"No":{}}
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+A (YES) redeem refused: Simulation failed. 
+Message: Transaction simulation failed: Error processing Instruction 1: custom program error: 0x1776. 
+Logs: 
+[
+  "Program ComputeBudget1111
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+B (NO) redeemed 0 sUSD: https://explorer.solana.com/tx/66QqEECQujyx4QittXnT8k1GsCPmG9TvjCsMc8z7gJm9pfDFA9tLTB4WiXrshhGXMCX7Hq58dNSvv6dp3YFXWZtE?cluster=devnet
+wrote pnp/out/settle.json

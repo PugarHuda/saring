@@ -1,0 +1,79 @@
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+SendTransactionError: Simulation failed. 
+Message: Transaction simulation failed: Error processing Instruction 1: custom program error: 0x1771. 
+Logs: 
+[
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 37 of 729408 compute units",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 233 of 726945 compute units",
+  "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+  "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 13510 of 739918 compute units",
+  "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success",
+  "Program log: AnchorError thrown in programs/pnp_protocol_solana/src/instructions/set_market_resolvable_v2.rs:186. Error Code: BufferPeriodExpired. Error Number: 6001. Error Message: Buffer period has expired, cannot change resolvable status.",
+  "Program 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb consumed 84117 of 799850 compute units",
+  "Program 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb failed: custom program error: 0x1771"
+]. 
+Catch the `SendTransactionError` and call `getLogs()` on it for full details.
+    at Connection.sendEncodedTransaction (/home/pugarhuda/blindcourt/pnp/node_modules/@solana/web3.js/src/connection.ts:6087:13)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at Connection.sendRawTransaction (/home/pugarhuda/blindcourt/pnp/node_modules/@solana/web3.js/src/connection.ts:6043:20)
+    at Connection.sendTransaction (/home/pugarhuda/blindcourt/pnp/node_modules/@solana/web3.js/src/connection.ts:5992:14)
+    at buildAndSendV0 (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/platform/tx.ts:47:15)
+    at MarketModule.setMarketResolvableIdl (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/modules/market.ts:205:17) {
+  signature: '',
+  transactionMessage: 'Transaction simulation failed: Error processing Instruction 1: custom program error: 0x1771',
+  transactionLogs: [
+    'Program ComputeBudget111111111111111111111111111111 invoke [1]',
+    'Program ComputeBudget111111111111111111111111111111 success',
+    'Program 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb invoke [1]',
+    'Program log: Instruction: SetMarketResolvableV2',
+    'Program 11111111111111111111111111111111 invoke [2]',
+    'Program 11111111111111111111111111111111 success',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 214 of 781544 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program 11111111111111111111111111111111 invoke [2]',
+    'Program 11111111111111111111111111111111 success',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 214 of 766541 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [2]',
+    'Program log: Create',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 179 of 755431 compute units',
+    'Program return: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA pQAAAAAAAAA=',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program 11111111111111111111111111111111 invoke [3]',
+    'Program 11111111111111111111111111111111 success',
+    'Program log: Initialize the associated token account',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 37 of 750342 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 233 of 747879 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 13510 of 760852 compute units',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [2]',
+    'Program log: Create',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 179 of 734497 compute units',
+    'Program return: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA pQAAAAAAAAA=',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program 11111111111111111111111111111111 invoke [3]',
+    'Program 11111111111111111111111111111111 success',
+    'Program log: Initialize the associated token account',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 37 of 729408 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [3]',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 233 of 726945 compute units',
+    'Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 13510 of 739918 compute units',
+    'Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success',
+    'Program log: AnchorError thrown in programs/pnp_protocol_solana/src/instructions/set_market_resolvable_v2.rs:186. Error Code: BufferPeriodExpired. Error Number: 6001. Error Message: Buffer period has expired, cannot change resolvable status.',
+    'Program 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb consumed 84117 of 799850 compute units',
+    'Program 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb failed: custom program error: 0x1771'
+  ]
+}

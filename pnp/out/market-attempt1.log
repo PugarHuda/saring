@@ -1,0 +1,37 @@
+authority/settler 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ 7.396895591 SOL; traders A 5C3hzz3GZZxi3K9qBbpZJp2uTbgMyiTwKTnRgYwULEpa B ArD9WuUizEKqP3hXQawnQLRQGoTcbSDH6NE5oXwLR6y8
+funded traders: https://explorer.solana.com/tx/4Cu942c6jLCsDzRKLjHrRY95QhaWjKjkGNLZAM6JPWn1TjAfGibfuKRXQ2B3wR7utw9N1RSMHSahMZTXq49SPFFa?cluster=devnet
+collateral mint (sUSD, 6 dp): GE9xEMAkk2tju4Z1KL3wxkumM8EntMadwMANuL9EVyjo
+minted 1000/100/100 sUSD to authority/A/B: 3E5VZtGaspen, 2JvbJzumheaa, 31vca93zQpE5
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+🚀 Creating market with parameters:
+   Question: Saring x PNP demo: will the Saring jury rule NO on this devnet market? (settled by a conflict-blind Saring court)
+   Initial Liquidity: 100000000
+   End Time: 2026-10-13T02:50:24.000Z
+   Collateral Token Mint: GE9xEMAkk2tju4Z1KL3wxkumM8EntMadwMANuL9EVyjo
+   Creator (for fees/ownership): 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Global Config: 33Aj8nFahhjXTmStMw6jxyu6CynwnKvPzJwrsK94TYkf
+Current Global ID: 25
+Market Extension PDA: ECiWd2GzXjmRbrGNN9BGJPbaHwhexbQiYhoaLtJf2cx9
+Custom Oracle: 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Market PDA: 9bEcXczbkEVjaNMkWNwdXTFCQSeTe4qtrwWp7t3STQ6W
+✅ Market created successfully!
+Transaction signature: 3pn13ARvk6BBLqHZq6H13PaBxvv53dYLovismaeT6CiduADret9rKdNLNrLqeTGzK6e9GojbvEYNnM7ytJg4y71f
+
+📊 Market Details:
+------------------------
+Market ID: 25
+Question: Saring x PNP demo: will the Saring jury rule NO on this devnet market? (settled by a conflict-blind Saring court)
+Creator: 3eDPfxRgNrDfmhoFMfH4hDCxZYDq73Tj12XTCtvBSLtQ
+Initial Liquidity: 100000000
+Market Reserves: 100000000
+End Time: 2026-10-13T02:50:24.000Z
+Resolved: false
+------------------------
+GO: PNP accepted the self-minted collateral. market 9bEcXczbkEVjaNMkWNwdXTFCQSeTe4qtrwWp7t3STQ6W create https://explorer.solana.com/tx/3pn13ARvk6BBLqHZq6H13PaBxvv53dYLovismaeT6CiduADret9rKdNLNrLqeTGzK6e9GojbvEYNnM7ytJg4y71f?cluster=devnet
+Error: Missing account for set_market_resolvable_v2: market_yes_token_vault
+    at constructAccountMetas (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/idl/index.ts:174:13)
+    at buildIdlIx (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/idl/index.ts:152:74)
+    at buildSetMarketResolvableV2Ix (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/instructions/idl_builders.ts:167:10)
+    at MarketModule.setMarketResolvable (/home/pugarhuda/blindcourt/pnp/node_modules/pnp-sdk/src/modules/market.ts:309:16)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at main (/home/pugarhuda/blindcourt/pnp/market.ts:70:22)

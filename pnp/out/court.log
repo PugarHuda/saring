@@ -1,0 +1,26 @@
+PNP market BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18 (YES mint 5KGTPmtiyD8TftoWznsaAfMNZA7H5XfagvYTRbMd95JU, NO mint G8bcRuAZsb2KJMyswrdJ6rvxmVAQch3DnBhyixmC7YMY): 2 holders on devnet
+  5C3hzz3GZZxi3K9qBbpZJp2uTbgMyiTwKTnRgYwULEpa YES 13.421 NO 0
+  ArD9WuUizEKqP3hXQawnQLRQGoTcbSDH6NE5oXwLR6y8 YES 0 NO 14.577
+court 47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF (id 1453722099)
+  init_court_v3                  queue https://explorer.solana.com/tx/3M6ZkkZEmwWRrtwc3h79FB3ciMNXwfNP91k88ZjuwtDsLxQSASuuQBkUKayVRTMJbzzFH8Y9UmJgw9gZsekhrGRr?cluster=devnet
+                                 callback https://explorer.solana.com/tx/2ddqv8QLjkfHchSyr8uFjHvjCAeZqgfib6rdeFfywa8FDjohnGuXSjcSrh4aUMpTTMVDXHr9xtZoqVg5xzzN5xqU?cluster=devnet (+4s)
+  add_juror_v3 5C3h…LEpa         queue https://explorer.solana.com/tx/4HMNtnooGLgkAWhB3g2yz3sZ78LrVED6MwPanhTM8U6QKuJjyf3b7GWMEjpx8UVqek8KFciuhuSWn9t43eMX1LbE?cluster=devnet
+                                 callback https://explorer.solana.com/tx/5mtWcjQSizonSS14tHDv1tUcu66WD9bFJo8TWfdEnfCqs7VXvPGacUsNiPQgC35wqQFNoMZsgBWkzYia1XhkzfGp?cluster=devnet (+10s)
+  add_juror_v3 6qhL…6Paa         queue https://explorer.solana.com/tx/4ULL1Ye6H8EUUNRPSx5ke4eKYdUui7mJahMQjRXAA6EaBd8KWikZeEqutZnJGPUksrKmBdECdCh7gGJxU69UD3LX?cluster=devnet
+                                 callback https://explorer.solana.com/tx/4ZPgNPJeUiGxpfE3sdQXMiFwQGcfEF1fJKoqiahYno9ZtyTbWqYVMuRUKbZfupssjfhaw7SnxNhY3j4FFJcpifrX?cluster=devnet (+15s)
+  add_juror_v3 Ed9w…K8bK         queue https://explorer.solana.com/tx/3EJ3zXLDEdZE4knUYH9N5XPTSD47sZ8xE4XGTF396CGQqauEnVkpA9oyNmuKUoo9j3WRC8qRbLvwxhp7WkfBGUZ7?cluster=devnet
+                                 callback https://explorer.solana.com/tx/2dyz168Sq97a9jFXvvXGozDQrRaKbn93oF7n6JfNxmhozXzEzx3iLNp8eBiTwZvNs1TERCj2pWNjky3WuGvnXq9N?cluster=devnet (+20s)
+  record_positions_v3 #1         queue https://explorer.solana.com/tx/3mFKKHDgg7BmiRiYGHyGrFKBSj8N69hhq3qJZpUcY6qr8cp5ZTgEBAmee3wWEcv3kcZD3iHzT5FkF3EWpibHXSDR?cluster=devnet
+                                 callback https://explorer.solana.com/tx/5CJwStpF4EkV6fApuenb7r6kpTXryJhc9GF6zHJCjJjyVLdR2bXp8g1yt4fLB3DZQr6cacxMhiNyoDAdz33bFy89?cluster=devnet (+26s)
+  mirrored 2 PNP holders (encrypted)
+  cast YES 5C3h…LEpa (holder)    queue https://explorer.solana.com/tx/4SyFd7vWHodEhe3CaXJurM1qik67Dv6ZDvmuSBEnubq3tdeTJeXMaem7pqLkV9DPPeHAoAaZYGsLtBhe8XN1dV2c?cluster=devnet
+                                 callback https://explorer.solana.com/tx/56cWPjRB2xZVd3rmQCfewXz4cTdhVWvFAc8paJ2oEGGWBrE65xdqqN1DnDbrWv9sLqg6o6nCt3Axg7dhT6q6BJoQ?cluster=devnet (+31s)
+  cast NO  6qhL…6Paa             queue https://explorer.solana.com/tx/5aGvsCRGas554MCb3L2DoHHhoZqGPTSfQNGyZQPiG38QRPehc3AqqHR9UdymDgeRu5BrYRb1ji6MpRgMBvSSFPFb?cluster=devnet
+                                 callback https://explorer.solana.com/tx/2bYCQ53NzCSGvN41Vpk2HarpnqvoKY64JP3Agsz6RzyV1F8NmZywjWc9dWzrrwVsor9tE57zvfS6pbdyPdcQ4RNa?cluster=devnet (+36s)
+  cast NO  Ed9w…K8bK             queue https://explorer.solana.com/tx/XPc8to9pZsgL4WNryQXZYq8BEBTvpK2dLiBk3WKWvy4bJNX2bYAkYDfjUxrmEcCDqWnwmgCBUD9mpVag1rJpdwq?cluster=devnet
+                                 callback https://explorer.solana.com/tx/nKCoxWzH79AsYnm8B4M7eSs4AhhGW4XCc1hLuAUF8FPMxJHgC139VN3isKDbRjKhxBvMGw99VFy66aTW4Sdp3QF?cluster=devnet (+42s)
+  resolve_v3                     queue https://explorer.solana.com/tx/3jqMjh1Rp2XdB1vJnHPJR9cdFaxq8ESKvjgCpgf3zk2kAsyeGLd1XQmHkoyXZQQ7ZU5dDxJKZeTy8yvVR2GoK9MB?cluster=devnet
+                                 callback https://explorer.solana.com/tx/bJvbkVWNyWNLYB1yX8cFrj8TSpYzNP75xoUXU8Tj9tS8bpWYQWHF8yNhHpQA4ae8h4cREtsvhNmLYSqS2FhEYan?cluster=devnet (+47s)
+verdict: yes=0 no=2 excluded=1 incomplete=false outcome=NO
+devnet SOL spent: 0.0372
+wrote pnp/out/court.json

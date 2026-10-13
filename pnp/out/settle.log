@@ -1,0 +1,10 @@
+court 47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF: resolved=true yes=0 no=2 excluded=1 incomplete=false outcome=NO
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+settling PNP market BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18 -> NO wins
+settle_market_v2 (+ memo "saring-court:47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF outcome:NO (0-2, excluded 1) settles pnp-market:BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18"): https://explorer.solana.com/tx/62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj?cluster=devnet
+PNP market account: resolved=true winning_token_id={"No":{}}
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+A (YES) redeem refused: Error redeeming position: Missing account for redeem_position_v2: market_creator
+[PNP SDK] Using DEVNET program: 8PyE2dizL52ga7ytqLtqRyjwWp4yXEx8M5Z4BAHgHuTb
+B (NO) redeem refused: Error redeeming position: Missing account for redeem_position_v2: market_creator
+wrote pnp/out/settle.json

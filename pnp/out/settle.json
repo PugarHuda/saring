@@ -1,0 +1,25 @@
+{
+  "court": "47GBTvB4hUcC3fpt8eWd9np1eDovWzSDine3uTztm1hF",
+  "market": "BBatimnYzff3nkD7mjxMcGBzw7VrHdsRhcPwKvDNjK18",
+  "verdict": {
+    "yes": 0,
+    "no": 2,
+    "excluded": 1,
+    "outcome": "NO"
+  },
+  "yesWinner": false,
+  "settle": "62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj",
+  "memo": "62ttfBdoatuQggXSYBizd3rV6AACEY6hHHnewzGjKXMib1S7yDZk7w58TR9yD7M6Y24RbyyXZFdEhjGXPhfqv9Dj",
+  "redeems": {
+    "A": {
+      "side": "YES",
+      "refused": "Simulation failed. \nMessage: Transaction simulation failed: Error processing Instruction 1: custom program error: 0x1776. \nLogs: \n[\n  \"Program ComputeBudget111111111111111111111111111111 invoke [1]\",\n"
+    },
+    "B": {
+      "side": "NO",
+      "signature": "66QqEECQujyx4QittXnT8k1GsCPmG9TvjCsMc8z7gJm9pfDFA9tLTB4WiXrshhGXMCX7Hq58dNSvv6dp3YFXWZtE",
+      "paid": 20.475696,
+      "paidNote": "from the tx token balances (B sUSD 90 -> 110.475696, market vault 119.8 -> 99.324304); the script read the balance before the RPC caught up and logged 0"
+    }
+  }
+}
