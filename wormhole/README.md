@@ -18,8 +18,9 @@ chain's own Wormhole core bridge and checks the emitter. No Saring-held key is i
 | Who can submit | Anyone (the signature is what counts) | Anyone. In our runs the disputer, a bettor, or a random account delivered it. |
 | Can Saring forge a verdict? | Yes, by signing anything | Not through the message path. The emitter PDA can only sign inside `saring_wormhole`, which posts only what it read. See the limits below for upgrade authority. |
 
-The EIP-712 path is still there (`resolve` / `rule` / `settle`) so existing integrations keep working. A deployer who wants the VAA path
-only can pass `relayer = address(0)`. The fork tests do exactly that.
+The EIP-712 path (`resolve` / `rule` / `settle`) survives only on deployments without a Wormhole core. Since the security review,
+`SaringWormhole._requireVaaOnly` makes a contract with a core revert `RelayerWithVaa` if it is given a relayer, so every Wormhole
+deployment is VAA-only (`relayer = 0`). The live contracts below were redeployed that way.
 
 ## Why a core message (path B) and not Queries (path A)
 
@@ -50,7 +51,18 @@ core bridge, which is open on every testnet we need.
 | Base Sepolia | 10004 | `0x79A1027a6A159502049F10906D333EC57E95F083` |
 | Tempo Moderato (42431) | 68 | `0xa29E8c21924834E6249bCE1FD733f24eC492018c` (listed under testnet core contracts on wormhole.com/docs/products/reference/contract-addresses) |
 
-## Live runs (one new dispute per chain, settled by the VAA)
+## Live runs after the security review (VAA-only redeploys, 2026-10-13)
+
+Each contract reads back `relayer() == 0x0` and is Sourcify exact match. Same VAA (court `24gQ…YGb`, seq 0) as below.
+
+| Chain | Contract | Settled by VAA | Log |
+|---|---|---|---|
+| Tempo Moderato | SaringMarket [`0xab3a…c639`](https://explore.testnet.tempo.xyz/address/0xab3a24e55b84eafd0767c71797b7aa75e16ec639) | [settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1) after a bet past `closesAt` was rejected; [claim +5](https://explore.testnet.tempo.xyz/tx/0x855ab9a0f3d3b20ec26584c706de8a1bb1463897a75dc1a29e24044b4a272a5f) | `out/flow-tempo.log` |
+| Arbitrum Sepolia | UMA EM [`0xc36d…4b58`](https://sepolia.arbiscan.io/address/0xc36dd39a3fc1831a2813e20316f998c08fb74b58) | [resolveWithVaa](https://sepolia.arbiscan.io/tx/0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617), [settleAssertion](https://sepolia.arbiscan.io/tx/0x02443b7c718806b9a79fd3e97e7a7d443214df9c29167e055fdcc16015d511ed) false | `out/flow-arbitrum.log` |
+| Ethereum Sepolia | UMA EM [`0x4101…115c`](https://sepolia.etherscan.io/address/0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c) | [resolveWithVaa](https://sepolia.etherscan.io/tx/0x46ee84adb1ac62fb692fffdc8b58d06232e11c89dc47df2cdf0604dd6fe7aeec), [settleAssertion](https://sepolia.etherscan.io/tx/0xf4f4140ae0e50d11a40bf84456bedc859b5bb0351520c3fa9c0c4f59ba0db01c) false | `out/flow-sepolia.log` |
+| Base Sepolia | Reality.eth arbitrator [`0xad38…f8c5`](https://sepolia.basescan.org/address/0xad38eb68f9912f39e201960f22e584d650f2f8c5) | [ruleWithVaa](https://sepolia.basescan.org/tx/0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e), result NO, [claimWinnings](https://sepolia.basescan.org/tx/0xb2e3edcefddbc511a4e4de892a9410daf174c0ce6742addc883e1a1dcd033380) | `out/flow-base.log` |
+
+## Live runs before the review (these contracts still accept the old relayer key; history only)
 
 **Attestation (Solana devnet).** Court `24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb` resolved NO (yes 0, no 1, excluded 1).
 [post tx](https://explorer.solana.com/tx/5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z?cluster=devnet),
@@ -102,7 +114,7 @@ Result: `settlementResolution: false`. Total cost was about 0.0011 ETH, almost a
 
 ## Tests
 
-- **Foundry, 31/31** (`out/forge-test-{arbitrum,base,tempo}.log`). Each adapter has fork tests against the **real core bridge** of its chain with the **real recorded VAA**:
+- **Foundry, 60/60** (`out/forge-test-{arbitrum,base,tempo,hyperliquid}.log`, after the security fixes). Each adapter has fork tests against the **real core bridge** of its chain with the **real recorded VAA**:
   - positive: full UMA OOv3 flow (Arbitrum fork) / full Reality.eth flow (Base fork) / market payout (Tempo fork), all with `relayer = address(0)`. The decoded verdict is checked, and a second submission reverts.
   - tampered payload: one tally byte flipped reverts with `BadVaa("VM signature invalid")`.
   - wrong emitter: a genuine guardian-signed devnet VAA from another Solana program (`out/foreign-vaa-1222.json`) reverts `WrongEmitter`, and so does our VAA on a contract that expects another emitter.
@@ -144,9 +156,10 @@ npx tsx flow-tempo.ts [court]                                 # Tempo Moderato
 
 ## Known issues (security review, 2026-10-13)
 
-Found in review; the deployed contracts were not redeployed. Full write-up: `research/56-security-review.md` in the workspace.
+Full write-up: `research/56-security-review.md` in the workspace.
 
-- **The relayer key can still rule, and it can front-run the VAA (High).** Four of the five Wormhole deployments were built
+- **Fixed: the relayer key could still rule and front-run the VAA (High).** Source: `RelayerWithVaa` (above). On chain, the four
+  contracts were redeployed with `relayer = 0` and re-run (table above). The old ones below are history only. Original finding: Four of the five Wormhole deployments were built
   with a non-zero relayer: `relayer()` is `0x1f80…e682` on Base `0x3848…682a`, Arbitrum `0x6ae4…6c` and Sepolia `0x2618…dcda0`,
   and `0x1cc1…c5ec` on Tempo `0x5780…f482`. `resolve` / `rule` / `settle` accept any verdict that key signs, for any bound
   court, before the court has resolved, and whoever rules first wins (`AlreadyResolved` / `AlreadyRuled` / `MarketClosed`).

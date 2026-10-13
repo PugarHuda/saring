@@ -181,9 +181,9 @@ function ChainCard(p: { chain: string; net: string; what: ReactNode; load: () =>
 
 const TEMPO_RPC = ["https://rpc.moderato.tempo.xyz"];
 const TEMPO_X = "https://explore.testnet.tempo.xyz";
-const TEMPO_MARKET = "0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482";
+const TEMPO_MARKET = "0xab3a24e55b84eafd0767c71797b7aa75e16ec639"; // VAA only (relayer 0) + betting deadline, redeployed after the security review
 const TEMPO_CORE = "0xa29E8c21924834E6249bCE1FD733f24eC492018c";
-const TEMPO_VAA_TX = "0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc";
+const TEMPO_VAA_TX = "0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1";
 const OUTCOME = ["Open", "Yes", "No", "Refund"];
 // One paid dispute end to end (tempo/mpp-e2e.ts): MPP 402 -> court H7Bd -> VAA -> fee-sponsored settleWithVaa -> memo receipt.
 const PAID_MARKET = "0x4df7a5af22bb31c5f33cf6d5a0e28859faa45eae";
@@ -349,11 +349,11 @@ const conflictedCall = (voter: string) =>
   SEL.isConflicted + pad(THAI.disputeId) + pad(voter) + pad("60") + pad(THAI.proof.length.toString(16)) + THAI.proof.map(pad).join("");
 const yesNo = (b: bigint) => <strong className={b ? "bad" : "ok"}>{b ? "true" : "false"}</strong>;
 
-const SEP_EM = "0x2618c1f527a513a1638b8071b4b796e7769dcda0";
+const SEP_EM = "0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c"; // VAA only (relayer 0), redeployed after the security review
 const SEP_OOV3 = "0xFd9e2642a170aDD10F53Ee14a93FcF2F31924944";
 const SEP_CORE = "0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78";
-const SEP_ASSERTION = "0x6fa0e66154558e8a188b07acbec8fff1372dce8b879aa13727bbe0cbb74f3801";
-const SEP_VAA_TX = "0x914337a888d19e0cc6d96dac017234deb8f461948b921a323d0ef293de87db44";
+const SEP_ASSERTION = "0xc903d00365c35bd1c768b37b3fc0fa1f101a4f41cecf62765332e4ddd7feb9d0";
+const SEP_VAA_TX = "0x46ee84adb1ac62fb692fffdc8b58d06232e11c89dc47df2cdf0604dd6fe7aeec";
 
 async function loadEthereum(): Promise<Read> {
   const [b, [round], [phase], [pending, resolved], sb, [leaves], [c1], [c2], [sepResult], proof] = await Promise.all([
@@ -388,11 +388,11 @@ async function loadEthereum(): Promise<Read> {
 
 const ARB_RPC = ["https://sepolia-rollup.arbitrum.io/rpc", "https://arbitrum-sepolia-rpc.publicnode.com"];
 const ARB_X = "https://sepolia.arbiscan.io";
-const EM = "0x6ae4c89bb75291062b204e6ba9d43952786ec56c";
+const EM = "0xc36dd39a3fc1831a2813e20316f998c08fb74b58"; // VAA only (relayer 0), redeployed after the security review
 const OOV3 = "0x1037A21a30aEfF90c269b01c3933eB9a5285d9b8";
 const ARB_CORE = "0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35";
-const ASSERTION = "0xed57d330c68595455a61c9570ac3457635685357e0ddfeed9caf36f57212e33a";
-const ARB_VAA_TX = "0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587";
+const ASSERTION = "0xa7e8d7ae26bf30b8c4179a53d259bdfb11bf14959ca3f8ba2fe0a38317f473d4";
+const ARB_VAA_TX = "0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617";
 const KLEROS_V2 = "0xc2b4805da6899d788b179f12eb19136bd73f5ba5"; // SaringArbitratorV2 (IArbitratorV2)
 const KLEROS_RULE_TX = "0x4a9da88971511f607a2d45a18866e6dd7dd5ceb2cbab5f78d65226352e18eeea";
 
@@ -423,11 +423,12 @@ async function loadArbitrum(): Promise<Read> {
 
 const BASE_RPC = ["https://sepolia.base.org", "https://base-sepolia-rpc.publicnode.com"];
 const BASE_X = "https://sepolia.basescan.org";
-const ARBITRATOR = "0x384822075dc735ea7de0b8417c9b4403bb9d682a";
+const ARBITRATOR = "0xad38eb68f9912f39e201960f22e584d650f2f8c5"; // VAA only (relayer 0), redeployed after the security review
+const LIMITLESS_ARB = "0x384822075dc735ea7de0b8417c9b4403bb9d682a"; // pre-review arbitrator that ruled the Limitless question
 const REALITY = "0x86b653Dc9aa6d7311109276925927087573f91CB";
 const BASE_CORE = "0x79A1027a6A159502049F10906D333EC57E95F083";
-const QID = "0x7cb90bbfca19ffc2fddb8f390d4d81384b0863871264470a3095ee3c0f3cec83";
-const BASE_VAA_TX = "0xf2a1ef9c6ab80fbd75a9cf298bee115d3eaf5d4a9608ccdcde86e5c8b37d01c9";
+const QID = "0xc121dfd42e6320863f693b2a9b3933980eba051323ad67e3ad34ae0148408421";
+const BASE_VAA_TX = "0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e";
 // Base-native loop (base/limitless-court.ts): 12 real Limitless holders -> court BT7f (top holder seated, excluded) -> VAA -> Reality.eth.
 const LIMITLESS_COURT = "BT7fCq2tCffGCB8M64gj5o2P4aXLtdG4FjdWgPsqkZhr";
 const LIMITLESS_QID = "0x9c1fd757056eba950758ca3ba4b92222ee333a0198dfe6999e12027956c6baaf";
@@ -443,7 +444,7 @@ async function loadBase(): Promise<Read> {
     call(BASE_RPC, REALITY, SEL.resultFor + pad(QID)),
     vaaProof(BASE_RPC, ARBITRATOR, BASE_CORE, BASE_VAA_TX, VAA_SEL.ruleWithVaa),
     readCourt(LIMITLESS_COURT),
-    call(BASE_RPC, ARBITRATOR, SEL.courtOf + pad(LIMITLESS_QID)),
+    call(BASE_RPC, LIMITLESS_ARB, SEL.courtOf + pad(LIMITLESS_QID)),
     call(BASE_RPC, REALITY, SEL.isFinalized + pad(LIMITLESS_QID)),
     call(BASE_RPC, REALITY, SEL.resultFor + pad(LIMITLESS_QID)),
   ]);
@@ -470,12 +471,12 @@ const CARDS: { chain: string; net: string; what: ReactNode; load: () => Promise<
   {
     chain: "Tempo",
     net: "Moderato testnet",
-    what: <>A pathUSD YES/NO market settled by a bettor delivering the Wormhole VAA of a Saring verdict (EIP-712 relayer kept as fallback); fees paid by TIP-20 memo and MPP.</>,
+    what: <>A pathUSD YES/NO market settled by a bettor delivering the Wormhole VAA of a Saring verdict (deployed with relayer = 0: no Saring key can settle it; bets close at a deadline); fees paid by TIP-20 memo and MPP.</>,
     load: loadTempo,
     links: [
       ["SaringMarket", `${TEMPO_X}/address/${TEMPO_MARKET}`],
       ["settleWithVaa tx", `${TEMPO_X}/tx/${TEMPO_VAA_TX}`],
-      ["claim tx", `${TEMPO_X}/tx/0xd8b751302525261128ade2af948ea98d1978fec8fc4d3777df4a8a8bfb916b0c`],
+      ["claim tx", `${TEMPO_X}/tx/0x855ab9a0f3d3b20ec26584c706de8a1bb1463897a75dc1a29e24044b4a272a5f`],
       ["Solana emitter tx (Wormhole)", `https://explorer.solana.com/tx/${SOL_EMITTER_TX}?cluster=devnet`],
       ["VAA on Wormholescan", `https://wormholescan.io/#/tx/${SOL_EMITTER_TX}?network=Testnet`],
       ["Fee with memo", `${TEMPO_X}/tx/0xfd2ecd44cbd7f47565e4cec1451ab74660303f752c6c4cb37ff9a3e698e37846`],
@@ -575,8 +576,8 @@ export default function Multichain() {
           chain from your browser (Zcash and the Wormholescan VAA through our <code>/api/chains</code> proxy), not by stored
           results. Tempo, Arbitrum, Base and Ethereum Sepolia now take the court's verdict as a <strong>Wormhole VAA</strong>{" "}
           posted by the <code>saring_wormhole</code> program after it read the resolved court on Solana; each card checks
-          the settling tx and the contract's Wormhole core and emitter. The relayer-signed EIP-712 path remains as a
-          fallback. Testnet limits: one guardian signs, and our programs are still upgradeable. Refresh to read again.
+          the settling tx and the contract's Wormhole core and emitter. These contracts were redeployed after our security
+          review with <code>relayer = 0</code>, so no Saring-held key can settle them. Testnet limits: one guardian signs, and our programs are still upgradeable. Refresh to read again.
         </p>
       </div>
       <div className="chain-grid">

@@ -119,7 +119,8 @@ from the recorded VAA of court `24gQ…`. Tx links and the HyperCore before/afte
   Core unit), and only the first disputer counts. Once the court resolves on Solana, the verdict is public before anyone relays
   the VAA. Anyone can then dispute on the known-winning side with a dust bond, get it back, and lock out a real disputer. Fix:
   set a minimum bond, and close disputes at a deadline set in `open`.
-- **The relayer fallback depends on the deploy argument.** Deploy with `relayer = address(0)` for the VAA-only trust model.
-  See `wormhole/README.md`.
+- **Fixed: the relayer fallback depended on the deploy argument.** The constructor now reverts `RelayerWithVaa` when given both a
+  relayer and a Wormhole core (test `test_relayerWithWormhole_cannotDeploy`), and `fallback.ts` deploys with `relayer = 0` and
+  settles both outcomes by VAA. Nothing was deployed on HyperEVM (no testnet HYPE arrived).
 - `spotSend` through CoreWriter is asynchronous. `BondReturnedOnCore` is emitted when the action is queued, not when HyperCore
   executes it, so check the disputer's Core balance before treating a refund as done.

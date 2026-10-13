@@ -20,7 +20,7 @@ are dropped inside MPC, and the chain never learns which jurors were dropped.
 ## Quickstart (from the release tarball)
 
 ```bash
-npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz \
+npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.1/saring-sdk-0.1.1.tgz \
       @solana/web3.js @anchor-lang/core@^1.0.2 @arcium-hq/client@0.15.0
 ```
 
@@ -63,7 +63,7 @@ for (const { sequence, vaa } of await fetchSaringVaas()) {           // Wormhole
 `verifySaringVaa` checks the guardian signatures (quorum, ascending indices, recovered against the guardian set the
 Wormhole core bridge stores on Solana devnet, the same check `parseAndVerifyVM` runs on EVM), the emitter
 (`saring_wormhole` PDA, chain 1), and that the payload tally equals the court account. `sdk/out/verify-vaas.ts` runs it
-on every live VAA and checks that tampered copies are rejected. The `sdk-v0.1.0` tarball predates the signature check.
+on every live VAA and checks that tampered copies are rejected. The `sdk-v0.1.1` release tarball includes it (checked on the packed tarball: all 3 live VAAs verify, a flipped signature byte is rejected). The older `sdk-v0.1.0` tarball predates the signature check.
 In that version, `verifySaringVaa` only parsed the VAA.
 See the whole trail for any court at <https://pugarhuda.github.io/saring/court.html>.
 

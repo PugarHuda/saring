@@ -28,7 +28,11 @@ incomplete conflict check returns 0, so the assertion is false and the disputer 
 `saring_wormhole` program posted on Solana devnet after reading the resolved court on-chain. The contract checks the guardian
 signatures through the Arbitrum Sepolia core bridge `0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35`, the emitter (Solana, PDA
 `0x54c231ce…6238`), and the bound court. The constructor is now `(oo, relayer, wormhole, emitter)`. The EIP-712 `resolve()` is unchanged.
-**Live:** [`0x6ae4c89bb75291062b204e6ba9d43952786ec56c`](https://sepolia.arbiscan.io/address/0x6ae4c89bb75291062b204e6ba9d43952786ec56c) (Sourcify exact match). A new assertion was disputed and
+**Live (after the security review, `relayer = 0`):** [`0xc36dd39a3fc1831a2813e20316f998c08fb74b58`](https://sepolia.arbiscan.io/address/0xc36dd39a3fc1831a2813e20316f998c08fb74b58) (Sourcify exact match):
+[deploy](https://sepolia.arbiscan.io/tx/0xfc1a54d92fd8ef89f44a6758ecd79b79f09a99b4560d9d0d480c34422aea0055), [assertTruth](https://sepolia.arbiscan.io/tx/0x3321b213e83f435e2a70e724d1b2c29b7c6c190a0dcc839d098fa5951068155a),
+[bindCourt](https://sepolia.arbiscan.io/tx/0xf46b5410bdb86cb00a06c86df0dcd498b4371328d6a7a3c03bb8e9432ca823c2), [disputeAssertion](https://sepolia.arbiscan.io/tx/0x64ee39fdc42c487cd645174a3caf9baddd58838cbc4f895d437367db9b0f3ef9),
+[**resolveWithVaa**](https://sepolia.arbiscan.io/tx/0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617), [settleAssertion](https://sepolia.arbiscan.io/tx/0x02443b7c718806b9a79fd3e97e7a7d443214df9c29167e055fdcc16015d511ed) (`settlementResolution: false`).
+Pre-review EM (relayer `0x1f80…e682` still accepted, history only): [`0x6ae4c89bb75291062b204e6ba9d43952786ec56c`](https://sepolia.arbiscan.io/address/0x6ae4c89bb75291062b204e6ba9d43952786ec56c) (Sourcify exact match). A new assertion was disputed and
 [resolved by VAA](https://sepolia.arbiscan.io/tx/0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587), then
 [settled](https://sepolia.arbiscan.io/tx/0xaaae5ed3e9edf4ab4995f034ceb79687a4c83dd79a3217f81ac17cd320c3c3df) false.
 The same contract also runs on Ethereum Sepolia against UMA's OOv3 there. See [`../wormhole/README.md`](../wormhole/README.md) for the trust model, all tx links and tests.
@@ -139,14 +143,16 @@ gas. It pays the dispute bond on the disputer's behalf, and OOv3 credits the `di
 
 ## Known issues (security review, 2026-10-13)
 
-The contracts below were not redeployed.
-
-- **A payee or payer can block the escrow ruling (Medium).** `SaringEscrow._close` pushes ETH and reverts if either
+- **Fixed in source: a payee or payer could block the escrow ruling (Medium).** `SaringEscrow` now credits `owed` and each
+  party calls `withdraw()` (test `test_revertingPayee_cannotBlockRuling`). The deployed demo escrow `0x31ee…6766` predates the
+  fix and was not redeployed; `SaringArbitratorV2` itself needed no change. Original finding: `SaringEscrow._close` pushes ETH and reverts if either
   transfer fails. `SaringArbitratorV2.ruleWithVaa` calls `arbitrable.rule` in the same transaction, so a payee contract that
   reverts on receive makes every `ruleWithVaa` revert. A NO ruling (refund the payer) then never lands, the payer's ETH stays
   locked, and the dispute stays unruled. The same holds the other way for a split (ruling 0) when the payer reverts. Fix: use
   pull payments (credit balances in `rule`, then `withdraw()`), and record the ruling in the arbitrator before the external call.
-- **The relayer fallback is live on the UMA EM `0x6ae4…6c` (High).** `relayer()` is `0x1f80…e682`, so that key can resolve any
+- **Fixed: the relayer fallback was live on the UMA EM `0x6ae4…6c` (High).** Redeployed VAA-only as `0xc36d…4b58` (above); the
+  constructor now reverts `RelayerWithVaa` for relayer + core (tests `test_relayerWithWormhole_cannotDeploy`,
+  `test_vaaOnly_rejectsRelayerSignedVerdict`). Original finding: `relayer()` is `0x1f80…e682`, so that key can resolve any
   bound assertion before the court does. See `wormhole/README.md`.
 - **Tie and incomplete verdicts make the assertion false (Low, design).** `_rule` maps them to price 0, so the asserter loses
   their bond when the jury could not decide. Consider returning the bond (e.g. route void verdicts to UMA's DVM via

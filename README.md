@@ -13,7 +13,7 @@ Built for Colosseum's Crypto World's Fair (Sep 14 to Oct 12, 2026). MIT-licensed
 - **Real Panta data:** the demo dispute is a real [Panta](https://panta.market) market. Its holders are read from Panta's program on Solana mainnet (see [Panta integration](#panta-integration)).
 - **Conflict Report:** https://pugarhuda.github.io/saring/
 - **Verdict proof page:** https://pugarhuda.github.io/saring/court.html lists every court with a Wormhole VAA and, for one court (`?c=<court>`), reads the whole trail live: Solana court account, VAA, and each chain's settle tx.
-- **SDK release:** [`sdk-v0.1.0`](https://github.com/PugarHuda/saring/releases/tag/sdk-v0.1.0) (`npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz`), quickstart in [`sdk/README.md`](sdk/README.md#quickstart-from-the-release-tarball).
+- **SDK release:** [`sdk-v0.1.1`](https://github.com/PugarHuda/saring/releases/tag/sdk-v0.1.1) (`npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.1/saring-sdk-0.1.1.tgz`; 0.1.1 adds the guardian-signature check to `verifySaringVaa`), quickstart in [`sdk/README.md`](sdk/README.md#quickstart-from-the-release-tarball).
 
 ## Chain integrations
 
@@ -35,11 +35,11 @@ The court itself (encrypted state, MPC tally, settlement market) runs only on So
 
 ### Trust model: EIP-712 relayer → Wormhole VAA
 
-| | Before (fallback, still supported) | Now (Wormhole VAA) |
+| | Before (legacy deployments only) | Now (Wormhole VAA, `relayer = 0`) |
 |---|---|---|
 | Who states the verdict | One Saring relayer key signs an EIP-712 `Verdict` | The `saring_wormhole` program ([`DdNYVoQV…WdPq`](https://explorer.solana.com/address/DdNYVoQVXZdWjAaYq9pnrH2fec17F1QnSXDyfnTQWdPq?cluster=devnet)) reads the resolved Saring court on-chain and posts it as a Wormhole message ([Solana tx](https://explorer.solana.com/tx/5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z?cluster=devnet)) |
 | What the EVM contract checks | `ecrecover == relayer` | Guardian signatures via the chain's own Wormhole core bridge, emitter = the program's PDA on Solana, payload court = bound court |
-| Can Saring forge a verdict? | Yes, by signing anything | Not through the message path (see limits) |
+| Can Saring forge a verdict? | Yes, by signing anything | Not through the message path (see limits). A contract with a Wormhole core can't be deployed with a relayer at all (`RelayerWithVaa`) |
 
 What each chain now trusts, deepest first:
 
@@ -52,7 +52,32 @@ What each chain now trusts, deepest first:
 | Zcash | Payouts checked by anyone with the published UFVK ([report](zcash/out/verify-8bX2MwDZof48jfgfGGE1T7sMJwa6aojWvbazzpTfGNFm.md)) | The operator picks which voters were conflicted (only the count is checked) and must send the payout |
 | Hyperliquid | Court live; settlement contract not deployed | Everything past the court verdict is unproven on chain |
 
-The same VAA (court `24gQ…YGb`) settled four adapters: [Base `ruleWithVaa`](https://sepolia.basescan.org/tx/0xf2a1ef9c6ab80fbd75a9cf298bee115d3eaf5d4a9608ccdcde86e5c8b37d01c9) · [Arbitrum `resolveWithVaa`](https://sepolia.arbiscan.io/tx/0xafb717d9c06f195b4a952030c4f084ce2d316e54054750b910cf456517d95587) · [Ethereum Sepolia `resolveWithVaa`](https://sepolia.etherscan.io/tx/0x914337a888d19e0cc6d96dac017234deb8f461948b921a323d0ef293de87db44) · [Tempo `settleWithVaa`](https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc), and later the Kleros V2 escrow. The Base and Tempo loops above each posted their own VAA (sequences 1 and 2). Foundry fork tests run against each chain's real core bridge with the recorded VAA (tampered payload, wrong emitter and wrong court all revert). We used the core message path because Wormhole Queries is a closed beta. **Limits:** the testnet guardian set is a single guardian (mainnet is 13 of 19), and `saring_wormhole` and the Saring program are still upgradeable by our wallet. Details: [`wormhole/README.md`](wormhole/README.md).
+The same VAA (court `24gQ…YGb`) settled four adapters, first on the pre-review contracts and again on the VAA-only redeploys: [Base `ruleWithVaa`](https://sepolia.basescan.org/tx/0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e) · [Arbitrum `resolveWithVaa`](https://sepolia.arbiscan.io/tx/0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617) · [Ethereum Sepolia `resolveWithVaa`](https://sepolia.etherscan.io/tx/0x46ee84adb1ac62fb692fffdc8b58d06232e11c89dc47df2cdf0604dd6fe7aeec) · [Tempo `settleWithVaa`](https://explore.testnet.tempo.xyz/tx/0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1), and the Kleros V2 escrow. The Base and Tempo loops above each posted their own VAA (sequences 1 and 2). Foundry fork tests run against each chain's real core bridge with the recorded VAA (tampered payload, wrong emitter and wrong court all revert). We used the core message path because Wormhole Queries is a closed beta. **Limits:** the testnet guardian set is a single guardian (mainnet is 13 of 19), and `saring_wormhole` and the Saring program are still upgradeable by our wallet. Details: [`wormhole/README.md`](wormhole/README.md).
+
+### Security fixes after review (2026-10-13)
+
+An adversarial review of the last 30 hours of code found two High issues in the EVM adapters. Both are fixed in the source
+and on chain. Status of every finding is in the per-chain READMEs (sections "Known issues").
+
+- **The relayer key could still rule on the Wormhole deployments (High).** Fix: `SaringWormhole._requireVaaOnly` makes a
+  contract with a Wormhole core revert `RelayerWithVaa` if it is built with a relayer, so the EIP-712 path exists only on
+  core-less (legacy) deployments. The four affected contracts held `relayer` as an immutable with no setter, so they were
+  redeployed with `relayer = 0` (each reads back `relayer() == 0x0` and is Sourcify exact match), and each one settled a new
+  dispute from the same recorded VAA:
+  [Tempo `0xab3a…c639`](https://explore.testnet.tempo.xyz/address/0xab3a24e55b84eafd0767c71797b7aa75e16ec639) ([settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1)) ·
+  [Arbitrum EM `0xc36d…4b58`](https://sepolia.arbiscan.io/address/0xc36dd39a3fc1831a2813e20316f998c08fb74b58) ([resolveWithVaa](https://sepolia.arbiscan.io/tx/0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617)) ·
+  [Sepolia EM `0x4101…115c`](https://sepolia.etherscan.io/address/0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c) ([resolveWithVaa](https://sepolia.etherscan.io/tx/0x46ee84adb1ac62fb692fffdc8b58d06232e11c89dc47df2cdf0604dd6fe7aeec)) ·
+  [Base arbitrator `0xad38…f8c5`](https://sepolia.basescan.org/address/0xad38eb68f9912f39e201960f22e584d650f2f8c5) ([ruleWithVaa](https://sepolia.basescan.org/tx/0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e)).
+  The old contracts (`0x5780…f482`, `0x6ae4…c56c`, `0x2618…dcda0`, `0x3848…682a`) still accept the relayer key and are kept only as history.
+  The Kleros `SaringArbitratorV2` never had a relayer.
+- **Tempo bets were accepted after the verdict was public (High).** Fix: the owner opens each court with `open(court, closesAt)`
+  before voting starts, and `bet` reverts `MarketClosed` at or after `closesAt` and on courts never opened. The live run shows a
+  bet after the deadline rejected, then `settleWithVaa` and the claim.
+- **Medium:** the escrow uses pull payments (a reverting party can't block `ruleWithVaa`); the Reality.eth arbitrator has a
+  permissionless `cancelArbitration` after 7 days; the faucet checks Origin and can't pay twice after a timeout; the RPC proxy
+  limits uncached mainnet scans; the SDK's `verifySaringVaa` checks guardian signatures (`sdk-v0.1.1`); the proof page
+  shows only events from Saring's own contracts. Foundry: 60 tests across the four adapters, including a relayer-signed
+  verdict rejected by every VAA-only contract.
 
 ---
 

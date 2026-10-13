@@ -95,7 +95,12 @@ full `getLogs` scan instead, which also catches transfers that happen outside Li
 that the `saring_wormhole` program posted on Solana devnet after reading the resolved court on-chain. The contract checks the guardian
 signatures through the Base Sepolia core bridge `0x79A1027a6A159502049F10906D333EC57E95F083`, the emitter (Solana, PDA `0x54c231ce…6238`),
 and the bound court. The constructor is now `(realitio, relayer, fee, wormhole, emitter)`. The EIP-712 `rule()` is unchanged.
-**Live:** [`0x384822075dc735ea7de0b8417c9b4403bb9d682a`](https://sepolia.basescan.org/address/0x384822075dc735ea7de0b8417c9b4403bb9d682a) (Sourcify exact match). A new question was answered YES, sent to arbitration,
+**Live (after the security review: `relayer = 0`, with `cancelArbitration`):** [`0xad38eb68f9912f39e201960f22e584d650f2f8c5`](https://sepolia.basescan.org/address/0xad38eb68f9912f39e201960f22e584d650f2f8c5) (Sourcify exact match):
+[deploy](https://sepolia.basescan.org/tx/0x3a3435a47ae95868b1092ce9893f9fbf05b86fa673adb3c293a2810e55d6936f), [askQuestion](https://sepolia.basescan.org/tx/0xedfb89f9532e38a3bd3ac86a92439c9eab00a30b903d0cb9ed5a8552ba9f6ddf),
+[submitAnswer YES](https://sepolia.basescan.org/tx/0x5f84df8609f9101eb3fd68891e0291d00de705c78dc08e2b7a5d5b2bcec89b87), [requestArbitration](https://sepolia.basescan.org/tx/0x700c556db962846a05fb908098cd01a25e2525547b7afb260e5eb15a807dc748),
+[bindCourt](https://sepolia.basescan.org/tx/0x5d0b25aa3f8388cb608f0e7ce9ba83d7d87da35cb0890d3848258091805f47d6), [**ruleWithVaa**](https://sepolia.basescan.org/tx/0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e) to `resultFor = 0x0`,
+[claimWinnings](https://sepolia.basescan.org/tx/0xb2e3edcefddbc511a4e4de892a9410daf174c0ce6742addc883e1a1dcd033380), [withdraw](https://sepolia.basescan.org/tx/0x678cc22f559b43531347293e5a2c1f7250ea52277e6b64ef3643bd991c94c573).
+Pre-review arbitrator (relayer `0x1f80…e682` still accepted; it also ruled the Limitless question above): [`0x384822075dc735ea7de0b8417c9b4403bb9d682a`](https://sepolia.basescan.org/address/0x384822075dc735ea7de0b8417c9b4403bb9d682a) (Sourcify exact match). A new question was answered YES, sent to arbitration,
 [ruled by VAA](https://sepolia.basescan.org/tx/0xf2a1ef9c6ab80fbd75a9cf298bee115d3eaf5d4a9608ccdcde86e5c8b37d01c9) (submitted by the disputer) to `resultFor = 0x0`, and the bond was
 [claimed](https://sepolia.basescan.org/tx/0x40615bedc3b8d84e7ce31b6d59e40a2e2b4298b5a207cf6f290f8f18efbe1750).
 See [`../wormhole/README.md`](../wormhole/README.md) for the trust model, all tx links and tests. Foundry is now 9/9, including fork tests with the
@@ -153,12 +158,14 @@ to the disputer for gas and the arbitration fee.
 
 ## Known issues (security review, 2026-10-13)
 
-The contracts below were not redeployed.
-
-- **A requested arbitration can freeze a question forever (Medium).** `requestArbitration` makes Reality.eth freeze the
+- **Fixed: a requested arbitration could freeze a question forever (Medium).** After `ARBITRATION_TIMEOUT` (7 days) without a
+  ruling, anyone can call `cancelArbitration(questionId)`, which calls Reality.eth's `cancelArbitration` and reopens the question
+  (fork test against the real Reality.eth v3: `test_fork_cancelArbitration_unfreezes`). The fee is not refunded. Live in
+  `0xad38…f8c5`; `0x3848…682a` predates it. Original finding: `requestArbitration` makes Reality.eth freeze the
   question. If the owner never calls `bindCourt`, or the bound court never resolves, the only way out is `_rule`. There is no
   timeout, no `cancelArbitration`, and no fee refund, so the bonds on that question stay locked for good. Fix: after a
   deadline, let anyone call `realitio.cancelArbitration(questionId)` through the arbitrator, and refund the requester's fee.
-- **The relayer fallback is live on `0x3848…682a` (High).** `relayer()` is `0x1f80…e682`, so that key can answer any bound
+- **Fixed: the relayer fallback was live on `0x3848…682a` (High).** Redeployed VAA-only as `0xad38…f8c5`; the constructor now
+  reverts `RelayerWithVaa` for relayer + core (tests `test_relayerWithWormhole_cannotDeploy`, `test_vaaOnly_rejectsRelayerSignedVerdict`). Original finding: `relayer()` is `0x1f80…e682`, so that key can answer any bound
   question before the court resolves. `0xd96e…03b4` is relayer-only. See `wormhole/README.md`.
 - Overpaying `requestArbitration` (`msg.value > disputeFee`) is not refunded, and `withdraw` sends it to the owner.

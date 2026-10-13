@@ -14,8 +14,11 @@ Saring is a conflict-blind jury for prediction-market disputes. It runs on Solan
 
 **Wormhole path.** `SaringMarket` now also has `settleWithVaa(vaa)`: any bettor can settle with a guardian-signed VAA from the
 `saring_wormhole` program on Solana, checked by Wormhole's Tempo testnet core `0xa29E8c21924834E6249bCE1FD733f24eC492018c`. No relayer key is involved.
-Live: market [`0x5780c7e5…f482`](https://explore.testnet.tempo.xyz/address/0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482),
-[settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc) giving outcome No. Details are in [`../wormhole/README.md`](../wormhole/README.md).
+Live (after the security review: `relayer = 0`, betting deadline): market [`0xab3a…c639`](https://explore.testnet.tempo.xyz/address/0xab3a24e55b84eafd0767c71797b7aa75e16ec639) (Sourcify exact match),
+[open(court, closesAt)](https://explore.testnet.tempo.xyz/tx/0x36ae58968e91887286ba0b63415f57d956ffc3a08e390f0dbfa8038952aa10c8), [bet A YES](https://explore.testnet.tempo.xyz/tx/0xdea2a071d10f92d0210fdb03c9872fb51e30a2048b4e826b43fc38a31637c226),
+[bet B NO](https://explore.testnet.tempo.xyz/tx/0xdffac2ec7d21bb912fef13bcd20c098900af749a671f8f8d3d94551aa56b9bc5), a bet after `closesAt` rejected (`MarketClosed`),
+[settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1) giving outcome No, [claim B +5 pathUSD](https://explore.testnet.tempo.xyz/tx/0x855ab9a0f3d3b20ec26584c706de8a1bb1463897a75dc1a29e24044b4a272a5f).
+The earlier market [`0x5780c7e5…f482`](https://explore.testnet.tempo.xyz/address/0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482) ([settleWithVaa](https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc)) still trusts a relayer key and is history only. Details are in [`../wormhole/README.md`](../wormhole/README.md).
 The constructor is now `(token, relayer, wormhole, emitter)`.
 
 ## Live run on Moderato testnet (chain 42431), 2026-10-12
@@ -95,17 +98,22 @@ npx tsx mpp-e2e.ts [question|--resume]      # 402, court, jurors, MPC, VAA, spon
 
 ## Known issues (security review, 2026-10-13)
 
-The contracts below were not redeployed.
+Status: both High findings are **fixed** in `contracts/src/SaringMarket.sol` and in the redeployed market `0xab3a…c639` above.
+`0x5780…f482` and `0x4df7…5eae` were deployed before the fix and keep the old behaviour.
 
-- **Betting stays open after the verdict is public (High).** `bet` closes only when someone calls `settle`/`settleWithVaa`.
+- **Fixed: betting stayed open after the verdict was public (High).** Now the owner calls `open(court, closesAt)`, and `bet`
+  reverts `MarketClosed` at or after `closesAt` (and on courts never opened). Tests: `test_betAfterDeadline_reverts`,
+  `test_betOnUnopenedCourt_reverts`, `test_open_onlyOwner_once_futureDeadline`. The deadline must be set before the
+  court's voting starts; the live demo reuses an already-resolved court, so there it only shows the mechanism. Original finding: `bet` closes only when someone calls `settle`/`settleWithVaa`.
   Once the court resolves on Solana, its tally sits in a public account, but the VAA needs Solana finality plus guardian
   observation, and someone has to relay it. In that window, or at any later time until someone settles, an attacker bets
   heavily on the known winner and then settles in the same block. Example: pools are 100 YES / 100 NO and YES won. The
   attacker bets 10,000 YES and claims 10,000 * 10,200 / 10,100 = 10,099, which takes 99 of the honest YES side's 100
   winnings. Fix: give each market a deadline set before the jury votes, `open(court, closesAt)`, and have `bet` require
   `block.timestamp < closesAt`. Or settle only VAAs whose Wormhole `timestamp` comes before the deadline, so later bets refund.
-- **The relayer fallback is live on `0x5780…f482` (High).** Its `relayer()` is `0x1cc1…c5ec`, so that key can settle any court's
+- **Fixed: the relayer fallback was live on `0x5780…f482` (High).** A market with a Wormhole core can no longer be built with a relayer
+  (`RelayerWithVaa`; tests `test_relayerWithWormhole_cannotDeploy`, `test_vaaOnly_rejectsRelayerSignedVerdict`). Original finding: Its `relayer()` is `0x1cc1…c5ec`, so that key can settle any court's
   market with any tally, before the court resolves. `0x4df7…5eae` is VAA-only (`relayer = 0`). See `wormhole/README.md`.
-- **Anyone can open a market on any court (Info).** Markets are keyed by the court pubkey, and anyone can create a court on
-  Solana. A UI should only list courts whose authority it trusts.
+- **Only the owner opens markets now (Info; before, anyone could bet on any court).** Courts are still permissionless on Solana,
+  so the owner must open only courts whose authority it trusts.
 - Rounding: `claimable` floors, so dust of up to `#winners` base units stays in the contract. Funds are never over-paid.
