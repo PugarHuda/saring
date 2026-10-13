@@ -183,8 +183,8 @@ export default function App() {
   const [options, setOptions] = useState<MarketOption[] | null>(null);
   const [optionsErr, setOptionsErr] = useState("");
   const optionsAsked = useRef(false);
-  // Panta API's view of each juror wallet: market ids it lists, "refused" (the API rejected the wallet) or "error". Cached across markets.
-  const [apiPos, setApiPos] = useState<Record<string, string[] | "refused" | "error">>({});
+  // Panta API's view of each juror wallet: market ids it lists, or "error". Cached across markets.
+  const [apiPos, setApiPos] = useState<Record<string, string[] | "error">>({});
   const apiPosRef = useRef(apiPos);
 
   // Dev-only: lets a local check open the Settle on Panta panel without a 3-minute devnet run.
@@ -289,11 +289,11 @@ export default function App() {
       for (const j of jurors) {
         if (stop) return;
         if (j.you || Array.isArray(apiPosRef.current[j.wallet])) continue; // errors retry on the next toggle
-        let v: string[] | "refused" | "error";
+        let v: string[] | "error";
         try {
           v = (await withTimeout(walletPositions(j.wallet), 20_000)).positions.map((p) => p.marketId);
-        } catch (e) {
-          v = (e as { status?: number }).status === 400 ? "refused" : "error";
+        } catch {
+          v = "error";
         }
         apiPosRef.current = { ...apiPosRef.current, [j.wallet]: v };
         setApiPos(apiPosRef.current);
@@ -476,7 +476,6 @@ export default function App() {
     const v = apiPos[j.wallet];
     if (v === undefined) return <span className="muted">Checking…</span>;
     if (v === "error") return <span className="muted">API unavailable</span>;
-    if (v === "refused") return <span className="muted">API rejected this wallet</span>;
     const api = v.includes(scenario!.market);
     const chain = j.conflicted;
     return (
