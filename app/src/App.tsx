@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type AnchorHTMLAttributes } from "react";
 import { LAMPORTS_PER_SOL, type PublicKey } from "@solana/web3.js";
-import type { BN } from "@anchor-lang/core";
+import { BN } from "@anchor-lang/core";
 import {
   DEFAULT_CHOICE,
   PROGRAM_ID,
@@ -82,16 +82,19 @@ const faucetKey = (burner: string) => `saring.faucetUntil.${burner}`;
 /** External link: always a new tab, no referrer. */
 const Ext = (p: AnchorHTMLAttributes<HTMLAnchorElement>) => <a target="_blank" rel="noreferrer" {...p} />;
 
-/** The last finished run, so a reload still shows its verdict and explorer links. */
+/** The last run, saved after every step, so a reload shows its verdict or resumes it. */
 interface Last {
   market: string;
   /** Court account address (devnet), for the record. */
   court: string;
   courtId: number;
   choice: Choice;
-  verdict: Verdict;
+  /** null while the run is unfinished. */
+  verdict: Verdict | null;
   bet: Bet;
-  steps: Pick<StepState, "status" | "queueSig" | "finalizeSig">[];
+  /** The exact script sent (juror keys included), so a resumed run sends the same ballots. Absent in older saves. */
+  script?: ScriptStep[];
+  steps: (Pick<StepState, "status" | "queueSig" | "finalizeSig"> & { offset?: string })[];
 }
 /** Keyed by burner pubkey: a saved verdict from another burner is never shown. */
 function loadLast(burner: string): Last | null {
@@ -211,15 +214,26 @@ export default function App() {
     withTimeout(loadScenario(burner.publicKey, choiceRef.current, m))
       .then((sc) => {
         if (m !== marketRef.current) return; // the visitor picked another market meanwhile
-        // Restore the last finished run if it matches this market and script.
+        // Restore the last run (finished or not) if it matches this market and script.
         const last = loadLast(me);
-        if (last && last.market === m && last.steps.length === sc.steps.length) {
-          setStepStates(last.steps.map((s) => ({ ...s })));
+        if (last && last.market === m && (last.script ?? sc.steps).length === last.steps.length) {
+          if (last.script) sc.steps = last.script;
+          // A step that was in flight when the page closed resumes on Retry: a landed queue tx is only
+          // re-awaited (its offset is saved), anything else is re-sent.
+          setStepStates(
+            last.steps.map(({ offset, ...s }) =>
+              s.status === "sending" || s.status === "queued"
+                ? { ...s, offset: offset ? new BN(offset) : undefined, status: "failed", error: "Interrupted by a page reload. Retry resumes from here." }
+                : { ...s, offset: offset ? new BN(offset) : undefined }
+            )
+          );
           setCourtId(last.courtId);
           setVerdict(last.verdict);
           setBet(last.bet);
-          // A court the current program can't read (e.g. made before v3.1) is dropped silently.
-          readVerdict(client, last.courtId).catch(() => {
+          // A court the current program can't read (e.g. made before v3.1) is dropped silently;
+          // an RPC hiccup is not a reason to forget a court.
+          readVerdict(client, last.courtId).catch((e) => {
+            if (/fail(ed)? to (get info|fetch)/i.test(String(e?.message ?? e))) return;
             if (loadLast(me)?.courtId !== last.courtId) return;
             saveLast(me, null);
             setStepStates(fresh(sc.steps));
@@ -365,6 +379,18 @@ export default function App() {
     setNotice("");
     const id = courtId ?? newCourtId();
     setCourtId(id);
+    // Saved after every step so a reload or a closed tab can resume this court.
+    const persist = (v: Verdict | null = null, b: Bet = null) =>
+      saveLast(me, {
+        market: marketRef.current,
+        court: courtPda(burner.publicKey, id).toBase58(),
+        courtId: id,
+        choice: choiceRef.current,
+        verdict: v,
+        bet: b,
+        script: SCRIPT,
+        steps: stepsRef.current.map(({ status, queueSig, finalizeSig, offset }) => ({ status, queueSig, finalizeSig, offset: offset?.toString() })),
+      });
     try {
       const mxePub = await fetchMxePublicKey(client);
       for (let i = 0; i < SCRIPT.length; i++) {
@@ -374,7 +400,9 @@ export default function App() {
         if (!isMpc(action)) {
           // Plain transaction: confirmed when queueStep returns, no callback.
           patch(i, { status: "sending", error: undefined });
+          persist();
           patch(i, { status: "finalized", queueSig: await queueStep(client, id, mxePub, action, newComputationOffset()) });
+          persist();
           continue;
         }
         let offset = s.offset;
@@ -382,31 +410,28 @@ export default function App() {
         if (!s.queueSig || !offset) {
           offset = newComputationOffset();
           patch(i, { status: "sending", offset, error: undefined });
+          persist();
           patch(i, { queueSig: await queueStep(client, id, mxePub, action, offset) });
         }
         patch(i, { status: "queued", error: undefined });
+        persist();
         patch(i, { status: "finalized", finalizeSig: await awaitStep(client, offset) });
+        persist();
       }
       const v = await readVerdict(client, id);
       const b = choiceRef.current.bet !== null ? await readBet(client, id) : null;
       setVerdict(v);
       setBet(b);
-      saveLast(me, {
-        market: marketRef.current,
-        court: courtPda(burner.publicKey, id).toBase58(),
-        courtId: id,
-        choice: choiceRef.current,
-        verdict: v,
-        bet: b,
-        steps: stepsRef.current.map(({ status, queueSig, finalizeSig }) => ({ status, queueSig, finalizeSig })),
-      });
+      persist(v, b);
       // On a narrow screen the verdict sits far above the timeline.
       if (window.matchMedia("(max-width: 1020px)").matches) verdictRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (e) {
       const i = stepsRef.current.findIndex((s) => s.status === "sending" || s.status === "queued");
       const msg = e instanceof Error ? e.message : String(e);
-      if (i >= 0) patch(i, { status: "failed", error: msg });
-      else setNotice(msg);
+      if (i >= 0) {
+        patch(i, { status: "failed", error: msg });
+        persist();
+      } else setNotice(msg);
     } finally {
       setRunning(false);
       refreshBalance();
