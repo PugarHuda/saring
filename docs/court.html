@@ -130,11 +130,14 @@ const le32 = (b, o) => (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] <<
 const outcome = (v) => (!v.resolved ? null : v.incomplete ? "INCOMPLETE" : v.yes === v.no ? "TIE" : v.yes > v.no ? "YES" : "NO");
 
 async function getJson(url, body) {
-  // Public RPCs answer 429 when several proofs load at once: back off and retry instead of dropping the chain.
+  // Public RPCs answer 429 when several proofs load at once (Arbitrum's 429 even carries a doubled CORS header, which the
+  // browser reports as a network error): back off and retry instead of dropping the chain.
   for (let i = 0; ; i++) {
-    const r = await fetch(url, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : undefined);
-    if (r.ok) return r.json();
-    if ((r.status !== 429 && r.status < 500) || i >= 4) throw new Error(`${new URL(url).host}: HTTP ${r.status}`);
+    let r;
+    try { r = await fetch(url, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : undefined); }
+    catch (e) { if (i >= 4) throw new Error(`${new URL(url).host}: ${e.message}`); }
+    if (r && r.ok) return r.json();
+    if (r && ((r.status !== 429 && r.status < 500) || i >= 4)) throw new Error(`${new URL(url).host}: HTTP ${r.status}`);
     await new Promise((ok) => setTimeout(ok, 800 * 2 ** i + Math.random() * 400));
   }
 }
