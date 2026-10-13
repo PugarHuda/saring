@@ -1,0 +1,90 @@
+{
+ "hero": [
+  [
+   "Saring is a jury for prediction-market disputes that can't rule on markets it bet on.",
+   "Saring: a jury for prediction-market disputes that can't rule on markets it bet on."
+  ],
+  [
+   "In 834 of 4,121 Polymarket disputes on UMA, a voter held a position in that market. Nothing filters them.",
+   "In 834 of 4,121 UMA disputes (20.2%), a voter held a position in that market. Nothing filters them."
+  ]
+ ],
+ "case": [
+  [
+   "Here is a real Panta market on Solana mainnet. Its details come from Panta's API, its holders from Panta's program.",
+   "A real Panta market on Solana mainnet: details from Panta's API, holders read from Panta's program."
+  ],
+  [
+   "Five jurors are real Panta wallets. God view, local to this demo, shows that three of them hold this market.",
+   "5 jurors are real Panta wallets. God view (local to this demo): 3 of them hold this market."
+  ]
+ ],
+ "seat": [
+  [
+   "You are juror number six, with your own secret ballot key. I vote NO, and also bet on NO.",
+   "You are juror #6, with your own secret ballot key. Vote NO, and also bet 0.01 SOL on NO."
+  ],
+  [
+   "The burner wallet gets devnet SOL. One full run costs about a tenth of a SOL.",
+   "Burner wallet funded with devnet SOL. One run costs about 0.10 SOL."
+  ]
+ ],
+ "run": [
+  [
+   "Now, 28 real devnet transactions on Arcium MPC, shown eight times faster. Every step links its transaction and its verified callback.",
+   "28 devnet transactions on Arcium MPC. Every step links its queue tx and its verified callback."
+  ],
+  [
+   "Positions are mirrored encrypted. A bribed juror rotates his key, so the briber's stale-key ballot is ignored inside MPC, and so is a forged one.",
+   "Positions mirrored encrypted. A bribed juror rotates his key: the briber's stale-key ballot and a forged one are ignored inside MPC."
+  ]
+ ],
+ "verdict": [
+  [
+   "The verdict, read from chain: NO, two to zero. Four excluded: the three conflicted holders, and me, because I bet.",
+   "Verdict: NO 2–0. 4 excluded: the 3 conflicted holders and you, because you bet."
+  ],
+  [
+   "A plain jury would have ruled YES. The market in the same program pays out on Saring's verdict.",
+   "A plain jury would have ruled YES. The market in the same program pays out on the verdict."
+  ]
+ ],
+ "privacy": [
+  [
+   "On chain there are only ciphertexts and four numbers: yes, no, excluded, and incomplete.",
+   "On chain: ciphertexts and four numbers (yes, no, excluded, incomplete)."
+  ]
+ ],
+ "explorer": [
+  [
+   "Every step is a real devnet transaction you can open on the explorer.",
+   "Every step is a real devnet transaction on Solana Explorer."
+  ]
+ ],
+ "multichain": [
+  [
+   "The court stays on Solana and Arcium. Other chains pay for it, feed it data, or consume its verdict. Every card is a live read.",
+   "The court stays on Solana + Arcium. Other chains pay for it, feed it, or consume its verdict. Every card is a live read."
+  ],
+  [
+   "Tempo takes a paid dispute and settles a market with a Wormhole VAA. Zcash holds shielded juror bonds and slashes a no-show.",
+   "Tempo: paid dispute, market settled by Wormhole VAA. Zcash: shielded juror bonds, a no-show slashed."
+  ],
+  [
+   "On Arbitrum, a UMA dispute and a Kleros V2 ruling follow the verdict. On Base, Reality.eth, and a court seated from Limitless holders.",
+   "Arbitrum: UMA dispute + Kleros V2 ruling follow the verdict. Base: Reality.eth + a Limitless-holder court."
+  ]
+ ],
+ "court": [
+  [
+   "Anyone can audit a verdict. This public proof page traces one court from Solana, through its Wormhole VAA, to the chain that settled on it.",
+   "Public proof page: one court traced Solana → Wormhole VAA → the settle tx on the chain that used it."
+  ]
+ ],
+ "outro": [
+  [
+   "Try it live at saring-silk dot vercel dot app.",
+   "Try it: saring-silk.vercel.app"
+  ]
+ ]
+}
