@@ -34,3 +34,21 @@ Reality.eth isFinalized=true resultFor=0x000000000000000000000000000000000000000
 claimWinnings: https://sepolia.basescan.org/tx/0xc2357b444302566f3217fd0672a275c56c0480bb82bff25836fc08ba07b82147
 disputer Reality.eth balance 0 ETH
 withdraw: https://sepolia.basescan.org/tx/0xbceb11a26591e62c66b3a250e3e50546588c26b1faac39fbfecd3928f6f43042
+
+=== 2026-10-13T03:43:53.181Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.001922431440145872 ETH; disputer 0x1f85Ce34e545fd0B0a42433CFCbd68331fcefCAE
+deployArbitrator: https://sepolia.basescan.org/tx/0x3a3435a47ae95868b1092ce9893f9fbf05b86fa673adb3c293a2810e55d6936f
+SaringArbitrator 0xad38eb68f9912f39e201960f22e584d650f2f8c5 (https://sepolia.basescan.org/address/0xad38eb68f9912f39e201960f22e584d650f2f8c5); wormhole 0x79A1027a6A159502049F10906D333EC57E95F083, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+askQuestion: https://sepolia.basescan.org/tx/0xedfb89f9532e38a3bd3ac86a92439c9eab00a30b903d0cb9ed5a8552ba9f6ddf
+question_id 0xc121dfd42e6320863f693b2a9b3933980eba051323ad67e3ad34ae0148408421
+submitAnswerYES: https://sepolia.basescan.org/tx/0x5f84df8609f9101eb3fd68891e0291d00de705c78dc08e2b7a5d5b2bcec89b87
+requestArbitration: https://sepolia.basescan.org/tx/0x700c556db962846a05fb908098cd01a25e2525547b7afb260e5eb15a807dc748
+bindCourt: https://sepolia.basescan.org/tx/0x5d0b25aa3f8388cb608f0e7ce9ba83d7d87da35cb0890d3848258091805f47d6
+
+=== 2026-10-13T03:44:05.465Z  ===
+ruleWithVaa: https://sepolia.basescan.org/tx/0x7595811eceb6825878bce3ff5f64ce5c6e6ae2be375026107023e8e14ebe532e
+Reality.eth isFinalized=true resultFor=0x0000000000000000000000000000000000000000000000000000000000000000
+claimWinnings: https://sepolia.basescan.org/tx/0xb2e3edcefddbc511a4e4de892a9410daf174c0ce6742addc883e1a1dcd033380
+disputer Reality.eth balance 0 ETH
+withdraw: https://sepolia.basescan.org/tx/0x678cc22f559b43531347293e5a2c1f7250ea52277e6b64ef3643bd991c94c573

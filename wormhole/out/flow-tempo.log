@@ -10,3 +10,17 @@ betA 3 pathUSD YES (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0
 betB 2 pathUSD NO (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0x99ff9ff52ea319ebbf5f540fba35b319513530550f121c460596f050651a0687
 settleWithVaa (sent by bettor B): https://explore.testnet.tempo.xyz/tx/0x93b87af3d4c0ac42db03178eb91672c962f01e3e32542af06063574d51b5bddc -> outcome No
 claimB: https://explore.testnet.tempo.xyz/tx/0xd8b751302525261128ade2af948ea98d1978fec8fc4d3777df4a8a8bfb916b0c status=success, pathUSD +5.000000
+
+=== 2026-10-13T03:37:56.749Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+  0xCffDaB023df861A8C72Ee2790c96242734d8FFf2 already funded (999999.989635 AlphaUSD)
+  0x4a725561cA68F49493319e77C04bE84D02b86011 already funded (999999.99868 AlphaUSD)
+  0x5a7F864163F40A41F6Eb4F9c9f0a3dA9C7Cc96a6 already funded (999999.998512 AlphaUSD)
+SaringMarket 0xab3a24e55b84eafd0767c71797b7aa75e16ec639 (https://explore.testnet.tempo.xyz/address/0xab3a24e55b84eafd0767c71797b7aa75e16ec639); wormhole 0xa29E8c21924834E6249bCE1FD733f24eC492018c, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+deployMarket: https://explore.testnet.tempo.xyz/tx/0x5aa6c70b0076614fb3c4482cb41a720370072ce876b744bdb5df800246c0fc7a
+open(court, closesAt 1791862742): https://explore.testnet.tempo.xyz/tx/0x36ae58968e91887286ba0b63415f57d956ffc3a08e390f0dbfa8038952aa10c8
+betA 3 pathUSD YES (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0xdea2a071d10f92d0210fdb03c9872fb51e30a2048b4e826b43fc38a31637c226
+betB 2 pathUSD NO (batched approve+bet): https://explore.testnet.tempo.xyz/tx/0xdffac2ec7d21bb912fef13bcd20c098900af749a671f8f8d3d94551aa56b9bc5
+bet after closesAt (block time >= 1791862742) rejected by the contract: MarketClosed
+settleWithVaa (sent by bettor B): https://explore.testnet.tempo.xyz/tx/0x4ef420f2ffcf25d29921dbe56d8b0f31e1c9ca840bd547609918af8bee73d0c1 -> outcome No
+claimB: https://explore.testnet.tempo.xyz/tx/0x855ab9a0f3d3b20ec26584c706de8a1bb1463897a75dc1a29e24044b4a272a5f status=success, pathUSD +5.000000

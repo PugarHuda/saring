@@ -15,3 +15,20 @@ settleAssertion: https://sepolia.etherscan.io/tx/0x48bf0c502240376ca485e51684618
 AssertionSettled: {"assertionId":"0x6fa0e66154558e8a188b07acbec8fff1372dce8b879aa13727bbe0cbb74f3801","bondRecipient":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747","disputed":true,"settlementResolution":false,"settleCaller":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747"}
 getAssertionResult = false
 unwrapWETH: https://sepolia.etherscan.io/tx/0x601593042efd5dc929d119893e0fbd5eff606ce3ac752aff8e8797d61c92c849
+
+=== 2026-10-13T03:42:06.485Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+deployer 0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747: 0.008876242965230292 ETH
+deployEM: https://sepolia.etherscan.io/tx/0xdb4658099bf26c001fc6a55517f999a236d9e9c0a3a886fdf89023d8117aff10
+SaringEscalationManager 0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c (https://sepolia.etherscan.io/address/0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c); wormhole 0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+wrapWETH: https://sepolia.etherscan.io/tx/0x3e3b7398c61b19fe76539b9656c2b26ab7bcaaa61ee97bcf9433b3a2c2fc3623
+approve: https://sepolia.etherscan.io/tx/0x3d11c0da6f2dab22da65a697799bf6707631e6c1839e4ce8883d3a19c183b573
+assertTruth: https://sepolia.etherscan.io/tx/0x777b965f2ac37dd3979d641ea03252e90b1747e14fd450ba5c18be30567f011a
+assertionId 0xc903d00365c35bd1c768b37b3fc0fa1f101a4f41cecf62765332e4ddd7feb9d0
+bindCourt: https://sepolia.etherscan.io/tx/0x12acdb7f84e56cf962afb6dd40bc045fd080851a34c08b32da74b24ecb4f95e4
+disputeAssertion: https://sepolia.etherscan.io/tx/0x21787f5acf566726c0a5f3d10e6b06bfd25b9026c78bbb6af0619952336008ea
+resolveWithVaa: https://sepolia.etherscan.io/tx/0x46ee84adb1ac62fb692fffdc8b58d06232e11c89dc47df2cdf0604dd6fe7aeec
+settleAssertion: https://sepolia.etherscan.io/tx/0xf4f4140ae0e50d11a40bf84456bedc859b5bb0351520c3fa9c0c4f59ba0db01c
+AssertionSettled: {"assertionId":"0xc903d00365c35bd1c768b37b3fc0fa1f101a4f41cecf62765332e4ddd7feb9d0","bondRecipient":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747","disputed":true,"settlementResolution":false,"settleCaller":"0x1E11D68d1D1C98e3dC768DaCd84d87F52F834747"}
+getAssertionResult = false
+unwrapWETH: https://sepolia.etherscan.io/tx/0x31260ab3e116244faf9049755b8107761cd38e972a3327cfe8424c9c448d0fe2

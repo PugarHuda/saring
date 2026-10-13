@@ -58,7 +58,7 @@ pre { background:#0b0718; border:1px solid var(--line); border-radius:12px; padd
   <div id="out" aria-live="polite"><p class="muted">Loading…</p></div>
   <section class="hop" style="margin-top:28px">
     <h2>Use the verdict in code</h2>
-    <pre>npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz
+    <pre>npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.1/saring-sdk-0.1.1.tgz
 
 import { Connection } from "@solana/web3.js";
 import { readCourtVerdict, verdictToYesWins } from "@saring/sdk";
@@ -89,16 +89,17 @@ const SETTLE = new Set(["0x0c07073767c6651f42f3bba3b53d1e97973c33210c3e26f3fef16
 // saring = the deployed Saring contracts. Topic-only log queries match ANY contract that emits an event with the
 // same signature, so a log (and a "calldata carries this VAA" tx) only counts when it comes from one of these.
 const CHAINS = [
-  { name: "Tempo Moderato", rpc: "https://rpc.moderato.tempo.xyz", tx: "https://explore.testnet.tempo.xyz/tx/", addr: "https://explore.testnet.tempo.xyz/address/", since: 39283000, step: 99000,
-    saring: ["0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482", "0x256eebad0930fe8e899b5e7c239130db50af0446", "0x4df7a5af22bb31c5f33cf6d5a0e28859faa45eae"] /* SaringMarket */ },
+  { name: "Tempo Moderato", rpc: "https://rpc.moderato.tempo.xyz", tx: "https://explore.testnet.tempo.xyz/tx/", addr: "https://explore.testnet.tempo.xyz/address/", since: 39250000, step: 99000,
+    saring: ["0xab3a24e55b84eafd0767c71797b7aa75e16ec639" /* VAA only + betting deadline (after review) */, "0x5780c7e56f46ae0df0e43acfc184b0c47ea0f482", "0x256eebad0930fe8e899b5e7c239130db50af0446" /* EIP-712 v1 */, "0x4df7a5af22bb31c5f33cf6d5a0e28859faa45eae"] /* SaringMarket */ },
   { name: "Base Sepolia", blockscout: "https://base-sepolia.blockscout.com", rpc: "https://sepolia.base.org", logRpc: "https://base-sepolia.gateway.tenderly.co", since: 47900000, step: 490000, tx: "https://sepolia.basescan.org/tx/", addr: "https://sepolia.basescan.org/address/",
-    saring: ["0x384822075dc735ea7de0b8417c9b4403bb9d682a", "0xd96e40e336363f856ce264176da6c24bf23803b4"] /* SaringArbitrator: VAA, EIP-712 v1 */ },
-  { name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", tx: "https://sepolia.arbiscan.io/tx/", addr: "https://sepolia.arbiscan.io/address/", since: 318455000, step: 9900000,
+    saring: ["0xad38eb68f9912f39e201960f22e584d650f2f8c5" /* VAA only (after review) */, "0x384822075dc735ea7de0b8417c9b4403bb9d682a", "0xd96e40e336363f856ce264176da6c24bf23803b4"] /* SaringArbitrator: VAA, EIP-712 v1 */ },
+  { name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", tx: "https://sepolia.arbiscan.io/tx/", addr: "https://sepolia.arbiscan.io/address/", since: 318447000, step: 9900000,
     // Arbiscan's Blockscout sits behind a bot challenge and the public RPC needs one address per getLogs, so the Saring contracts are listed.
-    addrs: ["0x6ae4c89bb75291062b204e6ba9d43952786ec56c" /* UMA EM */, "0xc2b4805da6899d788b179f12eb19136bd73f5ba5" /* Kleros V2 SaringArbitratorV2 */],
-    saring: ["0x6ae4c89bb75291062b204e6ba9d43952786ec56c", "0xc2b4805da6899d788b179f12eb19136bd73f5ba5", "0xd96e40e336363f856ce264176da6c24bf23803b4"] },
+    addrs: ["0xc36dd39a3fc1831a2813e20316f998c08fb74b58" /* UMA EM, VAA only (after review) */, "0x6ae4c89bb75291062b204e6ba9d43952786ec56c" /* UMA EM */,
+      "0xc2b4805da6899d788b179f12eb19136bd73f5ba5" /* Kleros V2 SaringArbitratorV2 */, "0xd96e40e336363f856ce264176da6c24bf23803b4" /* UMA EM, EIP-712 v1 */],
+    saring: ["0xc36dd39a3fc1831a2813e20316f998c08fb74b58", "0x6ae4c89bb75291062b204e6ba9d43952786ec56c", "0xc2b4805da6899d788b179f12eb19136bd73f5ba5", "0xd96e40e336363f856ce264176da6c24bf23803b4"] },
   { name: "Ethereum Sepolia", rpc: "https://sepolia.gateway.tenderly.co", tx: "https://sepolia.etherscan.io/tx/", addr: "https://sepolia.etherscan.io/address/", since: 11899700, step: 49000,
-    saring: ["0x2618c1f527a513a1638b8071b4b796e7769dcda0"] /* SaringEscalationManager */ },
+    saring: ["0x41014a50d7582ae90b50d0b1da0c1ccbaac0115c" /* VAA only (after review) */, "0x2618c1f527a513a1638b8071b4b796e7769dcda0"] /* SaringEscalationManager */ },
 ];
 
 // ---------- helpers ----------
@@ -129,9 +130,13 @@ const le32 = (b, o) => (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] <<
 const outcome = (v) => (!v.resolved ? null : v.incomplete ? "INCOMPLETE" : v.yes === v.no ? "TIE" : v.yes > v.no ? "YES" : "NO");
 
 async function getJson(url, body) {
-  const r = await fetch(url, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : undefined);
-  if (!r.ok) throw new Error(`${new URL(url).host}: HTTP ${r.status}`);
-  return r.json();
+  // Public RPCs answer 429 when several proofs load at once: back off and retry instead of dropping the chain.
+  for (let i = 0; ; i++) {
+    const r = await fetch(url, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : undefined);
+    if (r.ok) return r.json();
+    if ((r.status !== 429 && r.status < 500) || i >= 4) throw new Error(`${new URL(url).host}: HTTP ${r.status}`);
+    await new Promise((ok) => setTimeout(ok, 800 * 2 ** i + Math.random() * 400));
+  }
 }
 async function rpc(url, method, params) {
   const j = await getJson(url, { jsonrpc: "2.0", id: 1, method, params });

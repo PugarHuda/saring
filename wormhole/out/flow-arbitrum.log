@@ -14,3 +14,19 @@ resolveWithVaa: https://sepolia.arbiscan.io/tx/0xafb717d9c06f195b4a952030c4f084c
 settleAssertion: https://sepolia.arbiscan.io/tx/0xaaae5ed3e9edf4ab4995f034ceb79687a4c83dd79a3217f81ac17cd320c3c3df
 AssertionSettled: {"assertionId":"0xed57d330c68595455a61c9570ac3457635685357e0ddfeed9caf36f57212e33a","bondRecipient":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394","disputed":true,"settlementResolution":false,"settleCaller":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394"}
 getAssertionResult = false
+
+=== 2026-10-13T03:39:18.936Z  ===
+court 24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb; VAA from Solana tx 5WtYWwEuDrMmkyaQt7hfX8bdcGrqom19AbLUXnGMX43kHjcoVRTqAzXeXj3vheF2vFg9SPgvySj9H7aQJRiREy7Z (emitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238, seq 0)
+deployer 0x1cE80de3835Ee1e32264DbADe102aB62c78AB394: 0.004880977198014 ETH
+deployEM: https://sepolia.arbiscan.io/tx/0xfc1a54d92fd8ef89f44a6758ecd79b79f09a99b4560d9d0d480c34422aea0055
+SaringEscalationManager 0xc36dd39a3fc1831a2813e20316f998c08fb74b58 (https://sepolia.arbiscan.io/address/0xc36dd39a3fc1831a2813e20316f998c08fb74b58); wormhole 0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35, saringEmitter 0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238
+mintBondToken: https://sepolia.arbiscan.io/tx/0x67e6387934abb2521bcb04133a3f5c255ae3b519ab39b3ae8da27066a97635a2
+approve: https://sepolia.arbiscan.io/tx/0x06fd648997b681acfd435f2570f70d1c858d2636b6a3058914bd562a99edf23c
+assertTruth: https://sepolia.arbiscan.io/tx/0x3321b213e83f435e2a70e724d1b2c29b7c6c190a0dcc839d098fa5951068155a
+assertionId 0xa7e8d7ae26bf30b8c4179a53d259bdfb11bf14959ca3f8ba2fe0a38317f473d4
+bindCourt: https://sepolia.arbiscan.io/tx/0xf46b5410bdb86cb00a06c86df0dcd498b4371328d6a7a3c03bb8e9432ca823c2
+disputeAssertion: https://sepolia.arbiscan.io/tx/0x64ee39fdc42c487cd645174a3caf9baddd58838cbc4f895d437367db9b0f3ef9
+resolveWithVaa: https://sepolia.arbiscan.io/tx/0x89ebcbca147f046ceb8df1adc30d4436f1fdd3a8d25f16ff7a75754c6d249617
+settleAssertion: https://sepolia.arbiscan.io/tx/0x02443b7c718806b9a79fd3e97e7a7d443214df9c29167e055fdcc16015d511ed
+AssertionSettled: {"assertionId":"0xa7e8d7ae26bf30b8c4179a53d259bdfb11bf14959ca3f8ba2fe0a38317f473d4","bondRecipient":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394","disputed":true,"settlementResolution":false,"settleCaller":"0x1cE80de3835Ee1e32264DbADe102aB62c78AB394"}
+getAssertionResult = false
