@@ -1,6 +1,6 @@
 {
   "name": "@saring/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "description": "Conflict-blind jury for prediction-market disputes: Solana + Arcium MPC client, venue verdict reader, Panta adapter",
   "license": "MIT",

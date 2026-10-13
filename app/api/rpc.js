@@ -27,6 +27,8 @@ function allowed(net, call) {
     return net === "mainnet" && program === PANTA_PROGRAM && Array.isArray(filters)
       && filters.some((f) => f?.dataSize === 202) && filters.some((f) => f?.memcmp);
   }
+  // A single base64 tx per simulation, no extra account dumps: caps what one call can make Helius do.
+  if (call.method === "simulateTransaction" && (typeof call.params?.[0] !== "string" || call.params[0].length > 1700 || call.params?.[1]?.accounts)) return false;
   // Mainnet simulation is read-only (nothing is signed or landed): the app uses
   // it to show that a verdict-built Panta settlement passes everything but
   // Panta's oracle signature check.
@@ -43,14 +45,16 @@ const hits = new Map(); // ip -> { start, n }
 const GPA_TTL_MS = 60_000;
 const gpaCache = new Map(); // params json -> { t, text }
 
-function overLimit(ip) {
+const GPA_PER_WINDOW = 20;
+
+function overLimit(ip, max = MAX_PER_WINDOW) {
   const now = Date.now();
   const h = hits.get(ip);
   if (!h || now - h.start > WINDOW_MS) {
     hits.set(ip, { start: now, n: 1 });
     return false;
   }
-  return ++h.n > MAX_PER_WINDOW;
+  return ++h.n > max;
 }
 
 export default async function handler(req, res) {
@@ -67,6 +71,11 @@ export default async function handler(req, res) {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     const calls = Array.isArray(body) ? body : [body];
     if (calls.length < 1 || calls.length > MAX_BATCH) return res.status(400).json({ error: `batch must have 1-${MAX_BATCH} calls` });
+    // A getProgramAccounts scan is the expensive call and the memcmp bytes make its cache key attacker-chosen:
+    // allow it only alone (so it can't hide in a batch) and at most GPA_PER_WINDOW per IP per minute.
+    const gpa = calls.some((c) => isObj(c) && c.method === "getProgramAccounts");
+    if (gpa && (calls.length !== 1 || overLimit(`gpa:${ip}`, GPA_PER_WINDOW)))
+      return res.status(429).json({ jsonrpc: "2.0", id: null, error: { code: 429, message: "position scan rate limited" } });
     const badIndex = calls.findIndex((c) => !allowed(net, c));
     if (badIndex !== -1) {
       const bad = calls[badIndex];

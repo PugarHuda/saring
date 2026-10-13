@@ -58,10 +58,21 @@ const COOLDOWN_MS = 10 * 60_000;
 const lastGrant = new Map(); // ip or address -> timestamp
 const inFlight = new Set(); // addresses being funded right now
 
+// Same origin rule as rpc.js: another site's page can't make its visitors drain the faucet.
+const ALLOWED_ORIGIN = /^https:\/\/(saring-silk|saring-[a-z0-9-]+-hudas-projects-[a-z0-9]+)\.vercel\.app$|^http:\/\/localhost(:\d+)?$/;
+// Per-IP + per-address cooldowns are beaten by fresh burners from many IPs; this bounds the loss per instance.
+const MAX_GRANTS_PER_HOUR = 30; // 4.5 SOL/hour per instance
+const grants = []; // timestamps of sent grants
+
 export default async function handler(req, res) {
+  const origin = req.headers.origin;
+  if (origin && !ALLOWED_ORIGIN.test(origin)) return res.status(403).json({ error: "origin not allowed" });
+  while (grants.length && Date.now() - grants[0] > 3_600_000) grants.shift();
+  if (grants.length >= MAX_GRANTS_PER_HOUR) return res.status(429).json({ error: "faucet hourly limit reached, try again later" });
   const ip = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim() || "unknown";
   let address;
   let mine = false;
+  const sent = { done: false }; // set once sendTransaction went out: from then on a failure must keep the cooldown
   try {
     address = (typeof req.body === "string" ? JSON.parse(req.body) : req.body)?.address;
     if (typeof address !== "string" || address.length > 64) return res.status(400).json({ error: "invalid address" });
@@ -75,22 +86,26 @@ export default async function handler(req, res) {
     mine = true;
     lastGrant.set(ip, now);
     lastGrant.set(address, now);
-    const out = await grant(req, address);
-    if (out.status !== 200) {
+    const out = await grant(req, address, sent);
+    // 504 = sent but not confirmed yet: it usually lands, so keep the cooldown (else an instant retry pays twice).
+    if (out.status === 200 || out.status === 504) grants.push(now);
+    else {
       lastGrant.delete(ip);
       lastGrant.delete(address);
     }
     return res.status(out.status).json(out.body);
   } catch {
-    lastGrant.delete(ip);
-    if (typeof address === "string") lastGrant.delete(address);
+    if (!sent.done) {
+      lastGrant.delete(ip);
+      if (typeof address === "string") lastGrant.delete(address);
+    }
     return res.status(502).json({ error: "faucet temporarily unavailable" });
   } finally {
     if (mine) inFlight.delete(address);
   }
 }
 
-async function grant(req, address) {
+async function grant(req, address, sent) {
   const reply = (status, body) => ({ status, body });
   if (req.method !== "POST") return reply(405, { error: "POST only" });
   const { HELIUS_KEY, FAUCET_SECRET } = process.env;
@@ -114,6 +129,7 @@ async function grant(req, address) {
   if ((await rpc(url, "getBalance", [b58encode(from)])).value < Number(GRANT) + 5000) {
     return reply(503, { error: "faucet is empty" });
   }
+  sent.done = true;
   await rpc(url, "sendTransaction", [Buffer.from(tx).toString("base64"), { encoding: "base64" }]);
   for (let i = 0; i < 20; i++) {
     const s = (await rpc(url, "getSignatureStatuses", [[signature]])).value[0];
