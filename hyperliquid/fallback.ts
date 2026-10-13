@@ -187,6 +187,7 @@ async function main() {
   if (cmd === "wait") {
     while ((await pub.getBalance({ address: owner.address })) < NEED && !load().tx?.fundDisputer) {
       log(`0x71Ea… HyperEVM balance ${formatEther(await pub.getBalance({ address: owner.address }))} HYPE < ${formatEther(NEED)}, waiting`);
+      if (Date.now() > Date.parse("2026-10-13T06:30:00Z")) throw new Error("13 Oct 13:30 WIB reached, no HYPE arrived"); // 30 min before the deadline
       await new Promise((r) => setTimeout(r, 60_000));
     }
     return run();
