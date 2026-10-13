@@ -258,16 +258,17 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <li><strong>Bribe receipts are worthless.</strong> Each seat has a secret ballot key held inside MPC. A ballot counts only with the seat's current key, and a ballot can rotate the key, so a key handed to a briber after rotation is worthless and the briber can't tell. Forged ballots with guessed keys are ignored inside MPC.</li>
 <li><strong>Minimal output.</strong> The only thing revealed is <code>(yes, no, excluded, incomplete)</code>.</li>
 </ol>
+<p><a href="https://saring-silk.vercel.app" rel="noopener"><strong>Run a Saring dispute live on Solana devnet →</strong></a></p>
 <div class="callout ok"><strong>Prior art.</strong> Kleros pioneered hidden-vote juries with commit-reveal. Saring builds on that idea: it also filters conflicted jurors, and the chain never sees who the jurors are or which ones were dropped.</div>
 
 <footer>
 Data and scripts: <a href="{REPO}/tree/main/conflict-report" rel="noopener"><code>conflict-report/</code></a> · <a href="data/summary.json">summary.json</a> · data CC BY 4.0. Sources: UMA voting subgraph, Polygon RPC, Polymarket Gamma and Data APIs. All addresses are public on-chain data.
 </footer>
 </main>
-<script type="application/json" id="data">{data_json}</script>
+<script type="application/json" id="rows-data">{data_json}</script>
 <script>
 (() => {{
-  const rows = JSON.parse(document.getElementById('data').textContent).rows;
+  const rows = JSON.parse(document.getElementById('rows-data').textContent).rows;
   const tb = document.querySelector('#t tbody');
   const sh = a => a.slice(0, 6) + '…' + a.slice(-4);
   const usd = n => '$' + Math.round(n).toLocaleString('en-US');
