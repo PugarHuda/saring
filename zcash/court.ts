@@ -26,7 +26,15 @@ import { SARING_PROGRAM_ID, SaringClient, type SaringSigner, newBallotKey } from
 import { seatKey } from "./bond";
 import { HOME, OUT, castMemo, commitment, orchardReceiver, readJurors, seatMemo, uaCommit, writeOut } from "./zec";
 
-export const rpc = process.env.SOLANA_RPC_URL ?? process.env.RPC_URL ?? "https://api.devnet.solana.com";
+// The public devnet RPC answers courtLog's per-signature getTransaction loop with 429, so fall back to RPC_URL in ../.env.local.
+const envLocalRpc = (() => {
+  try {
+    return fs.readFileSync(path.join(__dirname, "../.env.local"), "utf8").match(/^RPC_URL=(.+)$/m)?.[1].trim();
+  } catch {
+    return undefined;
+  }
+})();
+export const rpc = process.env.SOLANA_RPC_URL ?? process.env.RPC_URL ?? envLocalRpc ?? "https://api.devnet.solana.com";
 const tx = (s: string) => `https://explorer.solana.com/tx/${s}?cluster=devnet`;
 export const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
