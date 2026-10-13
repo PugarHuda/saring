@@ -32,6 +32,7 @@ contract SaringMarketTest is Test {
     function setUp() public {
         usd = new TestUSD();
         mkt = new SaringMarket(IERC20(address(usd)), vm.addr(relayerKey), IWormhole(address(0)), bytes32(0));
+        mkt.open(court, uint64(block.timestamp + 1 days));
         address[3] memory who = [alice, bob, carol];
         for (uint256 i; i < 3; i++) {
             usd.mint(who[i], 100e6);
@@ -59,7 +60,7 @@ contract SaringMarketTest is Test {
         _bet(bob, false, 10e6);
         _bet(carol, false, 30e6);
         _settle(_v(0, 1, false), relayerKey);
-        (,, SaringMarket.Outcome o) = mkt.markets(court);
+        (,, SaringMarket.Outcome o,) = mkt.markets(court);
         assertEq(uint8(o), uint8(SaringMarket.Outcome.No));
 
         vm.expectRevert(SaringMarket.MarketClosed.selector);
@@ -127,7 +128,7 @@ contract SaringMarketTest is Test {
     function test_emptyWinningSide_refunds() public {
         _bet(alice, true, 5e6);
         _settle(_v(0, 2, false), relayerKey);
-        (,, SaringMarket.Outcome o) = mkt.markets(court);
+        (,, SaringMarket.Outcome o,) = mkt.markets(court);
         assertEq(uint8(o), uint8(SaringMarket.Outcome.Refund));
         vm.prank(alice); mkt.claim(court);
         assertEq(usd.balanceOf(alice), 100e6);
@@ -146,6 +147,53 @@ contract SaringMarketTest is Test {
         mkt.bet(court, true, 0);
     }
 
+    // ---------------- Security review 2026-10-13 ----------------
+
+    /// Finding 2: no bets once the deadline passed (the verdict may already be public on Solana).
+    function test_betAfterDeadline_reverts() public {
+        _bet(alice, true, 1e6);
+        vm.warp(block.timestamp + 1 days);
+        vm.prank(bob);
+        vm.expectRevert(SaringMarket.MarketClosed.selector);
+        mkt.bet(court, false, 1e6);
+    }
+
+    /// Finding 2: a court the owner never opened takes no bets at all.
+    function test_betOnUnopenedCourt_reverts() public {
+        vm.prank(alice);
+        vm.expectRevert(SaringMarket.MarketClosed.selector);
+        mkt.bet(bytes32(uint256(0x99)), true, 1e6);
+    }
+
+    function test_open_onlyOwner_once_futureDeadline() public {
+        bytes32 c2 = bytes32(uint256(0x77));
+        vm.prank(alice);
+        vm.expectRevert(SaringMarket.OnlyOwner.selector);
+        mkt.open(c2, uint64(block.timestamp + 1));
+        vm.expectRevert(SaringMarket.BadDeadline.selector);
+        mkt.open(c2, uint64(block.timestamp));
+        vm.expectRevert(SaringMarket.AlreadyOpen.selector);
+        mkt.open(court, uint64(block.timestamp + 2 days)); // can't extend a running market
+    }
+
+    /// Finding 1: a deployment wired to a Wormhole core can't be built with a relayer key ...
+    function test_relayerWithWormhole_cannotDeploy() public {
+        vm.expectRevert(SaringWormhole.RelayerWithVaa.selector);
+        new SaringMarket(IERC20(address(usd)), vm.addr(relayerKey), IWormhole(address(0xC0DE)), bytes32(0));
+    }
+
+    /// ... and on a VAA-only deployment a relayer-signed verdict is rejected, even one signed by the old relayer key.
+    function test_vaaOnly_rejectsRelayerSignedVerdict() public {
+        SaringMarket m = new SaringMarket(IERC20(address(usd)), address(0), IWormhole(address(0xC0DE)), bytes32(0));
+        m.open(court, uint64(block.timestamp + 1 days));
+        SaringWormhole.Verdict memory v = _v(9, 0, false);
+        (uint8 sv, bytes32 r, bytes32 s) = vm.sign(relayerKey, m.verdictDigest(v));
+        vm.expectRevert(SaringMarket.BadSignature.selector);
+        m.settle(v, sv, r, s);
+        (,, SaringMarket.Outcome o,) = m.markets(court);
+        assertEq(uint8(o), uint8(SaringMarket.Outcome.Open));
+    }
+
     // ---------------- Wormhole path: real recorded VAA, real core bridge (Tempo Moderato fork) ----------------
 
     function _forkMarket(bytes32 emitter) internal returns (SaringMarket m) {
@@ -153,6 +201,7 @@ contract SaringMarketTest is Test {
         usd = new TestUSD();
         m = new SaringMarket(IERC20(address(usd)), address(0), IWormhole(SaringWormholeFixtures.CORE_TEMPO_MODERATO), emitter);
         bytes32 c = SaringWormholeFixtures.COURT;
+        m.open(c, uint64(block.timestamp + 1 hours));
         usd.mint(alice, 3e6);
         usd.mint(bob, 2e6);
         vm.startPrank(alice);

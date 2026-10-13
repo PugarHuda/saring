@@ -49,7 +49,7 @@ async function main() {
 
   log(`deployer ${me}: ${formatEther(await pub.getBalance({ address: me }))} ETH; disputer ${disputer}; relayer ${relayer}`);
   const art = artifact(__dirname, "SaringArbitrator");
-  const dep = await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, relayer, FEE, "0x79A1027a6A159502049F10906D333EC57E95F083", "0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238"] } /* + Wormhole core, saring emitter: see wormhole/ */));
+  const dep = await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, relayer, FEE, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"] } /* legacy EIP-712 demo: no Wormhole core; a VAA deployment takes no relayer (wormhole/) */));
   const ARB = dep.contractAddress as Address;
   log(`SaringArbitrator ${ARB} (${EXPLORER}/address/${ARB})`);
   saveState(__dirname, { arbitrator: ARB, court: COURT });

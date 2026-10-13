@@ -69,6 +69,7 @@ contract SaringEscalationManager is EscalationManagerInterface, SaringWormhole {
     error BadSignature();
 
     constructor(address oo_, address relayer_, IWormhole wormhole_, bytes32 emitter_) SaringWormhole(wormhole_, emitter_) {
+        _requireVaaOnly(wormhole_, relayer_);
         oo = oo_;
         relayer = relayer_;
         owner = msg.sender;

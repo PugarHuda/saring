@@ -8,9 +8,9 @@
  *
  * 1. fund a separate disputer address on HyperEVM; it bridges a little HYPE to HyperCore (0x2222…2222) so its
  *    Core account exists (verified via spotClearinghouseState and the coreUserExists precompile)
- * 2. deploy SaringHyperCourt (relayer = 0x71Ea…, Wormhole core 0xBB73…00dd), open HIP-4 outcome 8659 -> court FoRH…
+ * 2. deploy SaringHyperCourt (relayer = 0: VAA only, Wormhole core 0xBB73…00dd), open HIP-4 outcome 8659 -> court FoRH…
  * 3. the disputer posts a 0.01 HYPE bond claiming NO; the contract bridges it to ITS HyperCore account
- * 4. read court FoRH… on Solana devnet (sdk/src/venue.ts), sign the EIP-712 Verdict, settle on HyperEVM
+ * 4. read court FoRH… on Solana devnet (sdk/src/venue.ts), get its Wormhole VAA (wormhole/attest.ts), settleWithVaa on HyperEVM
  * 5. the contract spotSends the bond back on HyperCore via CoreWriter; confirmed via info spotClearinghouseState
  * 6. Wormhole path: settle demo outcome 0 from the guardian-signed VAA of court 24gQ… (no Saring key)
  *
@@ -107,7 +107,7 @@ async function run() {
 
   // 2. deploy + bind outcomes
   if (!s.court) {
-    const hash = await (wallet(owner) as any).deployContract({ abi, bytecode: bytecode.object, args: [owner.address, WORMHOLE, EMITTER, HYPE_TOKEN, HYPE_PERP] });
+    const hash = await (wallet(owner) as any).deployContract({ abi, bytecode: bytecode.object, args: ["0x0000000000000000000000000000000000000000", WORMHOLE, EMITTER, HYPE_TOKEN, HYPE_PERP] /* VAA only (security review finding 1) */ });
     const r = await pub.waitForTransactionReceipt({ hash });
     if (r.status !== "success" || !r.contractAddress) throw new Error(`deploy failed ${evmTx(hash)}`);
     Object.assign(s, { court: r.contractAddress, chainId: 998, tx: { ...s.tx, deploy: hash } });
@@ -128,26 +128,19 @@ async function run() {
   await until("bond on the contract's HyperCore account", async () => (await coreHype(c)) >= 0.01);
   log(`contract HyperCore HYPE: info ${await coreHype(c)}, precompile ${await read("coreSpotBalance", [c, HYPE_TOKEN])} wei`);
 
-  // 4. verdict from Solana devnet, EIP-712 by the relayer
+  // 4. verdict from Solana devnet, delivered as a guardian-signed VAA (no Saring key)
   const { Connection } = await import("@solana/web3.js");
   const { readCourtVerdict } = await import("../sdk/src/venue");
   const conn = new Connection(process.env.RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
   const v = await readCourtVerdict(conn, COURT);
   if (!v.resolved) throw new Error(`court ${COURT} not resolved`);
-  const verdict = { court: courtHex(COURT), yes: v.yes, no: v.no, excluded: v.excluded, incomplete: v.incomplete, resolvedSlot: BigInt(await conn.getSlot()) };
   log(`court ${COURT}: yes ${v.yes} no ${v.no} excluded ${v.excluded} incomplete ${v.incomplete} -> ${v.outcome}`);
-  if (!s.tx?.["settle:" + OUTCOME]) {
+  if (!s.tx?.["settleWithVaa:" + OUTCOME]) {
     s.disputerCoreBefore = await coreHype(disputer.address);
     save(s);
-    const sig = await owner.signTypedData({
-      domain: { name: "SaringHyperCourt", version: "1", chainId: 998, verifyingContract: c },
-      types: { Verdict: [
-        { name: "court", type: "bytes32" }, { name: "yes", type: "uint8" }, { name: "no", type: "uint8" },
-        { name: "excluded", type: "uint8" }, { name: "incomplete", type: "bool" }, { name: "resolvedSlot", type: "uint64" }] },
-      primaryType: "Verdict", message: verdict,
-    });
-    const sv = Number("0x" + sig.slice(130, 132));
-    await call("settle", [OUTCOME, verdict, sv, ("0x" + sig.slice(2, 66)) as Hex, ("0x" + sig.slice(66, 130)) as Hex]);
+    const vf = path.join(HERE, "..", "wormhole", "out", `vaa-${COURT}.json`);
+    const att = fs.existsSync(vf) ? JSON.parse(fs.readFileSync(vf, "utf8")) : await (await import("../wormhole/attest")).attest(COURT);
+    await call("settleWithVaa", [OUTCOME, att.vaa]);
   }
 
   // 5. CoreWriter spotSend effect on HyperCore

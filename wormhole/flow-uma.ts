@@ -1,6 +1,6 @@
 /**
  * Saring x UMA OOv3, settled through Wormhole (no Saring key in the verdict path):
- * deploy SaringEscalationManager(oo, relayer, wormholeCore, saringEmitter) -> assertTruth (EM = Saring)
+ * deploy SaringEscalationManager(oo, relayer = 0, wormholeCore, saringEmitter) -> assertTruth (EM = Saring)
  * -> bind court -> disputeAssertion -> resolveWithVaa(guardian-signed VAA of the Solana court) -> settleAssertion.
  *
  *   npx tsx flow-uma.ts arbitrum [court]   Arbitrum Sepolia, bond 100 UMA TestnetERC20 (mintable)
@@ -9,7 +9,7 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { createPublicClient, createWalletClient, decodeEventLog, formatEther, http, parseAbi, stringToHex, toHex, type Address, type Hex } from "viem";
+import { zeroAddress, createPublicClient, createWalletClient, decodeEventLog, formatEther, http, parseAbi, stringToHex, toHex, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrumSepolia, sepolia } from "viem/chains";
 import { account, artifact, courtToBytes32, logger } from "../arbitrum/lib";
@@ -72,7 +72,7 @@ async function main() {
 
   const em = artifact(path.join(__dirname, "..", "arbitrum"), "SaringEscalationManager");
   const emitter = toHex(EMITTER.toBytes());
-  const dep = await send("deployEM", wallet.deployContract({ ...fees, abi: em.abi, bytecode: em.bytecode, args: [n.oo, account("relayer").address, n.core, emitter] }));
+  const dep = await send("deployEM", wallet.deployContract({ ...fees, abi: em.abi, bytecode: em.bytecode, args: [n.oo, zeroAddress, n.core, emitter] /* VAA only: no relayer key */ }));
   const EM = dep.contractAddress as Address;
   log(`SaringEscalationManager ${EM} (${n.explorer}/address/${EM}); wormhole ${n.core}, saringEmitter ${emitter}`);
 

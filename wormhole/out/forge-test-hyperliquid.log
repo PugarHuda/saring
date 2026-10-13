@@ -1,0 +1,19 @@
+Compiling 1 files with Solc 0.8.30
+Solc 0.8.30 finished in 1.13s
+Compiler run successful!
+
+Ran 11 tests for test/SaringHyperCourt.t.sol:SaringHyperCourtTest
+[PASS] test_disputeBridgesBondToCore() (gas: 127888)
+[PASS] test_disputeRejectsDustAndUnknownCoreUser() (gas: 147838)
+[PASS] test_fork_vaaRejectsForeignEmitterAndTamper() (gas: 1790307)
+[PASS] test_fork_vaaSettlesNoWithoutAnyKey() (gas: 1800140)
+[PASS] test_onlyOwnerOpens() (gas: 33746)
+[PASS] test_refundNeedsCoreBalance() (gas: 293359)
+[PASS] test_rejectsBadSignatureWrongCourtAndReplay() (gas: 249336)
+[PASS] test_relayerWithWormhole_cannotDeploy() (gas: 6696)
+[PASS] test_rightDisputerGetsBondViaCoreWriterSpotSend() (gas: 492873)
+[PASS] test_settleFractionRules() (gas: 537733)
+[PASS] test_wrongDisputerForfeits() (gas: 219733)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 4.22s (8.45s CPU time)
+
+Ran 1 test suite in 4.23s (4.22s CPU time): 11 tests passed, 0 failed, 0 skipped (11 total tests)

@@ -15,6 +15,9 @@ interface IERC20 {
 ///         either a Wormhole VAA (settleWithVaa: guardian-attested, no Saring key) or the legacy
 ///         EIP-712 attestation signed by the Saring relayer key (settle).
 ///         Tie, incomplete conflict check, or an empty winning side => full refund.
+///         Betting on a court is possible only after the owner opens it with a deadline set before voting starts:
+///         the tally is public on Solana once the court resolves, so bets after that would be risk-free.
+///         A deployment with a Wormhole core accepts no relayer (security review 2026-10-13, findings 1 and 2).
 contract SaringMarket is SaringWormhole {
     enum Outcome { Open, Yes, No, Refund }
 
@@ -22,6 +25,7 @@ contract SaringMarket is SaringWormhole {
         uint256 yesPool;
         uint256 noPool;
         Outcome outcome;
+        uint64 closesAt; // 0 = not opened; bets need block.timestamp < closesAt
     }
 
     bytes32 public constant VERDICT_TYPEHASH = keccak256(
@@ -32,17 +36,22 @@ contract SaringMarket is SaringWormhole {
 
     IERC20 public immutable token;
     address public immutable relayer;
+    address public immutable owner; // Saring operator: opens each court's market with its betting deadline
     bytes32 public immutable DOMAIN_SEPARATOR;
 
     mapping(bytes32 => Market) public markets;
     mapping(bytes32 => mapping(address => uint256)) public yesStake;
     mapping(bytes32 => mapping(address => uint256)) public noStake;
 
+    event Opened(bytes32 indexed court, uint64 closesAt);
     event Bet(bytes32 indexed court, address indexed bettor, bool yes, uint256 amount);
     event Settled(bytes32 indexed court, Outcome outcome, uint8 yes, uint8 no, uint8 excluded, bool incomplete, uint64 resolvedSlot);
     event Claimed(bytes32 indexed court, address indexed bettor, uint256 amount);
 
     error MarketClosed();
+    error OnlyOwner();
+    error AlreadyOpen();
+    error BadDeadline();
     error NotSettled();
     error BadSignature();
     error ZeroAmount();
@@ -50,7 +59,9 @@ contract SaringMarket is SaringWormhole {
     error TransferFailed();
 
     constructor(IERC20 token_, address relayer_, IWormhole wormhole_, bytes32 emitter_) SaringWormhole(wormhole_, emitter_) {
+        _requireVaaOnly(wormhole_, relayer_);
         token = token_;
+        owner = msg.sender;
         relayer = relayer_;
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
@@ -63,10 +74,20 @@ contract SaringMarket is SaringWormhole {
         );
     }
 
+    /// Opens betting on a court until closesAt, which the operator sets before the court's voting starts.
+    function open(bytes32 court, uint64 closesAt) external {
+        if (msg.sender != owner) revert OnlyOwner();
+        Market storage m = markets[court];
+        if (m.closesAt != 0 || m.outcome != Outcome.Open) revert AlreadyOpen();
+        if (closesAt <= block.timestamp) revert BadDeadline();
+        m.closesAt = closesAt;
+        emit Opened(court, closesAt);
+    }
+
     function bet(bytes32 court, bool yes, uint256 amount) external {
         if (amount == 0) revert ZeroAmount();
         Market storage m = markets[court];
-        if (m.outcome != Outcome.Open) revert MarketClosed();
+        if (m.outcome != Outcome.Open || block.timestamp >= m.closesAt) revert MarketClosed();
         if (!token.transferFrom(msg.sender, address(this), amount)) revert TransferFailed();
         if (yes) {
             m.yesPool += amount;

@@ -48,10 +48,18 @@ abstract contract SaringWormhole {
     error BadVaa(string reason);
     error WrongEmitter();
     error BadPayload();
+    error RelayerWithVaa();
 
     constructor(IWormhole wormhole_, bytes32 emitter_) {
         wormhole = wormhole_;
         saringEmitter = emitter_;
+    }
+
+    /// A deployment that verifies VAAs must not also trust a relayer key: that key could sign any tally for a
+    /// bound court before it resolves and front-run the VAA (security review 2026-10-13, finding 1). The legacy
+    /// EIP-712 path therefore exists only on deployments without a Wormhole core.
+    function _requireVaaOnly(IWormhole wormhole_, address relayer_) internal pure {
+        if (address(wormhole_) != address(0) && relayer_ != address(0)) revert RelayerWithVaa();
     }
 
     /// Payload (45 bytes): 0x01 | court[32] | yes | no | excluded | incomplete | slot u64 BE.

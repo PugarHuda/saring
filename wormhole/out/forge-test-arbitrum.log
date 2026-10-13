@@ -1,11 +1,31 @@
+Compiling 3 files with Solc 0.8.30
+Solc 0.8.30 finished in 1.25s
+Compiler run successful!
+
+Ran 8 tests for test/SaringArbitratorV2.t.sol:SaringArbitratorV2Test
+[PASS] test_fork_vaa_fullFlow() (gas: 647967)
+[PASS] test_fork_vaa_tampered() (gas: 427924)
+[PASS] test_fork_vaa_wrongCourt() (gas: 430195)
+[PASS] test_fork_vaa_wrongEmitter() (gas: 814507)
+[PASS] test_rejects() (gas: 1100373)
+[PASS] test_releaseWithoutDispute() (gas: 605106)
+[PASS] test_revertingPayee_cannotBlockRuling() (gas: 1045807)
+[PASS] test_rulingMapping() (gas: 1812536)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 14.25s (37.36s CPU time)
+
+Ran 12 tests for test/SaringEscalationManager.t.sol:SaringEscalationManagerTest
 [PASS] test_accessControl() (gas: 250146)
-[PASS] test_fork_realOOv3() (gas: 938134)
-[PASS] test_fork_vaa_realOOv3() (gas: 1026673)
-[PASS] test_fork_vaa_tamperedPayload() (gas: 669388)
-[PASS] test_fork_vaa_wrongCourt() (gas: 671771)
+[PASS] test_fork_realOOv3() (gas: 937894)
+[PASS] test_fork_vaa_realOOv3() (gas: 1026411)
+[PASS] test_fork_vaa_tamperedPayload() (gas: 669366)
+[PASS] test_fork_vaa_wrongCourt() (gas: 671881)
 [PASS] test_fork_vaa_wrongEmitter() (gas: 955595)
-[PASS] test_noVerdictPricesFalse_yesVerdictPricesTrue() (gas: 983716)
-[PASS] test_policyUnplugsDvm() (gas: 6465)
-[PASS] test_rejects() (gas: 659440)
-[PASS] test_tieAndIncompleteAreFalse() (gas: 841609)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 10.48s (38.18s CPU time)
+[PASS] test_noVerdictPricesFalse_yesVerdictPricesTrue() (gas: 983694)
+[PASS] test_policyUnplugsDvm() (gas: 6443)
+[PASS] test_rejects() (gas: 659418)
+[PASS] test_relayerWithWormhole_cannotDeploy() (gas: 6596)
+[PASS] test_tieAndIncompleteAreFalse() (gas: 841587)
+[PASS] test_vaaOnly_rejectsRelayerSignedVerdict() (gas: 91679)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 15.28s (58.40s CPU time)
+
+Ran 2 test suites in 15.28s (29.52s CPU time): 20 tests passed, 0 failed, 0 skipped (20 total tests)

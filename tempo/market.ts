@@ -27,13 +27,16 @@ async function main() {
 
   // --- deploy (gas in AlphaUSD; Tempo has no native token) ---
   const art = JSON.parse(fs.readFileSync(path.join(__dirname, "contracts/out/SaringMarket.sol/SaringMarket.json"), "utf8"));
-  const deployHash = await operator.deployContract({ abi: art.abi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, relayer.account.address, "0xa29E8c21924834E6249bCE1FD733f24eC492018c", "0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238"] }) // + Wormhole core, saring emitter: see wormhole/;
+  const deployHash = await operator.deployContract({ abi: art.abi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, relayer.account.address, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"] }); // legacy EIP-712 demo: no Wormhole core (a VAA deployment takes no relayer, see wormhole/)
   const dr = await operator.waitForTransactionReceipt({ hash: deployHash });
   const market = dr.contractAddress as Address;
   if (dr.status !== "success" || !market) throw new Error(`deploy failed ${deployHash}`);
   log(`SaringMarket deployed at ${market} (token pathUSD, relayer ${relayer.account.address})`);
   log(`  deploy tx ${txLink(deployHash)}  contract ${addrLink(market)}`);
   saveState({ market, deployTx: deployHash, marketCourt: court });
+  const openHash = await operator.writeContract({ address: market, abi: marketAbi, functionName: "open", args: [id, BigInt(Math.floor(Date.now() / 1000) + 600)] } as any);
+  await operator.waitForTransactionReceipt({ hash: openHash });
+  log(`open(court, closesAt = now + 10 min): ${txLink(openHash)}`);
 
   // --- bets: approve + bet in ONE Tempo transaction (type 0x76 batched calls, atomic) ---
   const bets: Record<string, Hex> = {};

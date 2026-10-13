@@ -164,6 +164,12 @@ contract SaringHyperCourtTest is Test {
         c.settle(OUTCOME, v, sv, r, s);
     }
 
+    /// Security review finding 1: a court wired to a Wormhole core can't also trust a relayer key.
+    function test_relayerWithWormhole_cannotDeploy() public {
+        vm.expectRevert(SaringWormhole.RelayerWithVaa.selector);
+        new SaringHyperCourt(vm.addr(relayerKey), IWormhole(address(0xC0DE)), bytes32(0), HYPE, HYPE_PERP);
+    }
+
     function test_onlyOwnerOpens() public {
         vm.prank(disputer);
         vm.expectRevert(SaringHyperCourt.NotOwner.selector);

@@ -8,7 +8,7 @@
  */
 import * as fs from "fs";
 import * as path from "path";
-import { decodeEventLog, encodePacked, formatEther, keccak256, parseAbi, parseEther, toHex, type Address, type Hex } from "viem";
+import { zeroAddress, decodeEventLog, encodePacked, formatEther, keccak256, parseAbi, parseEther, toHex, type Address, type Hex } from "viem";
 import { baseSepolia } from "viem/chains";
 import { account, artifact, clients, courtToBytes32, logger, txLink } from "../arbitrum/lib";
 import { attest, EMITTER } from "./attest";
@@ -54,7 +54,7 @@ export async function main(COURT: string, question?: string, arb?: Address) {
 
   const art = artifact(path.join(__dirname, "..", "base"), "SaringArbitrator");
   const emitter = toHex(EMITTER.toBytes());
-  const ARB = arb ?? ((await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, account("relayer").address, FEE, CORE, emitter] }))).contractAddress as Address);
+  const ARB = arb ?? ((await send("deployArbitrator", wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [REALITY, zeroAddress, FEE, CORE, emitter] /* VAA only: no relayer key */ }))).contractAddress as Address);
   log(`SaringArbitrator ${ARB} (${EXPLORER}/address/${ARB}); wormhole ${CORE}, saringEmitter ${emitter}`);
 
   if ((await pub.getBalance({ address: disputer })) < parseEther("0.0001"))

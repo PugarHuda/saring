@@ -139,6 +139,13 @@ async function main() {
   save();
   }
   const market = r.market as Address;
+  if (!r.openTx) {
+    // Betting deadline (security review finding 2). In production the operator opens before voting starts.
+    r.openTx = await operator.writeContract({ address: market, abi, functionName: "open", args: [id, BigInt(Math.floor(Date.now() / 1000) + 600)] } as any);
+    await operator.waitForTransactionReceipt({ hash: r.openTx });
+    log(`   open(court, closesAt = now + 10 min): ${txLink(r.openTx)}`);
+    save();
+  }
   r.bets ??= {};
   for (const [name, c, yes, amt] of [["A", A, true, "3"], ["B", B, false, "2"]] as const) {
     if (r.bets[name]) continue;

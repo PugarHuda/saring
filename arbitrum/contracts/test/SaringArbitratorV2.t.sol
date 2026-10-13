@@ -16,6 +16,13 @@ contract MockWormhole {
     }
 }
 
+/// A party whose address rejects ETH (finding 5): it must not be able to block the ruling.
+contract RejectingParty {
+    receive() external payable { revert("no"); }
+    function open(SaringEscrow e, address payee) external payable returns (uint256) { return e.open{value: msg.value}(payee); }
+    function dispute(SaringEscrow e, uint256 id) external payable returns (uint256) { return e.dispute{value: msg.value}(id); }
+}
+
 contract SaringArbitratorV2Test is Test {
     uint256 constant FEE = 0.0001 ether;
     bytes32 constant COURT = SaringWormholeFixtures.COURT;
@@ -44,6 +51,12 @@ contract SaringArbitratorV2Test is Test {
         arb.bindCourt(d, court);
     }
 
+    function _cash(address who) internal {
+        if (esc.owed(who) == 0) return;
+        vm.prank(who);
+        esc.withdraw();
+    }
+
     function _payload(uint8 yes, uint8 no, bool incomplete) internal pure returns (bytes memory) {
         return abi.encodePacked(uint8(1), COURT, yes, no, uint8(0), incomplete ? uint8(1) : uint8(0), uint64(42));
     }
@@ -55,6 +68,7 @@ contract SaringArbitratorV2Test is Test {
         uint256 d = _disputed(COURT);
         assertEq(operator.balance, FEE); // fee forwarded to the operator
         arb.ruleWithVaa(d, _payload(2, 1, false)); // YES -> payee
+        _cash(payee);
         (uint256 r, bool tied, bool over) = arb.currentRuling(d);
         assertEq(abi.encode(r, tied, over), abi.encode(uint256(1), false, false));
         assertEq(payee.balance, 1 ether - FEE + 1 ether);
@@ -62,6 +76,7 @@ contract SaringArbitratorV2Test is Test {
         d = _disputed(COURT);
         uint256 before = payer.balance;
         arb.ruleWithVaa(d, _payload(1, 1, false)); // tie -> refused (0), split
+        _cash(payer);
         (r, tied,) = arb.currentRuling(d);
         assertEq(abi.encode(r, tied), abi.encode(uint256(0), true));
         assertEq(payer.balance - before, 0.5 ether);
@@ -116,7 +131,30 @@ contract SaringArbitratorV2Test is Test {
         uint256 id = esc.open{value: 1 ether}(payee);
         vm.prank(payer);
         esc.release(id);
+        _cash(payee);
         assertEq(payee.balance, 2 ether);
+        vm.prank(payee);
+        vm.expectRevert(SaringEscrow.NothingOwed.selector); // no double withdraw
+        esc.withdraw();
+    }
+
+    /// Finding 5: the payee's address reverts on receive; the NO ruling still lands and the payer withdraws.
+    function test_revertingPayee_cannotBlockRuling() public {
+        _deploy(IWormhole(address(new MockWormhole())), SaringWormholeFixtures.EMITTER);
+        RejectingParty bad = new RejectingParty();
+        vm.deal(address(bad), 1 ether);
+        vm.prank(payer);
+        uint256 id = esc.open{value: 1 ether}(address(bad));
+        uint256 d = bad.dispute{value: FEE}(esc, id);
+        vm.prank(operator);
+        arb.bindCourt(d, COURT);
+        arb.ruleWithVaa(d, _payload(1, 1, false)); // tie -> split: half is owed to the rejecting payee
+        (uint256 r,,) = arb.currentRuling(d);
+        assertEq(r, 0);
+        uint256 before = payer.balance;
+        _cash(payer);
+        assertEq(payer.balance - before, 0.5 ether);
+        assertEq(esc.owed(address(bad)), 0.5 ether); // stays claimable; only the rejecting party is affected
     }
 
     // ---------------- real recorded VAA, real Wormhole core bridge (Arbitrum Sepolia fork) ----------------
@@ -136,6 +174,7 @@ contract SaringArbitratorV2Test is Test {
         arb.ruleWithVaa(d, SaringWormholeFixtures.VAA);
         (uint256 r, bool tied,) = arb.currentRuling(d);
         assertEq(abi.encode(r, tied), abi.encode(uint256(2), false));
+        _cash(payer);
         assertEq(payer.balance, 10 ether); // 1 ETH deposit refunded
         assertEq(payee.balance, 1 ether - FEE);
         assertEq(address(esc).balance, 0);

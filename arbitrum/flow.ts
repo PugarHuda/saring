@@ -47,7 +47,7 @@ async function main() {
 
   log(`deployer ${me}: ${formatEther(await pub.getBalance({ address: me }))} ETH; disputer ${disputer}; relayer ${relayer}`);
   const em = artifact(__dirname, "SaringEscalationManager");
-  const dep = await send("deployEM", wallet.deployContract({ abi: em.abi, bytecode: em.bytecode, args: [OOV3, relayer, "0x6b9C8671cdDC8dEab9c719bB87cBd3e782bA6a35", "0x54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238"] } /* + Wormhole core, saring emitter: see wormhole/ */));
+  const dep = await send("deployEM", wallet.deployContract({ abi: em.abi, bytecode: em.bytecode, args: [OOV3, relayer, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"] } /* legacy EIP-712 demo: no Wormhole core; a VAA deployment takes no relayer (wormhole/) */));
   const EM = dep.contractAddress as Address;
   log(`SaringEscalationManager ${EM} (${EXPLORER}/address/${EM})`);
   saveState(__dirname, { escalationManager: EM, court: COURT });

@@ -78,6 +78,7 @@ contract SaringHyperCourt is SaringWormhole {
     constructor(address relayer_, IWormhole wormhole_, bytes32 emitter_, uint64 hypeToken_, uint32 hypePerp_)
         SaringWormhole(wormhole_, emitter_)
     {
+        _requireVaaOnly(wormhole_, relayer_);
         owner = msg.sender;
         relayer = relayer_;
         hypeToken = hypeToken_;

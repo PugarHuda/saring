@@ -156,6 +156,11 @@ export const marketAbi = [
         "name": "outcome",
         "type": "uint8",
         "internalType": "enum SaringMarket.Outcome"
+      },
+      {
+        "name": "closesAt",
+        "type": "uint64",
+        "internalType": "uint64"
       }
     ],
     "stateMutability": "view"
@@ -180,6 +185,37 @@ export const marketAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "open",
+    "inputs": [
+      {
+        "name": "court",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "closesAt",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "view"
@@ -493,6 +529,25 @@ export const marketAbi = [
   },
   {
     "type": "event",
+    "name": "Opened",
+    "inputs": [
+      {
+        "name": "court",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "closesAt",
+        "type": "uint64",
+        "indexed": false,
+        "internalType": "uint64"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "Settled",
     "inputs": [
       {
@@ -542,6 +597,16 @@ export const marketAbi = [
   },
   {
     "type": "error",
+    "name": "AlreadyOpen",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "BadDeadline",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "BadPayload",
     "inputs": []
   },
@@ -574,6 +639,16 @@ export const marketAbi = [
   {
     "type": "error",
     "name": "NothingToClaim",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OnlyOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "RelayerWithVaa",
     "inputs": []
   },
   {

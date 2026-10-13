@@ -70,6 +70,21 @@ contract SaringEscalationManagerTest is Test {
         em.resolve(id, v, sv, r, s);
     }
 
+    /// Security review finding 1: a deployment wired to a Wormhole core can't be built with a relayer key ...
+    function test_relayerWithWormhole_cannotDeploy() public {
+        vm.expectRevert(SaringWormhole.RelayerWithVaa.selector);
+        new SaringEscalationManager(address(mock), vm.addr(RELAYER_PK), IWormhole(address(0xC0DE)), bytes32(0));
+    }
+
+    /// ... and a VAA-only EM rejects a verdict signed by the old relayer key.
+    function test_vaaOnly_rejectsRelayerSignedVerdict() public {
+        SaringEscalationManager m = new SaringEscalationManager(address(mock), address(0), IWormhole(address(0xC0DE)), bytes32(0));
+        m.bindCourt(ID, COURT);
+        (uint8 sv, bytes32 r, bytes32 s) = vm.sign(RELAYER_PK, m.verdictDigest(_v(9, 0, false)));
+        vm.expectRevert(SaringEscalationManager.BadSignature.selector);
+        m.resolve(ID, _v(9, 0, false), sv, r, s);
+    }
+
     function test_policyUnplugsDvm() public view {
         EscalationManagerInterface.AssertionPolicy memory p = em.getAssertionPolicy(ID);
         assertTrue(p.arbitrateViaEscalationManager);

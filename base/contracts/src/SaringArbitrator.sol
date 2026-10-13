@@ -14,6 +14,7 @@ interface IRealityETH {
         bytes32 last_answer_or_commitment_id,
         address last_answerer
     ) external;
+    function cancelArbitration(bytes32 question_id) external;
 }
 
 /// @title SaringArbitrator
@@ -34,13 +35,17 @@ contract SaringArbitrator is SaringWormhole {
     address public immutable owner; // Saring operator: sets the fee, binds a court to each dispute
     bytes32 public immutable DOMAIN_SEPARATOR;
     uint256 public disputeFee;
+    /// After this long without a ruling, anyone can hand the question back to Reality.eth (security review, finding 6).
+    uint256 public constant ARBITRATION_TIMEOUT = 7 days;
 
     mapping(bytes32 => address) public requester; // question => who paid for arbitration
     mapping(bytes32 => bytes32) public courtOf;   // question => Saring court
     mapping(bytes32 => bool) public ruled;
+    mapping(bytes32 => uint256) public requestedAt;
 
     event ArbitrationRequested(bytes32 indexed questionId, address indexed requester, uint256 fee);
     event CourtBound(bytes32 indexed questionId, bytes32 indexed court);
+    event ArbitrationCancelled(bytes32 indexed questionId);
     event Ruled(bytes32 indexed questionId, bytes32 indexed court, bytes32 answer); // tally is in the signed calldata
 
     error OnlyOwner();
@@ -51,10 +56,12 @@ contract SaringArbitrator is SaringWormhole {
     error WrongCourt();
     error AlreadyRuled();
     error BadSignature();
+    error TooEarly();
 
     constructor(IRealityETH realitio_, address relayer_, uint256 fee_, IWormhole wormhole_, bytes32 emitter_)
         SaringWormhole(wormhole_, emitter_)
     {
+        _requireVaaOnly(wormhole_, relayer_);
         realitio = realitio_;
         relayer = relayer_;
         owner = msg.sender;
@@ -85,6 +92,7 @@ contract SaringArbitrator is SaringWormhole {
         if (msg.value < disputeFee) revert FeeTooLow();
         if (requester[questionId] != address(0)) revert AlreadyRequested();
         requester[questionId] = msg.sender;
+        requestedAt[questionId] = block.timestamp;
         realitio.notifyOfArbitrationRequest(questionId, msg.sender, maxPrevious);
         emit ArbitrationRequested(questionId, msg.sender, msg.value);
         return true;
@@ -141,6 +149,19 @@ contract SaringArbitrator is SaringWormhole {
         // Reality.eth credits the last answerer if they were right, else the requester who paid us.
         realitio.assignWinnerAndSubmitAnswerByArbitrator(questionId, answer, requester[questionId], lastHistoryHash, lastAnswer, lastAnswerer);
         emit Ruled(questionId, v.court, answer);
+    }
+
+    /// Unfreezes a question whose court was never bound or never resolved: Reality.eth reopens it for answers
+    /// and it can be arbitrated again. ponytail: the fee is not refunded (the owner may already have withdrawn it).
+    function cancelArbitration(bytes32 questionId) external {
+        if (requester[questionId] == address(0)) revert NotRequested();
+        if (ruled[questionId]) revert AlreadyRuled();
+        if (block.timestamp < requestedAt[questionId] + ARBITRATION_TIMEOUT) revert TooEarly();
+        delete requester[questionId];
+        delete courtOf[questionId];
+        delete requestedAt[questionId];
+        realitio.cancelArbitration(questionId);
+        emit ArbitrationCancelled(questionId);
     }
 
     function withdraw() external {

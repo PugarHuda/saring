@@ -156,6 +156,54 @@ contract SaringArbitratorTest is Test {
         assertEq(reality.balanceOf(requester), bond);
     }
 
+    // ---------------- Security review 2026-10-13 ----------------
+
+    /// Finding 1: a deployment wired to a Wormhole core can't be built with a relayer key ...
+    function test_relayerWithWormhole_cannotDeploy() public {
+        vm.expectRevert(SaringWormhole.RelayerWithVaa.selector);
+        new SaringArbitrator(IRealityETH(address(mock)), vm.addr(RELAYER_PK), 0.001 ether, IWormhole(address(0xC0DE)), bytes32(0));
+    }
+
+    /// ... and a VAA-only arbitrator rejects a verdict signed by the old relayer key.
+    function test_vaaOnly_rejectsRelayerSignedVerdict() public {
+        SaringArbitrator a = new SaringArbitrator(IRealityETH(address(mock)), address(0), 0.001 ether, IWormhole(address(0xC0DE)), bytes32(0));
+        vm.prank(requester);
+        a.requestArbitration{value: 0.001 ether}(Q, 0);
+        a.bindCourt(Q, COURT);
+        (uint8 sv, bytes32 r, bytes32 s) = _sig(a, _v(9, 0, false), RELAYER_PK);
+        vm.expectRevert(SaringArbitrator.BadSignature.selector);
+        a.rule(Q, _v(9, 0, false), sv, r, s, 0, YES, address(1));
+        assertFalse(a.ruled(Q));
+    }
+
+    /// Finding 6: a question whose court never resolves is handed back to the real Reality.eth after the timeout.
+    function test_fork_cancelArbitration_unfreezes() public {
+        vm.createSelectFork("https://sepolia.base.org");
+        IRealityFull reality = IRealityFull(0x86b653Dc9aa6d7311109276925927087573f91CB);
+        SaringArbitrator a = new SaringArbitrator(IRealityETH(address(reality)), address(0), 0.001 ether, IWormhole(SaringWormholeFixtures.CORE_BASE_SEPOLIA), SaringWormholeFixtures.EMITTER);
+        address answerer = makeAddr("answerer");
+        vm.deal(answerer, 1 ether);
+        vm.deal(requester, 1 ether);
+        bytes32 q = reality.askQuestion(0, unicode"Saring cancel test?␟other␟en", address(a), 3600, 0, 0);
+        vm.prank(answerer);
+        reality.submitAnswer{value: 0.01 ether}(q, YES, 0);
+        vm.prank(requester);
+        a.requestArbitration{value: 0.001 ether}(q, 0.01 ether);
+        vm.prank(answerer);
+        vm.expectRevert(); // frozen: pending arbitration
+        reality.submitAnswer{value: 0.02 ether}(q, bytes32(0), 0);
+
+        vm.expectRevert(SaringArbitrator.TooEarly.selector);
+        a.cancelArbitration(q);
+        vm.warp(block.timestamp + 7 days);
+        vm.prank(makeAddr("anyone"));
+        a.cancelArbitration(q);
+        vm.prank(answerer);
+        reality.submitAnswer{value: 0.02 ether}(q, bytes32(0), 0); // open again
+        vm.expectRevert(SaringArbitrator.NotRequested.selector);
+        a.cancelArbitration(q);
+    }
+
     // ---------------- Wormhole path: real recorded VAA, real core bridge (Base Sepolia fork) ----------------
 
     function _forkArb(bytes32 emitter) internal returns (SaringArbitrator a) {

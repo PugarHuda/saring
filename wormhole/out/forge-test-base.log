@@ -1,10 +1,20 @@
-[PASS] test_answerMapping() (gas: 37373)
-[PASS] test_fork_realRealityETH() (gas: 541554)
-[PASS] test_fork_vaa_realRealityETH() (gas: 539401)
-[PASS] test_fork_vaa_tamperedPayload() (gas: 412894)
-[PASS] test_fork_vaa_wrongCourt() (gas: 419764)
-[PASS] test_fork_vaa_wrongEmitter() (gas: 827951)
-[PASS] test_rejects() (gas: 449939)
-[PASS] test_ruleNo() (gas: 280669)
-[PASS] test_withdrawFees() (gas: 166603)
-Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 11.05s (34.06s CPU time)
+Compiling 2 files with Solc 0.8.30
+Solc 0.8.30 finished in 900.17ms
+Compiler run successful!
+
+Ran 12 tests for test/SaringArbitrator.t.sol:SaringArbitratorTest
+[PASS] test_answerMapping() (gas: 37153)
+[PASS] test_fork_cancelArbitration_unfreezes() (gas: 497870)
+[PASS] test_fork_realRealityETH() (gas: 563672)
+[PASS] test_fork_vaa_realRealityETH() (gas: 561529)
+[PASS] test_fork_vaa_tamperedPayload() (gas: 435022)
+[PASS] test_fork_vaa_wrongCourt() (gas: 441914)
+[PASS] test_fork_vaa_wrongEmitter() (gas: 872273)
+[PASS] test_rejects() (gas: 471849)
+[PASS] test_relayerWithWormhole_cannotDeploy() (gas: 6681)
+[PASS] test_ruleNo() (gas: 302731)
+[PASS] test_vaaOnly_rejectsRelayerSignedVerdict() (gas: 201138)
+[PASS] test_withdrawFees() (gas: 188776)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 11.22s (40.51s CPU time)
+
+Ran 1 test suite in 11.23s (11.22s CPU time): 12 tests passed, 0 failed, 0 skipped (12 total tests)

@@ -1,13 +1,14 @@
 /**
  * Saring x Tempo Moderato, settled through Wormhole (no Saring key in the verdict path):
- * deploy SaringMarket(pathUSD, relayer, wormholeCore, saringEmitter) -> bettor A YES, bettor B NO
- * (one batched 0x76 tx each) -> bettor B submits settleWithVaa(guardian-signed VAA) -> B claims the pool.
+ * deploy SaringMarket(pathUSD, relayer = 0, wormholeCore, saringEmitter) -> open(court, closesAt) -> bettor A YES,
+ * bettor B NO (one batched 0x76 tx each) -> a bet after closesAt reverts MarketClosed -> bettor B submits
+ * settleWithVaa(guardian-signed VAA) -> B claims the pool.
  *
  *   npx tsx flow-tempo.ts [court]
  */
 import * as fs from "fs";
 import * as path from "path";
-import { encodeFunctionData, erc20Abi, parseUnits, toHex, type Address, type Hex } from "viem";
+import { encodeFunctionData, erc20Abi, parseUnits, toHex, zeroAddress, type Address, type Hex } from "viem";
 import { logger } from "../arbitrum/lib";
 import { PATH_USD, addrLink, courtToBytes32, ensureFunded, tempoClient, txLink } from "../tempo/lib";
 import { attest, EMITTER } from "./attest";
@@ -24,7 +25,6 @@ async function main() {
   log(`court ${court}; VAA from Solana tx ${att.solanaTx} (emitter ${att.emitter}, seq ${att.sequence})`);
 
   const operator = tempoClient("operator");
-  const relayer = tempoClient("relayer");
   const A = tempoClient("bettorA");
   const B = tempoClient("bettorB");
   for (const c of [operator, A, B]) await ensureFunded(c, log);
@@ -32,12 +32,20 @@ async function main() {
   const art = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "tempo", "contracts/out/SaringMarket.sol/SaringMarket.json"), "utf8"));
   const abi = art.abi;
   const emitter = toHex(EMITTER.toBytes());
-  const deployHash = await operator.deployContract({ abi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, relayer.account.address, CORE, emitter] } as any);
+  const deployHash = await operator.deployContract({ abi, bytecode: art.bytecode.object as Hex, args: [PATH_USD, zeroAddress, CORE, emitter] /* VAA only */ } as any);
   const dr = await operator.waitForTransactionReceipt({ hash: deployHash });
   const market = dr.contractAddress as Address;
   if (dr.status !== "success" || !market) throw new Error(`deploy failed ${deployHash}`);
   log(`SaringMarket ${market} (${addrLink(market)}); wormhole ${CORE}, saringEmitter ${emitter}`);
   log(`deployMarket: ${txLink(deployHash)}`);
+
+  // Betting deadline (security review finding 2). This demo reuses an already-resolved court, so the deadline is
+  // a short window; in production the operator sets it before the court's voting starts.
+  const now = async () => (await operator.getBlock()).timestamp;
+  const closesAt = (await now()) + 60n;
+  const oh = await operator.writeContract({ address: market, abi, functionName: "open", args: [id, closesAt] } as any);
+  await operator.waitForTransactionReceipt({ hash: oh });
+  log(`open(court, closesAt ${closesAt}): ${txLink(oh)}`);
 
   for (const [name, c, yes, amt] of [["A", A, true, "3"], ["B", B, false, "2"]] as const) {
     const amount = parseUnits(amt, 6);
@@ -49,6 +57,15 @@ async function main() {
     } as any);
     if (r.status !== "success") throw new Error(`bet ${name} failed ${r.transactionHash}`);
     log(`bet${name} ${amt} pathUSD ${yes ? "YES" : "NO"} (batched approve+bet): ${txLink(r.transactionHash)}`);
+  }
+
+  while ((await now()) < closesAt) await new Promise((r) => setTimeout(r, 3000));
+  try {
+    await A.simulateContract({ address: market, abi, functionName: "bet", args: [id, true, 1n], account: A.account });
+    throw new Error("bet after closesAt did not revert");
+  } catch (e: any) {
+    if (!/MarketClosed/.test(e?.message ?? "")) throw e;
+    log(`bet after closesAt (block time >= ${closesAt}) rejected by the contract: MarketClosed`);
   }
 
   // Bettor B delivers the VAA itself: no operator, no relayer key.

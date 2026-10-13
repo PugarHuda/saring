@@ -7,6 +7,8 @@ import "./kleros/IArbitratorV2.sol";
 /// @notice Minimal IArbitrableV2: a payer locks ETH for a payee. The payer may release; either party may
 ///         dispute by paying the arbitrator's fee. The question to the court: "did the payee deliver?"
 ///         Ruling 1 (YES) pays the payee, 2 (NO) refunds the payer, 0 (refused) splits it in half.
+///         Pull payments: closing a deal credits `owed` and each party calls withdraw(), so a party whose
+///         address reverts on receive can't block the ruling (security review 2026-10-13, finding 5).
 contract SaringEscrow is IArbitrableV2 {
     struct Deal {
         address payer;
@@ -20,15 +22,18 @@ contract SaringEscrow is IArbitrableV2 {
     IArbitratorV2 public immutable arbitrator;
     Deal[] public deals;
     mapping(uint256 => uint256) public dealOfDispute; // arbitrator disputeID => deal id
+    mapping(address => uint256) public owed;
 
     event DealOpened(uint256 indexed dealId, address indexed payer, address indexed payee, uint256 amount);
     event DealClosed(uint256 indexed dealId, uint256 toPayee, uint256 toPayer);
+    event Withdrawn(address indexed who, uint256 amount);
 
     error NotParty();
     error Closed();
     error OnlyArbitrator();
     error UnknownDispute();
     error TransferFailed();
+    error NothingOwed();
 
     constructor(IArbitratorV2 arbitrator_) {
         arbitrator = arbitrator_;
@@ -74,14 +79,17 @@ contract SaringEscrow is IArbitrableV2 {
     function _close(uint256 id, uint256 toPayee, uint256 toPayer) internal {
         Deal storage d = deals[id];
         d.closed = true;
+        owed[d.payee] += toPayee;
+        owed[d.payer] += toPayer;
         emit DealClosed(id, toPayee, toPayer);
-        if (toPayee > 0) {
-            (bool a,) = d.payee.call{value: toPayee}("");
-            if (!a) revert TransferFailed();
-        }
-        if (toPayer > 0) {
-            (bool b,) = d.payer.call{value: toPayer}("");
-            if (!b) revert TransferFailed();
-        }
+    }
+
+    function withdraw() external {
+        uint256 a = owed[msg.sender];
+        if (a == 0) revert NothingOwed();
+        owed[msg.sender] = 0;
+        (bool ok,) = msg.sender.call{value: a}("");
+        if (!ok) revert TransferFailed();
+        emit Withdrawn(msg.sender, a);
     }
 }
