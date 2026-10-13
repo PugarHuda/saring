@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saring Verdict Proof</title>
+<meta name="description" content="Live proof trail for a Saring court: Solana court account, Wormhole VAA, and each EVM chain that settled on it. Every value is read from chain in your browser.">
+<style>
+:root {
+  --void:#06040c; --plum:#120c24; --plum-2:#1b1335; --ink:#f5f3fb; --muted:#b2abca; --dim:#8a83a6;
+  --line:rgba(255,255,255,.13); --line-strong:rgba(255,255,255,.26); --glass:rgba(24,18,44,.52);
+  --gold:#f1cf8e; --ice:#9fc4ff; --lilac:#bba6ff; --ok:#8fe6b8; --bad:#ff9d8f;
+  --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Consolas,monospace;
+  color-scheme:dark;
+}
+* { box-sizing:border-box; }
+html { -webkit-text-size-adjust:100%; }
+body { margin:0; color:var(--ink); font:400 16px/1.6 var(--sans);
+  background: radial-gradient(60% 40% at 75% 0%, rgba(110,72,220,.28), transparent 70%),
+              linear-gradient(180deg, var(--plum) 0%, #0b0718 50%, var(--void) 100%) fixed, var(--void); }
+main { max-width:880px; margin:0 auto; padding:28px 16px 64px; }
+a { color:var(--ice); text-underline-offset:3px; word-break:break-all; }
+:focus-visible { outline:2px solid var(--gold); outline-offset:3px; border-radius:6px; }
+h1 { font-size:clamp(1.6rem,5vw,2.3rem); line-height:1.15; margin:0 0 8px; letter-spacing:-.01em; }
+h1 span { color:var(--gold); }
+h2 { font-size:1.05rem; margin:0 0 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.lede { color:var(--muted); margin:0 0 22px; }
+code, .mono { font:.86em var(--mono); word-break:break-all; }
+form { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 24px; }
+input { flex:1 1 260px; min-width:0; background:var(--glass); color:var(--ink); border:1px solid var(--line-strong);
+  border-radius:12px; padding:10px 12px; font:14px var(--mono); }
+button { background:var(--gold); color:#1a1206; border:0; border-radius:12px; padding:10px 16px; font:600 14px var(--sans); cursor:pointer; }
+.hop { background:var(--glass); border:1px solid var(--line); border-radius:20px; padding:16px; margin:0 0 14px; backdrop-filter:blur(8px); }
+.hop.s-ok { border-left:3px solid var(--ok); } .hop.s-bad { border-left:3px solid var(--bad); } .hop.s-none { border-left:3px solid var(--dim); }
+.n { font:600 12px var(--mono); color:var(--lilac); border:1px solid var(--lilac); border-radius:999px; padding:1px 8px; }
+.pill { font:600 12px var(--sans); border-radius:999px; padding:2px 10px; background:var(--plum-2); color:var(--muted); }
+.pill.ok { color:var(--ok); } .pill.bad { color:var(--bad); } .pill.gold { color:var(--gold); }
+dl { display:grid; grid-template-columns:minmax(110px,max-content) 1fr; gap:4px 14px; margin:0; font-size:.92rem; }
+dt { color:var(--dim); } dd { margin:0; min-width:0; overflow-wrap:anywhere; }
+.muted { color:var(--muted); } .ok { color:var(--ok); } .bad { color:var(--bad); } .gold { color:var(--gold); }
+.verdict { font-size:1.6rem; font-weight:700; color:var(--gold); }
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { color:var(--dim); font-weight:600; }
+.ev { margin:10px 0 0; padding:10px 0 0; border-top:1px dashed var(--line); }
+.fine { font-size:.84rem; color:var(--muted); }
+pre { background:#0b0718; border:1px solid var(--line); border-radius:12px; padding:12px; overflow-x:auto; font:12.5px/1.5 var(--mono); }
+@media (max-width:520px) { dl { grid-template-columns:1fr; } dt { margin-top:6px; } .hide-sm { display:none; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="fine"><a href="./">Saring</a> / verdict proof</p>
+  <h1>Saring <span>verdict proof</span></h1>
+  <p class="lede">Every value below is read live from Solana devnet, Wormholescan and each EVM chain, in your browser, when this page loads. Nothing is cached or typed in.</p>
+  <form id="f"><input id="q" name="c" placeholder="Solana court address (base58)" autocomplete="off" spellcheck="false" aria-label="Court address"><button>Show trail</button></form>
+  <div id="out" aria-live="polite"><p class="muted">Loading…</p></div>
+  <section class="hop" style="margin-top:28px">
+    <h2>Use the verdict in code</h2>
+    <pre>npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz
+
+import { Connection } from "@solana/web3.js";
+import { readCourtVerdict, verdictToYesWins } from "@saring/sdk";
+const v = await readCourtVerdict(new Connection("https://api.devnet.solana.com"), COURT);
+const yesWins = verdictToYesWins(v); // throws on unresolved / tie / incomplete</pre>
+    <p class="fine">Full quickstart: <a href="https://github.com/PugarHuda/saring/tree/main/sdk#readme">sdk/README.md</a>.</p>
+  </section>
+</main>
+<script>
+"use strict";
+// ---------- config: where to look (addresses and endpoints, not results) ----------
+const SOL_RPC = "https://api.devnet.solana.com";
+const SARING_PROGRAM = "3CeQ1DQYwXjNcr6hYwmACzUwyU1DNxWL9HtiCaVKyfHy";
+const COURT_DISC = [7, 119, 99, 132, 122, 108, 213, 97];
+const WH_API = "https://api.testnet.wormholescan.io/api/v1/vaas/1/54c231cefc5bd0966f82594e4333d6211f9a1ab4740be61271fdcb2d5ceb6238";
+const T = { // event topic0 = keccak256(signature)
+  "0x0c07073767c6651f42f3bba3b53d1e97973c33210c3e26f3fef1668431e34227": "Ruled (UMA OOv3 escalation manager)", // Ruled(bytes32,bytes32,int256,uint8,uint8,uint8,bool,uint64)
+  "0x5e9d81be14c5b609b1b8b98aa77f5d27601e6305d8d8a9c9b2915bec5488d370": "Ruled (Reality.eth arbitrator)",      // Ruled(bytes32,bytes32,bytes32)
+  "0xe216e715f246249f4c2f1b25fa19be500b4236dc9eeab87a68edf909ec8bc3c2": "Settled (SaringMarket)",               // Settled(bytes32,uint8,uint8,uint8,uint8,bool,uint64)
+  "0xf1dd56c57171aaa7a5feb8a955fd43796fd8249ce5e4056fe8e06eb381cc7162": "CourtBound (Kleros V2 arbitrator)",    // CourtBound(uint256,bytes32)
+  "0x6532e718294cd3cacea0b18f7c53e1442a25499bdd7cd5eb0ee23e60ca6c803c": "CourtBound",                           // CourtBound(bytes32,bytes32)
+};
+const RULING = "0x394027a5fa6e098a1191094d1719d6929b9abc535fcc0c8f448d6a4e75622276"; // Ruling(address,uint256,uint256), Kleros IArbitratorV2
+const KLEROS_BOUND = "0xf1dd56c57171aaa7a5feb8a955fd43796fd8249ce5e4056fe8e06eb381cc7162";
+const SETTLE = new Set(["0x0c07073767c6651f42f3bba3b53d1e97973c33210c3e26f3fef1668431e34227",
+  "0x5e9d81be14c5b609b1b8b98aa77f5d27601e6305d8d8a9c9b2915bec5488d370", "0xe216e715f246249f4c2f1b25fa19be500b4236dc9eeab87a68edf909ec8bc3c2", RULING]);
+// since = a block at or before the first Saring deployment on that chain; step = the RPC's max getLogs range.
+const CHAINS = [
+  { name: "Tempo Moderato", rpc: "https://rpc.moderato.tempo.xyz", tx: "https://explore.testnet.tempo.xyz/tx/", addr: "https://explore.testnet.tempo.xyz/address/", since: 39283000, step: 99000 },
+  { name: "Base Sepolia", blockscout: "https://base-sepolia.blockscout.com", rpc: "https://sepolia.base.org", tx: "https://sepolia.basescan.org/tx/", addr: "https://sepolia.basescan.org/address/" },
+  { name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", tx: "https://sepolia.arbiscan.io/tx/", addr: "https://sepolia.arbiscan.io/address/", since: 318455000, step: 9900000,
+    // Arbiscan's Blockscout sits behind a bot challenge and the public RPC needs one address per getLogs, so the Saring contracts are listed.
+    addrs: ["0x6ae4c89bb75291062b204e6ba9d43952786ec56c" /* UMA EM */, "0xc2b4805da6899d788b179f12eb19136bd73f5ba5" /* Kleros V2 SaringArbitratorV2 */] },
+  { name: "Ethereum Sepolia", rpc: "https://sepolia.gateway.tenderly.co", tx: "https://sepolia.etherscan.io/tx/", addr: "https://sepolia.etherscan.io/address/", since: 11899700, step: 49000 },
+];
+
+// ---------- helpers ----------
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const short = (s, a = 6, b = 4) => (s.length > a + b + 1 ? s.slice(0, a) + "…" + s.slice(-b) : s);
+const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+const hex = (b) => Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58dec(s) {
+  let n = 0n;
+  for (const c of s) { const i = B58.indexOf(c); if (i < 0) throw new Error("not base58"); n = n * 58n + BigInt(i); }
+  const out = [];
+  while (n > 0n) { out.unshift(Number(n & 255n)); n >>= 8n; }
+  for (const c of s) { if (c !== "1") break; out.unshift(0); }
+  return Uint8Array.from(out);
+}
+function b58enc(b) {
+  let n = 0n, s = "";
+  for (const x of b) n = (n << 8n) | BigInt(x);
+  while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; }
+  for (const x of b) { if (x !== 0) break; s = "1" + s; }
+  return s;
+}
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const be = (b, o, n) => { let v = 0n; for (let i = 0; i < n; i++) v = (v << 8n) | BigInt(b[o + i]); return v; };
+const le32 = (b, o) => (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+const outcome = (v) => (!v.resolved ? null : v.incomplete ? "INCOMPLETE" : v.yes === v.no ? "TIE" : v.yes > v.no ? "YES" : "NO");
+
+async function getJson(url, body) {
+  const r = await fetch(url, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : undefined);
+  if (!r.ok) throw new Error(`${new URL(url).host}: HTTP ${r.status}`);
+  return r.json();
+}
+async function rpc(url, method, params) {
+  const j = await getJson(url, { jsonrpc: "2.0", id: 1, method, params });
+  if (j.error) throw new Error(`${new URL(url).host}: ${j.error.message}`);
+  return j.result;
+}
+
+// ---------- Wormhole VAA ----------
+function parseVaa(b64s) {
+  const v = b64(b64s), n = v[5], body = 6 + 66 * n, p = v.slice(body + 51);
+  const sigs = []; for (let i = 0; i < n; i++) sigs.push(v[6 + 66 * i]);
+  return {
+    hex: hex(v), guardianSet: Number(be(v, 1, 4)), guardians: sigs, timestamp: Number(be(v, body, 4)),
+    emitterChain: Number(be(v, body + 8, 2)), emitter: hex(v.slice(body + 10, body + 42)), sequence: be(v, body + 42, 8).toString(),
+    consistency: v[body + 50], payloadLen: p.length, type: p[0],
+    court: b58enc(p.slice(1, 33)), courtHex: "0x" + hex(p.slice(1, 33)),
+    yes: p[33], no: p[34], excluded: p[35], incomplete: p[36] === 1, slot: p.length >= 45 ? be(p, 37, 8).toString() : "?", resolved: true,
+  };
+}
+async function allVaas() {
+  const j = await getJson(WH_API + "?pageSize=100");
+  return (j.data || []).map((d) => ({ ...d, parsed: parseVaa(d.vaa) }));
+}
+
+// ---------- Solana court ----------
+async function readCourt(addr) {
+  const r = await rpc(SOL_RPC, "getAccountInfo", [addr, { encoding: "base64", commitment: "confirmed" }]);
+  if (!r.value) return { missing: true };
+  const raw = b64(r.value.data[0]);
+  // sdk/src/venue.ts padding rule: pre-v3.2 courts end before `pendingComputation`, so pad 32 zero bytes.
+  const d = new Uint8Array(raw.length + 32); d.set(raw);
+  const owner = r.value.owner, discOk = COURT_DISC.every((x, i) => d[i] === x);
+  if (owner !== SARING_PROGRAM || !discOk) return { owner, discOk, foreign: true };
+  // layout: disc 8 | bump 1 | state 13*32 | nonce u128 | id u32 | authority 32 | market string | flags…
+  const id = le32(d, 441), authority = b58enc(d.slice(445, 477)), len = le32(d, 477);
+  const market = new TextDecoder().decode(d.slice(481, 481 + len)), o = 481 + len;
+  const c = { owner, discOk, id, authority, market, resolved: d[o] === 1, yes: d[o + 1], no: d[o + 2], excluded: d[o + 3],
+    pending: d[o + 4] === 1, incomplete: d[o + 5] === 1, ready: d[o + 6] === 1, resolving: d[o + 7] === 1, bytes: raw.length };
+  c.outcome = outcome(c);
+  return c;
+}
+
+// ---------- EVM logs that carry the court in an indexed topic ----------
+async function head(c) { return Number(BigInt(await rpc(c.rpc, "eth_blockNumber", []))); }
+async function logsFor(c, courtHex) {
+  const pos = [[null, courtHex], [null, null, courtHex]];
+  if (c.blockscout) {
+    const q = (t) => getJson(`${c.blockscout}/api?module=logs&action=getLogs&fromBlock=0&toBlock=latest&${t}=${courtHex}`).then((j) => (Array.isArray(j.result) ? j.result : []));
+    return [...(await q("topic1")), ...(await q("topic2"))];
+  }
+  const top = await head(c), jobs = [];
+  for (let from = c.since; from <= top; from += c.step + 1) {
+    const range = { fromBlock: "0x" + from.toString(16), toBlock: "0x" + Math.min(from + c.step, top).toString(16) };
+    for (const topics of pos) for (const address of c.addrs || [undefined]) jobs.push(rpc(c.rpc, "eth_getLogs", [{ ...range, topics, ...(address ? { address } : {}) }]));
+  }
+  return (await Promise.all(jobs)).flat();
+}
+async function klerosRulings(c, bound) { // CourtBound(disputeID, court) -> Ruling(arbitrable, disputeID, ruling) from the same arbitrator
+  const top = await head(c), out = [];
+  for (const l of bound) {
+    const r = await rpc(c.rpc, "eth_getLogs", [{ fromBlock: "0x" + Math.max(c.since, top - c.step).toString(16), toBlock: "0x" + top.toString(16), address: l.address, topics: [RULING, null, l.topics[1]] }]);
+    out.push(...r);
+  }
+  return out;
+}
+const word = (data, i) => BigInt("0x" + (data.slice(2 + 64 * i, 66 + 64 * i) || "0"));
+function describe(l) {
+  const t = l.topics[0], d = l.data || "0x";
+  if (t === "0x0c07073767c6651f42f3bba3b53d1e97973c33210c3e26f3fef1668431e34227")
+    return `price ${word(d, 0) === 10n ** 18n ? "1e18 (assertion TRUE, YES)" : word(d, 0) + " (assertion FALSE)"} · yes ${word(d, 1)} · no ${word(d, 2)} · excluded ${word(d, 3)} · incomplete ${word(d, 4) ? "yes" : "no"} · slot ${word(d, 5)}`;
+  if (t === "0x5e9d81be14c5b609b1b8b98aa77f5d27601e6305d8d8a9c9b2915bec5488d370") {
+    const a = word(d, 0); return `answer ${a === 0n ? "0x0 (NO)" : a === 1n ? "0x1 (YES)" : "INVALID"}`;
+  }
+  if (t === "0xe216e715f246249f4c2f1b25fa19be500b4236dc9eeab87a68edf909ec8bc3c2")
+    return `outcome ${["Open", "Yes", "No", "Refund"][Number(word(d, 0))] ?? word(d, 0)} · yes ${word(d, 1)} · no ${word(d, 2)} · excluded ${word(d, 3)} · incomplete ${word(d, 4) ? "yes" : "no"} · slot ${word(d, 5)}`;
+  if (t === RULING) { const r = word(d, 0); return `Kleros ruling ${r} (${r === 1n ? "YES" : r === 2n ? "NO" : "refused"}) · dispute #${BigInt(l.topics[2])}`; }
+  if (t === KLEROS_BOUND) return `dispute #${BigInt(l.topics[1])}`;
+  return "";
+}
+
+async function chainHop(c, courtHex, vaa) {
+  let logs = await logsFor(c, courtHex);
+  const kb = logs.filter((l) => l.topics[0] === KLEROS_BOUND);
+  if (kb.length) logs = logs.concat(await klerosRulings(c, kb));
+  const seen = new Set();
+  logs = logs.filter((l) => T[l.topics[0]] || l.topics[0] === RULING)
+    .filter((l) => { const k = l.transactionHash + l.logIndex; if (seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a, b) => Number(BigInt(a.blockNumber)) - Number(BigInt(b.blockNumber)));
+  const settles = logs.filter((l) => SETTLE.has(l.topics[0]));
+  // For each settle tx: read the tx and receipt live, and check the calldata carries this court's VAA.
+  const checks = await Promise.all(settles.map(async (l) => {
+    const [tx, rc] = await Promise.all([rpc(c.rpc, "eth_getTransactionByHash", [l.transactionHash]), rpc(c.rpc, "eth_getTransactionReceipt", [l.transactionHash])]);
+    return { hash: l.transactionHash, ok: rc && rc.status === "0x1", viaVaa: !!vaa && JSON.stringify(tx || {}).toLowerCase().includes(vaa.hex), from: tx && tx.from };
+  }));
+  return { logs, checks };
+}
+
+// ---------- render ----------
+function hopHtml(n, title, cls, pill, body) {
+  return `<section class="hop s-${cls}"><h2><span class="n">${n}</span>${esc(title)} ${pill}</h2>${body}</section>`;
+}
+const dl = (rows) => `<dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`;
+
+async function showList() {
+  const out = $("#out");
+  const vaas = await allVaas();
+  const byCourt = new Map();
+  for (const v of vaas) if (!byCourt.has(v.parsed.court)) byCourt.set(v.parsed.court, v);
+  out.innerHTML = `<section class="hop"><h2>Courts with a Wormhole VAA <span class="pill gold">${byCourt.size} live from Wormholescan</span></h2>
+    <p class="fine" style="margin:0 0 10px">Emitter: Solana (chain 1), <code>saring_wormhole</code> PDA ${link("https://explorer.solana.com/address/6hrzcMmM16aUh5D1YkaVvPoQ2q532Acb2PC8yU935ABq?cluster=devnet", "6hrz…5ABq")}. Pick a court for its full trail.</p>
+    <table><thead><tr><th>Court</th><th>Verdict in VAA</th><th class="hide-sm">Seq</th><th class="hide-sm">Signed</th></tr></thead><tbody>
+    ${[...byCourt.values()].map((v) => { const p = v.parsed;
+      return `<tr><td><a href="?c=${esc(p.court)}">${esc(short(p.court))}</a></td><td><b class="gold">${esc(outcome(p))}</b> <span class="muted">${p.yes}/${p.no}/${p.excluded}</span></td><td class="hide-sm">${esc(v.sequence)}</td><td class="hide-sm">${esc(v.timestamp.slice(0, 16).replace("T", " "))} UTC</td></tr>`; }).join("")}
+    </tbody></table><p class="fine" style="margin-top:8px">Tally shown as yes/no/excluded.</p></section>`;
+}
+
+async function showCourt(court) {
+  const out = $("#out");
+  let bytes;
+  try { bytes = b58dec(court); } catch { bytes = null; }
+  if (!bytes || bytes.length !== 32) { out.innerHTML = `<p class="bad">That is not a 32-byte base58 Solana address.</p>`; return; }
+  const courtHex = "0x" + hex(bytes);
+  out.innerHTML = `<p class="muted">Reading Solana, Wormholescan and 4 EVM chains…</p>`;
+  const [cR, vR] = await Promise.allSettled([readCourt(court), allVaas()]);
+  const vaaRow = vR.status === "fulfilled" ? vR.value.find((v) => v.parsed.court === court) : null;
+  const vaa = vaaRow ? vaaRow.parsed : null;
+  let html = "";
+
+  // 1. Solana court
+  if (cR.status === "rejected") html += hopHtml(1, "Solana court account", "bad", `<span class="pill bad">read failed</span>`, `<p class="bad">${esc(cR.reason.message)}</p>`);
+  else {
+    const c = cR.value, addrLink = link(`https://explorer.solana.com/address/${court}?cluster=devnet`, short(court, 8, 6));
+    if (c.missing) html += hopHtml(1, "Solana court account", "bad", `<span class="pill bad">not found on devnet</span>`, dl([["Address", addrLink]]));
+    else if (c.foreign) html += hopHtml(1, "Solana court account", "bad", `<span class="pill bad">not a Saring court</span>`, dl([["Address", addrLink], ["Owner", `<code>${esc(c.owner)}</code>`], ["Discriminator", c.discOk ? "matches" : "does not match CourtAccount"]]));
+    else html += hopHtml(1, "Solana court account", c.resolved ? "ok" : "none", `<span class="pill ${c.resolved ? "ok" : ""}">${c.resolved ? "resolved" : c.resolving ? "resolving" : "open"}</span>`,
+      `<p class="verdict">${esc(c.outcome ?? "not resolved yet")}</p>` + dl([
+        ["Address", addrLink], ["Owner", `<code>${esc(short(c.owner, 8, 6))}</code> <span class="ok">Saring program ✓</span>`],
+        ["Tally", `yes <b>${c.yes}</b> · no <b>${c.no}</b> · excluded <b>${c.excluded}</b> (conflicted jurors dropped inside MPC)`],
+        ["Incomplete", c.incomplete ? `<span class="bad">yes, settle as refund</span>` : "no"], ["Pending MPC", c.pending ? "yes" : "no"],
+        ["Court id", String(c.id)], ["Market", `<code>${esc(c.market)}</code>`], ["Authority", `<code>${esc(short(c.authority, 8, 6))}</code>`],
+        ["Account size", `${c.bytes} bytes (decoded with the sdk/src/venue.ts padding rule)`],
+      ]));
+  }
+
+  // 2. Wormhole VAA
+  if (vR.status === "rejected") html += hopHtml(2, "Wormhole VAA", "bad", `<span class="pill bad">Wormholescan read failed</span>`, `<p class="bad">${esc(vR.reason.message)}</p>`);
+  else if (!vaa) html += hopHtml(2, "Wormhole VAA", "none", `<span class="pill">none</span>`, `<p class="muted">No VAA from the saring_wormhole emitter carries this court, so it has not been delivered to any chain.</p>`);
+  else {
+    const c = cR.status === "fulfilled" ? cR.value : null;
+    const match = c && !c.missing && !c.foreign && c.resolved && c.yes === vaa.yes && c.no === vaa.no && c.excluded === vaa.excluded && c.incomplete === vaa.incomplete;
+    html += hopHtml(2, "Wormhole VAA", match ? "ok" : "bad", `<span class="pill ${match ? "ok" : "bad"}">${match ? "matches the court account" : "differs from the court account"}</span>`, dl([
+      ["VAA id", link(`${WH_API}/${vaaRow.sequence}`, vaaRow.id.replace(/^(1\/)(\w{8})\w+(\w{4})/, "$1$2…$3"))],
+      ["Wormholescan", link(`https://wormholescan.io/#/tx/${vaaRow.txHash}?network=Testnet`, "message page")],
+      ["Solana post tx", link(`https://explorer.solana.com/tx/${vaaRow.txHash}?cluster=devnet`, short(vaaRow.txHash, 8, 6))],
+      ["Sequence", esc(vaa.sequence)], ["Emitter", `chain ${vaa.emitterChain} · <code>${esc(short(vaa.emitter, 8, 4))}</code>`],
+      ["Guardian sigs", `${vaa.guardians.length} (guardian set ${vaa.guardianSet}, indices ${vaa.guardians.join(", ")})`],
+      ["Consistency", vaa.consistency === 32 ? "32 (finalized)" : String(vaa.consistency)],
+      ["Payload", `type 0x0${vaa.type} · ${vaa.payloadLen} bytes · court <code>${esc(short(vaa.court, 8, 6))}</code>`],
+      ["Decoded verdict", `<b class="gold">${esc(outcome(vaa))}</b> · yes ${vaa.yes} · no ${vaa.no} · excluded ${vaa.excluded} · incomplete ${vaa.incomplete ? "yes" : "no"} · slot ${esc(vaa.slot)}`],
+      ["Signed", esc(vaaRow.timestamp)],
+    ]));
+  }
+
+  // 3+. each chain
+  out.innerHTML = html + CHAINS.map((c, i) => hopHtml(3 + i, c.name, "none", `<span class="pill">reading…</span>`, "")).join("");
+  const results = await Promise.allSettled(CHAINS.map((c) => chainHop(c, courtHex, vaa)));
+  html += results.map((r, i) => {
+    const c = CHAINS[i];
+    if (r.status === "rejected") return hopHtml(3 + i, c.name, "bad", `<span class="pill bad">read failed</span>`, `<p class="bad">${esc(r.reason.message)}</p>`);
+    const { logs, checks } = r.value;
+    if (!logs.length) return hopHtml(3 + i, c.name, "none", `<span class="pill">not delivered</span>`, `<p class="muted">Not delivered to this chain: no Saring contract here has an event for this court.</p>`);
+    const settled = checks.some((x) => x.ok);
+    const body = logs.map((l) => {
+      const ch = checks.find((x) => x.hash === l.transactionHash && SETTLE.has(l.topics[0]));
+      const tag = ch ? `<span class="pill ${ch.ok ? "ok" : "bad"}">${ch.ok ? "tx success" : "tx failed"}</span> <span class="pill ${ch.viaVaa ? "gold" : ""}">${ch.viaVaa ? "calldata carries this VAA" : "no VAA in calldata (EIP-712 path)"}</span>` : "";
+      return `<div class="ev"><b>${esc(T[l.topics[0]] || "Ruling (Kleros V2 IArbitratorV2)")}</b> ${tag}` + dl([
+        ["Tx", link(c.tx + l.transactionHash, short(l.transactionHash, 10, 6))], ["Contract", link(c.addr + l.address, short(l.address, 8, 4))],
+        ["Block", String(Number(BigInt(l.blockNumber)))], ...(describe(l) ? [["Decoded", esc(describe(l))]] : []),
+      ]) + `</div>`;
+    }).join("");
+    return hopHtml(3 + i, c.name, settled ? "ok" : "none", `<span class="pill ${settled ? "ok" : ""}">${settled ? "settled" : "bound, not settled"}</span>`, body);
+  }).join("");
+  html += `<p class="fine">A settle tx that succeeded with the VAA in its calldata means that chain's own Wormhole core bridge verified the guardian signatures (<code>parseAndVerifyVM</code>) and the emitter before the contract paid out.</p>`;
+  out.innerHTML = html;
+}
+
+const court = new URLSearchParams(location.search).get("c");
+if (court) { $("#q").value = court; document.title = `Court ${short(court)} · Saring Verdict Proof`; }
+(court ? showCourt(court.trim()) : showList()).catch((e) => { $("#out").innerHTML = `<p class="bad">${esc(e.message)}</p>`; });
+</script>
+</body>
+</html>

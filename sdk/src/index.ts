@@ -26,6 +26,7 @@ import type { Blindcourt } from "./idl/blindcourt";
 import { SARING_PROGRAM_ID, readCourtVerdict, type Verdict } from "./venue";
 
 export * from "./venue";
+export * from "./wormhole";
 export type { Blindcourt };
 
 /** Arcium devnet cluster the deployed program uses. */

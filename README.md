@@ -12,6 +12,8 @@ Built for Colosseum's Crypto World's Fair (Sep 14 to Oct 12, 2026). MIT-licensed
 - **Try it:** https://saring-silk.vercel.app. You sit on the jury as juror #6 with your own secret ballot key, cast your own ballot, and can bet 0.01 SOL to watch MPC drop your ballot.
 - **Real Panta data:** the demo dispute is a real [Panta](https://panta.market) market. Its holders are read from Panta's program on Solana mainnet (see [Panta integration](#panta-integration)).
 - **Conflict Report:** https://pugarhuda.github.io/saring/
+- **Verdict proof page:** https://pugarhuda.github.io/saring/court.html lists every court with a Wormhole VAA and, for one court (`?c=<court>`), reads the whole trail live: Solana court account, VAA, and each chain's settle tx.
+- **SDK release:** [`sdk-v0.1.0`](https://github.com/PugarHuda/saring/releases/tag/sdk-v0.1.0) (`npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz`), quickstart in [`sdk/README.md`](sdk/README.md#quickstart-from-the-release-tarball).
 
 ## Chain integrations
 

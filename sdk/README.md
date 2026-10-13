@@ -11,24 +11,72 @@ are dropped inside MPC, and the chain never learns which jurors were dropped.
 |---|---|
 | `src/index.ts` | `SaringClient`: run a court (open, seat, mirror, cast, resolve) and the built-in market |
 | `src/venue.ts` | Read a verdict without a client or wallet: `readCourtVerdict`, `verdictToYesWins` |
+| `src/wormhole.ts` | Saring verdict VAAs: `fetchSaringVaas`, `parseSaringVaa`, `verifySaringVaa` (emitter + tally vs the live court) |
 | `src/panta.ts` | Panta adapter: verdict → Panta `resolve_event(_usdc)` instruction, plus a mainnet simulation helper |
 | `src/idl/` | Saring IDL and generated types (copied from `target/`), Panta `balr_market` IDL |
 | `examples/` | `full-dispute.ts` (real devnet dispute), `panta-adapter.ts` (mainnet simulation) |
 | `out/` | Logs and JSON from the last runs of both examples |
 
-## Install
+## Quickstart (from the release tarball)
 
-The package is not published. Use it from this repo, or copy `sdk/` into your project.
-Peer dependencies: `@anchor-lang/core ^1.0.2`, `@arcium-hq/client 0.15.0`, `@solana/web3.js ^1.98`.
-`main` and `types` point at the TypeScript sources, so the consumer needs a TS toolchain
-(ts-node, tsx, a bundler) with `resolveJsonModule`.
+```bash
+npm i https://github.com/PugarHuda/saring/releases/download/sdk-v0.1.0/saring-sdk-0.1.0.tgz \
+      @solana/web3.js @anchor-lang/core@^1.0.2 @arcium-hq/client@0.15.0
+```
+
+The tarball ships compiled `dist/` (CommonJS + `.d.ts`), so plain Node works, no TS toolchain needed.
+Program: devnet. Every call below hits the real chain.
+
+**1. Open a court** (you become its authority) and seat jurors:
+```ts
+import { Connection, Keypair } from "@solana/web3.js";
+import { SaringClient, identityId, newBallotKey } from "@saring/sdk";
+const saring = new SaringClient(new Connection("https://api.devnet.solana.com", "confirmed"), payer /* Keypair or wallet */);
+const { courtId, court } = await saring.openCourt("mymarket:1234");
+const key = newBallotKey();                                              // hand to the juror privately
+await saring.seatJuror(courtId, await identityId(jurorWallet), key);
+```
+
+**2. Mirror the market's holders** (MPC drops any juror among them, without revealing who):
+```ts
+await saring.mirrorPositions(courtId, await Promise.all(holders.map(identityId))); // 6 ids per MPC call
+await saring.cast(courtId, { jurorId, key, yes: false });
+await saring.resolve(courtId);
+```
+
+**3. Read the verdict** (no wallet, no client):
+```ts
+import { readCourtVerdict, verdictToYesWins } from "@saring/sdk";
+const v = await readCourtVerdict(connection, "24gQkEbEwUo98arqpKRs3eWBjzya3dvMfrdPsesRMYGb");
+// { resolved: true, yes: 0, no: 1, excluded: 1, incomplete: false, outcome: "NO" }
+const yesWins = verdictToYesWins(v); // false; throws on unresolved / tie / incomplete
+```
+
+**4. Verify a Wormhole VAA** of a verdict against the live court:
+```ts
+import { fetchSaringVaas, verifySaringVaa } from "@saring/sdk";
+for (const { sequence, vaa } of await fetchSaringVaas()) {           // Wormholescan testnet, Saring emitter
+  const r = await verifySaringVaa(connection, vaa);                  // throws on wrong emitter or tally mismatch
+  console.log(sequence, r.court.toBase58(), r.verdict.outcome);
+}
+```
+`verifySaringVaa` checks the emitter (`saring_wormhole` PDA, chain 1) and that the payload tally equals the court
+account. Guardian signatures are checked on-chain by each EVM chain's Wormhole core (`parseAndVerifyVM`).
+See the whole trail for any court at <https://pugarhuda.github.io/saring/court.html>.
+
+Tested from a clean directory with the tarball: steps 3 and 4 return NO 0/1/1 for `24gQ…YGb` and verify all three
+recorded VAAs (`24gQ…YGb`, `BT7f…kZhr`, `H7Bd…NKU1`).
+
+## Build from source
 
 ```
+npm run build                                 # tsc -p tsconfig.build.json -> dist/
+npm pack                                      # saring-sdk-0.1.0.tgz
 npx tsc -p sdk --noEmit                       # typecheck (from the repo root)
 npx ts-node --transpile-only -P sdk/tsconfig.json sdk/examples/full-dispute.ts
 npx ts-node --transpile-only -P sdk/tsconfig.json sdk/examples/panta-adapter.ts [court] [pantaMarket]
 ```
-Both examples need `RPC_URL` (devnet) and `MAINNET_RPC_URL`, plus a devnet keypair at `~/.config/solana/id.json`.
+The examples need `RPC_URL` (devnet) and `MAINNET_RPC_URL`, plus a devnet keypair at `~/.config/solana/id.json`.
 
 ## Usage
 
@@ -48,7 +96,7 @@ const verdict = await saring.resolve(courtId);   // { yes, no, excluded, incompl
 On the venue side, with no client:
 
 ```ts
-import { readCourtVerdict, verdictToYesWins } from "@saring/sdk/src/venue";
+import { readCourtVerdict, verdictToYesWins } from "@saring/sdk";
 const v = await readCourtVerdict(connection, courtAddress); // owner checked == Saring program
 const yesWins = verdictToYesWins(v);                         // throws on unresolved / tie / incomplete
 ```

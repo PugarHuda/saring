@@ -4,10 +4,16 @@
   "private": false,
   "description": "Conflict-blind jury for prediction-market disputes: Solana + Arcium MPC client, venue verdict reader, Panta adapter",
   "license": "MIT",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "files": ["src"],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
     "typecheck": "tsc -p . --noEmit",
     "example:dispute": "ts-node --transpile-only -P tsconfig.json examples/full-dispute.ts",
     "example:panta": "ts-node --transpile-only -P tsconfig.json examples/panta-adapter.ts"
@@ -16,5 +22,10 @@
     "@anchor-lang/core": "^1.0.2",
     "@arcium-hq/client": "0.15.0",
     "@solana/web3.js": "^1.98.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PugarHuda/saring.git",
+    "directory": "sdk"
   }
 }
