@@ -11,7 +11,7 @@ are dropped inside MPC, and the chain never learns which jurors were dropped.
 |---|---|
 | `src/index.ts` | `SaringClient`: run a court (open, seat, mirror, cast, resolve) and the built-in market |
 | `src/venue.ts` | Read a verdict without a client or wallet: `readCourtVerdict`, `verdictToYesWins` |
-| `src/wormhole.ts` | Saring verdict VAAs: `fetchSaringVaas`, `parseSaringVaa`, `verifySaringVaa` (emitter + tally vs the live court) |
+| `src/wormhole.ts` | Saring verdict VAAs: `fetchSaringVaas`, `parseSaringVaa`, `verifySaringVaa` (guardian signatures + emitter + tally vs the live court) |
 | `src/panta.ts` | Panta adapter: verdict → Panta `resolve_event(_usdc)` instruction, plus a mainnet simulation helper |
 | `src/idl/` | Saring IDL and generated types (copied from `target/`), Panta `balr_market` IDL |
 | `examples/` | `full-dispute.ts` (real devnet dispute), `panta-adapter.ts` (mainnet simulation) |
@@ -56,12 +56,15 @@ const yesWins = verdictToYesWins(v); // false; throws on unresolved / tie / inco
 ```ts
 import { fetchSaringVaas, verifySaringVaa } from "@saring/sdk";
 for (const { sequence, vaa } of await fetchSaringVaas()) {           // Wormholescan testnet, Saring emitter
-  const r = await verifySaringVaa(connection, vaa);                  // throws on wrong emitter or tally mismatch
+  const r = await verifySaringVaa(connection, vaa);                  // throws on bad signatures, wrong emitter or tally mismatch
   console.log(sequence, r.court.toBase58(), r.verdict.outcome);
 }
 ```
-`verifySaringVaa` checks the emitter (`saring_wormhole` PDA, chain 1) and that the payload tally equals the court
-account. Guardian signatures are checked on-chain by each EVM chain's Wormhole core (`parseAndVerifyVM`).
+`verifySaringVaa` checks the guardian signatures (quorum, ascending indices, recovered against the guardian set the
+Wormhole core bridge stores on Solana devnet, the same check `parseAndVerifyVM` runs on EVM), the emitter
+(`saring_wormhole` PDA, chain 1), and that the payload tally equals the court account. `sdk/out/verify-vaas.ts` runs it
+on every live VAA and checks that tampered copies are rejected. The `sdk-v0.1.0` tarball predates the signature check.
+In that version, `verifySaringVaa` only parsed the VAA.
 See the whole trail for any court at <https://pugarhuda.github.io/saring/court.html>.
 
 Tested from a clean directory with the tarball: steps 3 and 4 return NO 0/1/1 for `24gQ…YGb` and verify all three

@@ -150,3 +150,15 @@ to the disputer for gas and the arbitration fee.
 - `rule` must be given the question's latest history entry, as Reality.eth requires. `flow.ts` knows it because there is exactly one answer.
   With several answers, a relayer reads it from `LogNewAnswer`.
 - Holder discovery scans CTF logs from public RPCs. Tenderly's public gateway is the only free archive endpoint we found (1000-block cap). A court mirrors at most 42 holders. `limitless-court.ts` reuses the arbitrator `0x3848…`, whose owner (our deployer) binds the court.
+
+## Known issues (security review, 2026-10-13)
+
+The contracts below were not redeployed.
+
+- **A requested arbitration can freeze a question forever (Medium).** `requestArbitration` makes Reality.eth freeze the
+  question. If the owner never calls `bindCourt`, or the bound court never resolves, the only way out is `_rule`. There is no
+  timeout, no `cancelArbitration`, and no fee refund, so the bonds on that question stay locked for good. Fix: after a
+  deadline, let anyone call `realitio.cancelArbitration(questionId)` through the arbitrator, and refund the requester's fee.
+- **The relayer fallback is live on `0x3848…682a` (High).** `relayer()` is `0x1f80…e682`, so that key can answer any bound
+  question before the court resolves. `0xd96e…03b4` is relayer-only. See `wormhole/README.md`.
+- Overpaying `requestArbitration` (`msg.value > disputeFee`) is not refunded, and `withdraw` sends it to the owner.

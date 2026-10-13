@@ -136,3 +136,18 @@ gas. It pays the dispute bond on the disputer's behalf, and OOv3 credits the `di
 - The court is bound after the assertion exists, because the assertionId is only known then. A disputer should check `CourtBound` before disputing.
 - Being "UMA on Arbitrum" is not unique to Arbitrum. What we add on Arbitrum is unplugging the DVM for a conflict-screened jury on the chain where Kleros v2
   and Precog already live.
+
+## Known issues (security review, 2026-10-13)
+
+The contracts below were not redeployed.
+
+- **A payee or payer can block the escrow ruling (Medium).** `SaringEscrow._close` pushes ETH and reverts if either
+  transfer fails. `SaringArbitratorV2.ruleWithVaa` calls `arbitrable.rule` in the same transaction, so a payee contract that
+  reverts on receive makes every `ruleWithVaa` revert. A NO ruling (refund the payer) then never lands, the payer's ETH stays
+  locked, and the dispute stays unruled. The same holds the other way for a split (ruling 0) when the payer reverts. Fix: use
+  pull payments (credit balances in `rule`, then `withdraw()`), and record the ruling in the arbitrator before the external call.
+- **The relayer fallback is live on the UMA EM `0x6ae4…6c` (High).** `relayer()` is `0x1f80…e682`, so that key can resolve any
+  bound assertion before the court does. See `wormhole/README.md`.
+- **Tie and incomplete verdicts make the assertion false (Low, design).** `_rule` maps them to price 0, so the asserter loses
+  their bond when the jury could not decide. Consider returning the bond (e.g. route void verdicts to UMA's DVM via
+  `discardOracle`) instead of punishing the asserter.

@@ -18,6 +18,10 @@
     "example:dispute": "ts-node --transpile-only -P tsconfig.json examples/full-dispute.ts",
     "example:panta": "ts-node --transpile-only -P tsconfig.json examples/panta-adapter.ts"
   },
+  "dependencies": {
+    "@noble/curves": "^1.4.2",
+    "@noble/hashes": "^1.4.0"
+  },
   "peerDependencies": {
     "@anchor-lang/core": "^1.0.2",
     "@arcium-hq/client": "0.15.0",

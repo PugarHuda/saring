@@ -68,7 +68,12 @@ async function main() {
     if (onChain && uaCommit(court, c, addr) !== onChain) throw new Error(`address for ${c.slice(0, 12)} does not open its on-chain commitment`);
     return addr;
   };
-  const outs = policy.pays.map((p) => ({
+  // Anyone who knows the operator's address can send BOND_ZAT with a "saring-bond:<court>:<random commitment>" memo.
+  // That bond never seats and has no registration; throwing on it would block every juror's payout, so it is
+  // left unpaid (held for a manual refund) instead. Seated jurors still throw in addrOf if unregistered.
+  const unclaimed = policy.pays.filter((p) => !seated.has(p.commitment) && !jurors.some((x) => commitment(x.jurorId, x.salt, court) === p.commitment));
+  for (const p of unclaimed) console.warn(`unregistered, never-seated bond ${p.commitment.slice(0, 12)}… (${taz(p.zat)}) left for a manual refund`);
+  const outs = policy.pays.filter((p) => !unclaimed.includes(p)).map((p) => ({
     ...p,
     address: addrOf(p.commitment),
     memo: p.kind === "refund" ? refundMemo(court, p.commitment) : rewardMemo(court, verdict, p.commitment),
@@ -83,6 +88,7 @@ async function main() {
     slashed: taz(policy.slashed),
     slashSharePerCountedJuror: taz(policy.share),
     payments: outs.map((o) => ({ kind: o.kind, juror: o.commitment, amount: taz(o.zat), memo: o.memo, addressOpensOnChainCommitment: true })),
+    unclaimedBonds: unclaimed.map((p) => ({ juror: p.commitment, amount: taz(p.zat) })),
     total: taz(outs.reduce((s, o) => s + o.zat, 0)),
     txid,
     explorer: explorer(txid),

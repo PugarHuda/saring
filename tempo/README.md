@@ -92,3 +92,20 @@ npx tsx mpp-e2e.ts [question|--resume]      # 402, court, jurors, MPC, VAA, spon
 - **Rounding:** pro-rata division can leave a few base units of dust in the contract.
 - **Scanning:** `reconcile.ts` uses a fixed 50k-block `getLogs` window. Use an indexer at scale.
 - Testnet only: Moderato tokens have no value.
+
+## Known issues (security review, 2026-10-13)
+
+The contracts below were not redeployed.
+
+- **Betting stays open after the verdict is public (High).** `bet` closes only when someone calls `settle`/`settleWithVaa`.
+  Once the court resolves on Solana, its tally sits in a public account, but the VAA needs Solana finality plus guardian
+  observation, and someone has to relay it. In that window, or at any later time until someone settles, an attacker bets
+  heavily on the known winner and then settles in the same block. Example: pools are 100 YES / 100 NO and YES won. The
+  attacker bets 10,000 YES and claims 10,000 * 10,200 / 10,100 = 10,099, which takes 99 of the honest YES side's 100
+  winnings. Fix: give each market a deadline set before the jury votes, `open(court, closesAt)`, and have `bet` require
+  `block.timestamp < closesAt`. Or settle only VAAs whose Wormhole `timestamp` comes before the deadline, so later bets refund.
+- **The relayer fallback is live on `0x5780…f482` (High).** Its `relayer()` is `0x1cc1…c5ec`, so that key can settle any court's
+  market with any tally, before the court resolves. `0x4df7…5eae` is VAA-only (`relayer = 0`). See `wormhole/README.md`.
+- **Anyone can open a market on any court (Info).** Markets are keyed by the court pubkey, and anyone can create a court on
+  Solana. A UI should only list courts whose authority it trusts.
+- Rounding: `claimable` floors, so dust of up to `#winners` base units stays in the contract. Funds are never over-paid.

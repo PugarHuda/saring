@@ -141,3 +141,24 @@ npx tsx flow-tempo.ts [court]                                 # Tempo Moderato
   message account, plus the core fee, which is 0 on devnet. Anyone can pay; the payer has no say over the content.
 - **Replays.** A VAA is a fact about a resolved court, which is final, so replaying it for the same court changes nothing. Each dispute is settled at most once
   (`AlreadyResolved` / `AlreadyRuled` / `MarketClosed`).
+
+## Known issues (security review, 2026-10-13)
+
+Found in review; the deployed contracts were not redeployed. Full write-up: `research/56-security-review.md` in the workspace.
+
+- **The relayer key can still rule, and it can front-run the VAA (High).** Four of the five Wormhole deployments were built
+  with a non-zero relayer: `relayer()` is `0x1f80…e682` on Base `0x3848…682a`, Arbitrum `0x6ae4…6c` and Sepolia `0x2618…dcda0`,
+  and `0x1cc1…c5ec` on Tempo `0x5780…f482`. `resolve` / `rule` / `settle` accept any verdict that key signs, for any bound
+  court, before the court has resolved, and whoever rules first wins (`AlreadyResolved` / `AlreadyRuled` / `MarketClosed`).
+  On those four, "no Saring key in the verdict" holds only if that key is never used. Only Tempo `0x4df7…5eae` (and any
+  HyperCourt deployed with `relayer = 0`) is VAA-only. Fix: redeploy with `relayer = address(0)`, or delete the EIP-712 entry
+  points.
+- **The payload names the court, not the question (Medium, trust).** The 45-byte payload carries no market or question hash,
+  so the owner's `bindCourt` is the only link between a dispute and a court. Courts are permissionless on Solana (anyone can
+  `create_court`, seat themselves and resolve), so a valid VAA exists for any court an attacker runs. The contracts are safe
+  only while the owner binds honestly, and nothing stops one court from being bound to several disputes. Fix: payload v2
+  appends `sha256(market)` and the court authority, and `bindCourt` stores the expected hash and checks it.
+- **Off-chain readers did not check guardian signatures.** `sdk/src/wormhole.ts verifySaringVaa` only parsed the VAA.
+  Fixed: it now checks quorum signatures against the guardian set stored by the Solana core bridge
+  (`sdk/out/verify-vaas.ts` runs it on every live VAA and on tampered copies). `docs/court.html` now shows only events from
+  the deployed Saring contracts. Before, any contract emitting a look-alike `Settled`/`Ruled` for the court showed as "settled".

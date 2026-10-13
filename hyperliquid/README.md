@@ -112,3 +112,14 @@ cd .. && npx tsx fallback.ts status | wait | run
 `FoRH…zPQBv`. (3) The disputer posts a 0.01 HYPE bond claiming NO. (4) It reads the devnet verdict with `sdk/src/venue.ts`, signs it and settles. (5) It
 confirms the CoreWriter spotSend on HyperCore through `info spotClearinghouseState` of the disputer. (6) It settles demo outcome 0
 from the recorded VAA of court `24gQ…`. Tx links and the HyperCore before/after are written to `hyperevm/deployments/testnet.json`.
+
+## Known issues (security review, 2026-10-13)
+
+- **One disputer per outcome lets anyone squat the dispute slot risk-free (Low).** `dispute` accepts a bond of 1e10 wei (one
+  Core unit), and only the first disputer counts. Once the court resolves on Solana, the verdict is public before anyone relays
+  the VAA. Anyone can then dispute on the known-winning side with a dust bond, get it back, and lock out a real disputer. Fix:
+  set a minimum bond, and close disputes at a deadline set in `open`.
+- **The relayer fallback depends on the deploy argument.** Deploy with `relayer = address(0)` for the VAA-only trust model.
+  See `wormhole/README.md`.
+- `spotSend` through CoreWriter is asynchronous. `BondReturnedOnCore` is emitted when the action is queued, not when HyperCore
+  executes it, so check the disputer's Core balance before treating a refund as done.

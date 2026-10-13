@@ -121,3 +121,16 @@ Previous run (v1, no slashing, no commitments): court `HRA5oPAf…h7FM`, payout
   public verifier flagging it. Slashed-share dust (`slashed mod #counted` zatoshis) stays with the operator.
 - A lightwalletd broadcast failure leaves a created tx in the wallet until it expires. `payout.ts` treats expired
   unmined txs as not paid, so a rerun after expiry is safe (this happened once in this run).
+
+## Known issues (security review, 2026-10-13)
+
+- **Fixed: a fake bond could block every payout.** Anyone who knows the operator's address could send `BOND_ZAT` with the memo
+  `saring-bond:<court>:<random commitment>`. That bond never seats and has no registration, and `payout.ts` threw on it
+  (`no registration for …`), so no juror in that court got paid. It is now left out of the payout transaction and listed
+  under `unclaimedBonds` for a manual refund. Seated jurors without a registration still abort the payout.
+- **Slashing math holds.** Rewards come to `counted * (REWARD_ZAT + floor(slashed / counted))`, so the redistributed part never
+  exceeds the slashed bonds. `REWARD_ZAT` itself comes from the operator.
+- `courtLog` calls `getTransaction` once for every signature that touched the court account, and anyone can add cheap transactions
+  that reference it. Spam makes `payout.ts` slow but cannot change the outcome: only `add_juror`/`cast` memos signed by the seat key count.
+- Double-pay protection is the outgoing-memo check after `sync`. Two `payout.ts` runs started at the same moment could both
+  pass it, so run it once per court.
