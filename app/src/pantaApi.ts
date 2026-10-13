@@ -29,7 +29,7 @@ export interface PantaPosition {
 async function get<T>(params: Record<string, string>): Promise<T> {
   const r = await fetch(`/api/panta?${new URLSearchParams(params)}`);
   const body = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(body?.error ?? body?.code ?? `Panta API ${r.status}`);
+  if (!r.ok) throw Object.assign(new Error(body?.error ?? body?.code ?? `Panta API ${r.status}`), { status: r.status });
   return body as T;
 }
 
