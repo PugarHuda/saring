@@ -87,17 +87,17 @@ footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); fo
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-17T09:54:43+00:00">2026-10-17 09:54:43 UTC</time>. <a href="#data">Download the data</a>.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-18T10:07:43+00:00">2026-10-18 10:07:43 UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
-  <div class="stat"><div class="n">60.4%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,199 voters</div></div>
-  <div class="stat"><div class="n">20.0%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,172 disputes</div></div>
+  <div class="stat"><div class="n">60.4%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,200 voters</div></div>
+  <div class="stat"><div class="n">19.9%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,183 disputes</div></div>
   <div class="stat"><div class="n">65.6%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 645 disputes</div></div>
   <div class="stat"><div class="n">$8.03M</div><div class="l">in positions held by conflicted voters while they voted</div><div class="s">405 voters · 2,256 conflicted votes</div></div>
 </section>
 
-<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 20.0% overall, 65.6% for markets at or above $1M volume">
-  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>20.0%</strong></div><div class="track"><div class="fill" style="width:19.99%"></div></div></div>
+<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 19.9% overall, 65.6% for markets at or above $1M volume">
+  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>19.9%</strong></div><div class="track"><div class="fill" style="width:19.94%"></div></div></div>
   <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>65.6%</strong></div><div class="track"><div class="fill" style="width:65.58%"></div></div></div>
 </div>
 
@@ -110,7 +110,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,172 of 4,513 requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,183 of 4,518 requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
@@ -231,11 +231,23 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 </div>
 
 <h2 id="latest">Latest disputes</h2>
-<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-17 09:54:43 UTC; newest resolution indexed 2026-10-16.</p>
+<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-18 10:07:43 UTC; newest resolution indexed 2026-10-18.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
 <tbody><tr>
+<td class="mk"><a href="https://polymarket.com/market/setkameua-kiilose-balabei-2026-10-14-game-handicap-away-1pt5" rel="noopener">Game Handicap: Balabei Serhii (-1.5) vs Kiilo Serhii (+1.5)</a></td><td>2026-10-17</td><td class="num">$5</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/zelenskyy-of-tweets-october-6-october-13-2026-100-119" rel="noopener">Will Zelenskyy post 100-119 posts from October 6 to October 13, 2026?</a></td><td>2026-10-17</td><td class="num">$3K</td>
+<td>No</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/setkameua-rehotun-yakoven-2026-10-13-game-handicap-away-1pt5" rel="noopener">Game Handicap: Yakovenko Anton (-1.5) vs Rehotun Dmytro (+1.5)</a></td><td>2026-10-17</td><td class="num">$3K</td>
+<td>Yakovenko Anton</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
 <td class="mk"><a href="https://polymarket.com/market/setkameua-balabei-kryshta-2026-10-13" rel="noopener">Balabei Serhii vs. Kryshtal Dmytro</a></td><td>2026-10-15</td><td class="num">$15</td>
 <td>other</td><td class="num">438</td>
 <td class="num">0</td>
@@ -258,6 +270,38 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <td>no</td></tr><tr>
 <td class="mk"><a href="https://polymarket.com/market/itf-epps1-laskev1-2026-10-12-set-handicap-away-1pt5" rel="noopener">Set Handicap: Evialina Laskevich (-1.5) vs Zoie Epps (+1.5)</a></td><td>2026-10-15</td><td class="num">$609</td>
 <td>50-50</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-amos-kipruto-win-the-2026-mens-chicago-marathon" rel="noopener">Will Amos Kipruto win the 2026 Men&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$4K</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-magdalyne-masai-win-the-2026-womens-chicago-marathon" rel="noopener">Will Magdalyne Masai win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$435</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-joan-kilimo-win-the-2026-womens-chicago-marathon" rel="noopener">Will Joan Kilimo win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$305</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-degitu-azimeraw-win-the-2026-womens-chicago-marathon" rel="noopener">Will Degitu Azimeraw win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$329</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-brillian-kipkoech-win-the-2026-womens-chicago-marathon" rel="noopener">Will Brillian Kipkoech win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$474</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-sutume-kebede-win-the-2026-womens-chicago-marathon" rel="noopener">Will Sutume Kebede win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$11K</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-ariel-brodey-win-the-2026-womens-chicago-marathon" rel="noopener">Will Ariel Brodey win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$192</td>
+<td>other</td><td class="num">438</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-sara-hall-win-the-2026-womens-chicago-marathon" rel="noopener">Will Sara Hall win the 2026 Women&#x27;s Chicago Marathon?</a></td><td>2026-10-15</td><td class="num">$578</td>
+<td>other</td><td class="num">438</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
 <td class="mk"><a href="https://polymarket.com/market/will-trump-say-ammunition-this-week-20261011" rel="noopener">Will Trump say &quot;Ammunition&quot; this week?</a></td><td>2026-10-15</td><td class="num">$455K</td>
@@ -291,50 +335,6 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <td class="mk"><a href="https://polymarket.com/market/dota2-ty-ts8-2026-10-11-game3" rel="noopener">Dota 2: Team Yandex vs Team Spirit - Game 3 Winner</a></td><td>2026-10-13</td><td class="num">$1.83M</td>
 <td>Team Yandex</td><td class="num">439</td>
 <td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/dota2-ty-ts8-2026-10-11-game3-ends-in-daytime" rel="noopener">Game 3: Ends in Daytime?</a></td><td>2026-10-13</td><td class="num">$634</td>
-<td>No</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/sea-com-rom-2026-10-11-saves-pierluigi-gollini-90031284-gte4" rel="noopener">Pierluigi Gollini: 4+ saves</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>No</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mlb-bal-nyy-2026-09-27-first-five-winner-draw" rel="noopener">Baltimore Orioles vs. New York Yankees: Tied after 5 innings?</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mlb-bal-nyy-2026-09-27-first-five-winner-home" rel="noopener">New York Yankees winning after 5 innings?</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>No</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mlb-bal-nyy-2026-09-27-first-five-winner-away" rel="noopener">Baltimore Orioles winning after 5 innings?</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>No</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mlb-bal-nyy-2026-09-27-inning-1-winner-away" rel="noopener">Baltimore Orioles to win the 1st inning?</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>No</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-los-angeles-on-october-10-2026-76-77f" rel="noopener">Will the highest temperature in Los Angeles be between 76-77°F on October 10?</a></td><td>2026-10-13</td><td class="num">$25K</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/jap-jef-vva-2026-10-11-ags-takuya-yasui-90163825" rel="noopener">Takuya Yasui: Anytime Goalscorer</a></td><td>2026-10-13</td><td class="num">$171</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mls-laf-vwh-2026-10-10-assists-sergio-vasquez-90129969-gte1" rel="noopener">Sergio Vasquez: 1+ assists</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mls-laf-vwh-2026-10-10-goals-plus-assists-sergio-vasquez-90129969-gte1" rel="noopener">Sergio Vasquez: 1+ goals + assists</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/mls-col-sje-2026-10-10-assists-timo-werner-90027327-gte1" rel="noopener">Timo Werner: 1+ assists</a></td><td>2026-10-13</td><td class="num">$0</td>
-<td>Yes</td><td class="num">439</td>
-<td class="num">0</td>
 <td>no</td></tr></tbody>
 </table>
 </div>
@@ -343,7 +343,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="https://github.com/PugarHuda/saring/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
 <ul class="dl">
 <li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
-<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,172 rows).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,183 rows).</li>
 <li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market (2,256 rows).</li>
 </ul>
 <p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="https://github.com/PugarHuda/saring/tree/main/conflict-report" rel="noopener">source</a>).</p>
@@ -353,7 +353,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <li><strong>This is a lower bound.</strong> Only the Safe derived from the voting address (and the address itself) is checked. Voters trading from separate wallets, exchanges, email/magic-link accounts or newer deposit wallets are invisible here. Large holders are the most likely to split wallets, so the 0.004% weight figure is almost certainly an undercount.</li>
 <li>Transfers of outcome tokens between wallets and negRisk conversions are not reconstructed.</li>
 <li>The Data API caps pagination at about 10,000 events per market chunk; extremely active traders may be truncated.</li>
-<li>Gamma volume is zero or missing for some markets. 341 requests could not be mapped to a market.</li>
+<li>Gamma volume is zero or missing for some markets. 335 requests could not be mapped to a market.</li>
 <li>Voting one's own side is not proof of bad faith. Most conflicted voters also voted with the correct majority.</li>
 <li>Some markets have two DVM requests (re-votes), so a voter can appear twice for one market.</li>
 </ul>
