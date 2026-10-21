@@ -67012,6 +67012,28 @@
   "voters_touching_market": 0
  },
  {
+  "request_id": "YES_OR_NO_QUERY-1792122700-0x616e63696c6c61727944617461486173683a653932633632303",
+  "market": "Deportivo Saprissa vs. Sporting FC: O/U 10.5 Total Corners",
+  "slug": "fpd-sap-spo-2026-10-15-corners-total-10pt5",
+  "volume_usd": 462,
+  "vote_round_end_utc": "2026-10-19",
+  "resolved_outcome": "Under",
+  "voters": 440,
+  "tokens_revealed": 19177153,
+  "conflicted_voters": 0,
+  "conflicted_tokens": 0,
+  "conflicted_pct": 0.0,
+  "self_serving_tokens": 0,
+  "winner_all": "Under",
+  "winner_share_all": 0.9998,
+  "winner_clean": "Under",
+  "winner_share_clean": 0.9998,
+  "outcome_flips": false,
+  "clean_below_supermajority": false,
+  "clean_below_GAT": false,
+  "voters_touching_market": 0
+ },
+ {
   "request_id": "YES_OR_NO_QUERY-1788784161-0x616e63696c6c61727944617461486173683a306662356134656",
   "market": "Set 1 Winner: Zolotareva vs Papamichail",
   "slug": "wta-zolota-papamic-2026-09-07-first-set-winner-Zolotareva-vs-Papamichail",
