@@ -87,17 +87,17 @@ footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); fo
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-21T10:51:59+00:00">2026-10-21 10:51:59 UTC</time>. <a href="#data">Download the data</a>.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-22T10:54:10+00:00">2026-10-22 10:54:10 UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
   <div class="stat"><div class="n">60.4%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,200 voters</div></div>
-  <div class="stat"><div class="n">19.8%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,213 disputes</div></div>
+  <div class="stat"><div class="n">19.3%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,324 disputes</div></div>
   <div class="stat"><div class="n">65.4%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 647 disputes</div></div>
   <div class="stat"><div class="n">$8.03M</div><div class="l">in positions held by conflicted voters while they voted</div><div class="s">405 voters · 2,256 conflicted votes</div></div>
 </section>
 
-<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 19.8% overall, 65.4% for markets at or above $1M volume">
-  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>19.8%</strong></div><div class="track"><div class="fill" style="width:19.8%"></div></div></div>
+<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 19.3% overall, 65.4% for markets at or above $1M volume">
+  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>19.3%</strong></div><div class="track"><div class="fill" style="width:19.29%"></div></div></div>
   <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>65.4%</strong></div><div class="track"><div class="fill" style="width:65.38%"></div></div></div>
 </div>
 
@@ -110,7 +110,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,213 of 4,549 requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,324 of 4,681 requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
@@ -231,109 +231,109 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 </div>
 
 <h2 id="latest">Latest disputes</h2>
-<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-21 10:51:59 UTC; newest resolution indexed 2026-10-20.</p>
+<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-22 10:54:10 UTC; newest resolution indexed 2026-10-22.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
 <tbody><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-umass-buf-2026-10-17-1h-total-24pt5" rel="noopener">UMass vs. Buffalo: 1H O/U 24.5</a></td><td>2026-10-19</td><td class="num">$3K</td>
-<td>Under</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/saudi-arabia-military-action-against-yemen-on-september-20-20260916" rel="noopener">Saudi Arabia military action against Yemen on September 20?</a></td><td>2026-10-21</td><td class="num">$43K</td>
+<td>No</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-umass-buf-2026-10-17-2q-total-13pt5" rel="noopener">UMass vs. Buffalo: 2Q O/U 13.5</a></td><td>2026-10-19</td><td class="num">$480</td>
-<td>Under</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/saudi-arabia-military-action-against-yemen-on-september-20-20260916" rel="noopener">Saudi Arabia military action against Yemen on September 20?</a></td><td>2026-10-21</td><td class="num">$43K</td>
+<td>No</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-umass-buf-2026-10-17-1h-team-total-umass-15pt5" rel="noopener">UMass 1H Team Total: O/U 15.5</a></td><td>2026-10-19</td><td class="num">$0</td>
-<td>Under</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/cze1-fkj-fvp-2026-10-18-ags-filip-zorvan-338575" rel="noopener">Filip Zorvan: Anytime Goalscorer</a></td><td>2026-10-21</td><td class="num">$35</td>
+<td>Yes</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-cita-txam-2026-10-17-1h-total-24pt5" rel="noopener">The Citadel vs. Texas A&amp;M: 1H O/U 24.5</a></td><td>2026-10-19</td><td class="num">$58K</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/unl-ire-aut-2026-10-01-assists-adam-idah-90078332-gte1" rel="noopener">Adam Idah: 1+ assists</a></td><td>2026-10-21</td><td class="num">$0</td>
+<td>No</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-cita-txam-2026-10-17-1h-total-21pt5" rel="noopener">The Citadel vs. Texas A&amp;M: 1H O/U 21.5</a></td><td>2026-10-19</td><td class="num">$1K</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/cze1-fkj-fvp-2026-10-18-ags-filip-zorvan-338575" rel="noopener">Filip Zorvan: Anytime Goalscorer</a></td><td>2026-10-21</td><td class="num">$35</td>
+<td>Yes</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-cita-txam-2026-10-17-1h-total-27pt5" rel="noopener">The Citadel vs. Texas A&amp;M: 1H O/U 27.5</a></td><td>2026-10-19</td><td class="num">$1K</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/atp-guidott-jon-2026-10-18-first-set-winner-Guidotti-vs-Jones" rel="noopener">Set 1 Winner: Martino Guidotti vs Maximus Jones</a></td><td>2026-10-21</td><td class="num">$227</td>
+<td>Maximus Jones</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-cita-txam-2026-10-17-2q-total-19pt5" rel="noopener">The Citadel vs. Texas A&amp;M: 2Q O/U 19.5</a></td><td>2026-10-19</td><td class="num">$0</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-team-total-away-2pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: FK Dynamo Kyiv O/U 2.5</a></td><td>2026-10-21</td><td class="num">$6K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-cita-txam-2026-10-17-2q-total-16pt5" rel="noopener">The Citadel vs. Texas A&amp;M: 2Q O/U 16.5</a></td><td>2026-10-19</td><td class="num">$0</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-dyn" rel="noopener">Will FK Dynamo Kyiv win on 2026-10-18?</a></td><td>2026-10-21</td><td class="num">$4K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-vir-smu-2026-10-17-1h-spread-home-2pt5" rel="noopener">1H Spread: SMU (-2.5)</a></td><td>2026-10-19</td><td class="num">$4K</td>
-<td>SMU</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-total-4pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: O/U 4.5</a></td><td>2026-10-21</td><td class="num">$4K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-vir-smu-2026-10-17-1h-total-21pt5" rel="noopener">Virginia vs. SMU: 1H O/U 21.5</a></td><td>2026-10-19</td><td class="num">$446</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-team-total-away-3pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: FK Dynamo Kyiv O/U 3.5</a></td><td>2026-10-21</td><td class="num">$3K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-vir-smu-2026-10-17-1h-team-total-smu-12pt5" rel="noopener">SMU 1H Team Total: O/U 12.5</a></td><td>2026-10-19</td><td class="num">$0</td>
-<td>Over</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-spread-home-1pt5" rel="noopener">Spread: FK Polissia (-1.5)</a></td><td>2026-10-21</td><td class="num">$2K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/cfb-vir-smu-2026-10-17-1h-moneyline" rel="noopener">Virginia vs. SMU: 1H Moneyline</a></td><td>2026-10-19</td><td class="num">$0</td>
-<td>SMU</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-pol" rel="noopener">Will FK Polissia win on 2026-10-18?</a></td><td>2026-10-21</td><td class="num">$2K</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-klymenk-priadko-2026-10-17-game-handicap-away-1pt5" rel="noopener">Game Handicap: Priadko Serhii (-1.5) vs Klymenko Vitalii (+1.5)</a></td><td>2026-10-19</td><td class="num">$326</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-team-total-away-1pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: FK Dynamo Kyiv O/U 1.5</a></td><td>2026-10-21</td><td class="num">$629</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-klymenk-priadko-2026-10-17-game-totals-4pt5" rel="noopener">Klymenko Vitalii vs. Priadko Serhii: Total Games O/U 4.5</a></td><td>2026-10-19</td><td class="num">$266</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-total-3pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: O/U 3.5</a></td><td>2026-10-21</td><td class="num">$438</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/val-vit-100t1-2026-10-17-game2" rel="noopener">Valorant: Team Vitality vs 100 Thieves - Map 2 Winner</a></td><td>2026-10-19</td><td class="num">$210K</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-spread-home-2pt5" rel="noopener">Spread: FK Polissia (-2.5)</a></td><td>2026-10-21</td><td class="num">$364</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/val-vit-100t1-2026-10-17-game2-round-handicap-100t1-2pt5" rel="noopener">Map 2 Rounds Handicap: 100 Thieves (-2.5) vs Team Vitality (+2.5)</a></td><td>2026-10-19</td><td class="num">$955</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-total-6pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: O/U 6.5</a></td><td>2026-10-21</td><td class="num">$360</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/ppa-doubles-daedizo-humge-2026-10-16-86a115c3" rel="noopener">PPA - Mixed Doubles: Andrei Daescu / Meghan Dizon vs Mari Humberg / Augustus Ge</a></td><td>2026-10-19</td><td class="num">$1K</td>
-<td>Andrei Daescu / Meghan Dizon</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-exact-score-3-3" rel="noopener">Exact Score: FK Polissia 3 - 3 FK Dynamo Kyiv?</a></td><td>2026-10-21</td><td class="num">$353</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-senykmy-illia-2026-10-16-game-totals-4pt5" rel="noopener">Senyk Mykhailo vs. Fokin Illia: Total Games O/U 4.5</a></td><td>2026-10-19</td><td class="num">$283</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-btts" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: Both Teams to Score</a></td><td>2026-10-21</td><td class="num">$337</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-senykmy-illia-2026-10-16-game-handicap-away-1pt5" rel="noopener">Game Handicap: Fokin Illia (-1.5) vs Senyk Mykhailo (+1.5)</a></td><td>2026-10-19</td><td class="num">$15</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-team-total-home-3pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: FK Polissia O/U 3.5</a></td><td>2026-10-21</td><td class="num">$330</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/fpd-sap-spo-2026-10-15-corners-total-10pt5" rel="noopener">Deportivo Saprissa vs. Sporting FC: O/U 10.5 Total Corners</a></td><td>2026-10-19</td><td class="num">$462</td>
-<td>Under</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-exact-score-3-1" rel="noopener">Exact Score: FK Polissia 3 - 1 FK Dynamo Kyiv?</a></td><td>2026-10-21</td><td class="num">$315</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-the-tesla-roadsters-0-60-time-be-less-than-1-second" rel="noopener">Will the Tesla Roadster&#x27;s 0-60 time be less than 1 second?</a></td><td>2026-10-19</td><td class="num">$6.84M</td>
-<td>Yes</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-total-1pt5" rel="noopener">FK Polissia vs. FK Dynamo Kyiv: O/U 1.5</a></td><td>2026-10-21</td><td class="num">$305</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/itf-wolff1-bulato1-2026-10-15" rel="noopener">W35 Redding, CA: Vivian Wolff vs Arina Bulatova</a></td><td>2026-10-19</td><td class="num">$77K</td>
-<td>Vivian Wolff</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-draw" rel="noopener">Will FK Polissia vs. FK Dynamo Kyiv end in a draw?</a></td><td>2026-10-21</td><td class="num">$261</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-the-tesla-roadsters-0-60-time-be-less-than-1-second" rel="noopener">Will the Tesla Roadster&#x27;s 0-60 time be less than 1 second?</a></td><td>2026-10-19</td><td class="num">$6.84M</td>
-<td>Yes</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-exact-score-2-5" rel="noopener">Exact Score: FK Polissia 2 - 5 FK Dynamo Kyiv?</a></td><td>2026-10-21</td><td class="num">$217</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-london-on-october-15-2026-16corbelow" rel="noopener">Will the highest temperature in London be 16°C or below on October 15?</a></td><td>2026-10-19</td><td class="num">$2K</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-exact-score-any-other" rel="noopener">Exact Score: Any Other Score?</a></td><td>2026-10-21</td><td class="num">$205</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-london-on-october-15-2026-17c" rel="noopener">Will the highest temperature in London be 17°C on October 15?</a></td><td>2026-10-19</td><td class="num">$2K</td>
-<td>other</td><td class="num">440</td>
+<td class="mk"><a href="https://polymarket.com/market/ukr1-pol-dyn-2026-10-18-exact-score-5-4" rel="noopener">Exact Score: FK Polissia 5 - 4 FK Dynamo Kyiv?</a></td><td>2026-10-21</td><td class="num">$187</td>
+<td>other</td><td class="num">332</td>
 <td class="num">0</td>
 <td>no</td></tr></tbody>
 </table>
@@ -343,7 +343,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="https://github.com/PugarHuda/saring/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
 <ul class="dl">
 <li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
-<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,213 rows).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,324 rows).</li>
 <li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market (2,256 rows).</li>
 </ul>
 <p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="https://github.com/PugarHuda/saring/tree/main/conflict-report" rel="noopener">source</a>).</p>
@@ -353,7 +353,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <li><strong>This is a lower bound.</strong> Only the Safe derived from the voting address (and the address itself) is checked. Voters trading from separate wallets, exchanges, email/magic-link accounts or newer deposit wallets are invisible here. Large holders are the most likely to split wallets, so the 0.004% weight figure is almost certainly an undercount.</li>
 <li>Transfers of outcome tokens between wallets and negRisk conversions are not reconstructed.</li>
 <li>The Data API caps pagination at about 10,000 events per market chunk; extremely active traders may be truncated.</li>
-<li>Gamma volume is zero or missing for some markets. 336 requests could not be mapped to a market.</li>
+<li>Gamma volume is zero or missing for some markets. 357 requests could not be mapped to a market.</li>
 <li>Voting one's own side is not proof of bad faith. Most conflicted voters also voted with the correct majority.</li>
 <li>Some markets have two DVM requests (re-votes), so a voter can appear twice for one market.</li>
 </ul>
