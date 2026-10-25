@@ -87,17 +87,17 @@ footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); fo
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-24T10:02:15+00:00">2026-10-24 10:02:15 UTC</time>. <a href="#data">Download the data</a>.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-25T10:25:31+00:00">2026-10-25 10:25:31 UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
   <div class="stat"><div class="n">60.4%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,202 voters</div></div>
-  <div class="stat"><div class="n">18.7%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,457 disputes</div></div>
+  <div class="stat"><div class="n">18.7%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,461 disputes</div></div>
   <div class="stat"><div class="n">65.3%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 648 disputes</div></div>
   <div class="stat"><div class="n">$8.03M</div><div class="l">in positions held by conflicted voters while they voted</div><div class="s">405 voters · 2,256 conflicted votes</div></div>
 </section>
 
 <div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 18.7% overall, 65.3% for markets at or above $1M volume">
-  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>18.7%</strong></div><div class="track"><div class="fill" style="width:18.71%"></div></div></div>
+  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>18.7%</strong></div><div class="track"><div class="fill" style="width:18.7%"></div></div></div>
   <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>65.3%</strong></div><div class="track"><div class="fill" style="width:65.28%"></div></div></div>
 </div>
 
@@ -110,7 +110,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,457 of 4,825 requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,461 of 4,825 requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
@@ -231,7 +231,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 </div>
 
 <h2 id="latest">Latest disputes</h2>
-<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-24 10:02:15 UTC; newest resolution indexed 2026-10-24.</p>
+<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-25 10:25:31 UTC; newest resolution indexed 2026-10-24.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
@@ -300,6 +300,14 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <td>other</td><td class="num">342</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-sao-paulo-on-october-19-2026-16c" rel="noopener">Will the highest temperature in Sao Paulo be 16°C on October 19?</a></td><td>2026-10-23</td><td class="num">$602</td>
+<td>other</td><td class="num">342</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/lowest-temperature-in-sao-paulo-on-october-19-2026-9corbelow" rel="noopener">Will the lowest temperature in Sao Paulo be 9°C or below on October 19?</a></td><td>2026-10-23</td><td class="num">$60</td>
+<td>other</td><td class="num">342</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
 <td class="mk"><a href="https://polymarket.com/market/will-ukraine-target-moscow-on-october-19-2026" rel="noopener">Will Ukraine target Moscow on October 19, 2026?</a></td><td>2026-10-23</td><td class="num">$12K</td>
 <td>other</td><td class="num">342</td>
 <td class="num">0</td>
@@ -327,14 +335,6 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <td class="mk"><a href="https://polymarket.com/market/will-jameis-winston-finish-week-6-of-the-2026-27-nfl-regular-season-with-the-most-interceptions-thrown" rel="noopener">Will Jameis Winston finish Week 6 of the 2026-27 NFL regular season with the most interceptions thrown?</a></td><td>2026-10-23</td><td class="num">$815</td>
 <td>Yes</td><td class="num">342</td>
 <td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-kenneth-walker-be-the-highest-scoring-rb-in-week-6-of-the-2026-27-nfl-season" rel="noopener">Will Kenneth Walker be the highest-scoring RB in Week 6 of the 2026-27 NFL season?</a></td><td>2026-10-23</td><td class="num">$692</td>
-<td>No</td><td class="num">342</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-christian-mccaffrey-be-the-highest-scoring-rb-in-week-6-of-the-2026-27-nfl-season" rel="noopener">Will Christian McCaffrey be the highest-scoring RB in Week 6 of the 2026-27 NFL season?</a></td><td>2026-10-23</td><td class="num">$670</td>
-<td>Yes</td><td class="num">342</td>
-<td class="num">0</td>
 <td>no</td></tr></tbody>
 </table>
 </div>
@@ -343,7 +343,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="https://github.com/PugarHuda/saring/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
 <ul class="dl">
 <li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
-<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,457 rows).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,461 rows).</li>
 <li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market (2,256 rows).</li>
 </ul>
 <p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="https://github.com/PugarHuda/saring/tree/main/conflict-report" rel="noopener">source</a>).</p>
@@ -353,7 +353,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <li><strong>This is a lower bound.</strong> Only the Safe derived from the voting address (and the address itself) is checked. Voters trading from separate wallets, exchanges, email/magic-link accounts or newer deposit wallets are invisible here. Large holders are the most likely to split wallets, so the 0.004% weight figure is almost certainly an undercount.</li>
 <li>Transfers of outcome tokens between wallets and negRisk conversions are not reconstructed.</li>
 <li>The Data API caps pagination at about 10,000 events per market chunk; extremely active traders may be truncated.</li>
-<li>Gamma volume is zero or missing for some markets. 368 requests could not be mapped to a market.</li>
+<li>Gamma volume is zero or missing for some markets. 364 requests could not be mapped to a market.</li>
 <li>Voting one's own side is not proof of bad faith. Most conflicted voters also voted with the correct majority.</li>
 <li>Some markets have two DVM requests (re-votes), so a voter can appear twice for one market.</li>
 </ul>
