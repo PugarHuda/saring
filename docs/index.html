@@ -87,18 +87,18 @@ footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); fo
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-25T10:25:31+00:00">2026-10-25 10:25:31 UTC</time>. <a href="#data">Download the data</a>.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-26T11:54:42+00:00">2026-10-26 11:54:42 UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
-  <div class="stat"><div class="n">60.4%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,202 voters</div></div>
-  <div class="stat"><div class="n">18.7%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,461 disputes</div></div>
-  <div class="stat"><div class="n">65.3%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 648 disputes</div></div>
+  <div class="stat"><div class="n">60.3%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,203 voters</div></div>
+  <div class="stat"><div class="n">18.5%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,506 disputes</div></div>
+  <div class="stat"><div class="n">64.8%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 653 disputes</div></div>
   <div class="stat"><div class="n">$8.03M</div><div class="l">in positions held by conflicted voters while they voted</div><div class="s">405 voters · 2,256 conflicted votes</div></div>
 </section>
 
-<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 18.7% overall, 65.3% for markets at or above $1M volume">
-  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>18.7%</strong></div><div class="track"><div class="fill" style="width:18.7%"></div></div></div>
-  <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>65.3%</strong></div><div class="track"><div class="fill" style="width:65.28%"></div></div></div>
+<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 18.5% overall, 64.8% for markets at or above $1M volume">
+  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>18.5%</strong></div><div class="track"><div class="fill" style="width:18.51%"></div></div></div>
+  <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>64.8%</strong></div><div class="track"><div class="fill" style="width:64.78%"></div></div></div>
 </div>
 
 <div class="callout">
@@ -110,7 +110,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,461 of 4,825 requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,506 of 4,870 requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
@@ -231,109 +231,109 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 </div>
 
 <h2 id="latest">Latest disputes</h2>
-<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-25 10:25:31 UTC; newest resolution indexed 2026-10-24.</p>
+<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-26 11:54:42 UTC; newest resolution indexed 2026-10-26.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
 <tbody><tr>
-<td class="mk"><a href="https://polymarket.com/market/thermo-fisher-tmo-q3-organic-revenue-growth-non-gaap-20261008120022000-6-to-8" rel="noopener">Thermo Fisher (TMO) Q3 organic revenue growth (non-GAAP) 6% to 8%?</a></td><td>2026-10-23</td><td class="num">$2K</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/bkcba-tia-gua2-2026-10-23-total-185pt5" rel="noopener">Tianjin Pioneers vs. Guangzhou Loong Lions: O/U 185.5</a></td><td>2026-10-25</td><td class="num">$33K</td>
+<td>Over</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/thermo-fisher-tmo-q3-organic-revenue-growth-non-gaap-20261008120022000-4-to-6" rel="noopener">Thermo Fisher (TMO) Q3 organic revenue growth (non-GAAP) 4% to 6%?</a></td><td>2026-10-23</td><td class="num">$2K</td>
-<td>No</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-russia-and-ukraine-hold-any-diplomatic-meeting-by-october-31-2026" rel="noopener">Will Russia and Ukraine hold any diplomatic meeting by October 31, 2026?</a></td><td>2026-10-25</td><td class="num">$2.62M</td>
+<td>Yes</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-trump-speak-to-friedrich-merz-by-october-31" rel="noopener">Will Trump speak to Friedrich Merz by October 31?</a></td><td>2026-10-23</td><td class="num">$14K</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-russia-and-ukraine-hold-any-diplomatic-meeting-by-october-31-2026" rel="noopener">Will Russia and Ukraine hold any diplomatic meeting by October 31, 2026?</a></td><td>2026-10-25</td><td class="num">$2.62M</td>
+<td>Yes</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-trump-speak-to-ursula-von-der-leyen-by-october-31" rel="noopener">Will Trump speak to Ursula von der Leyen by October 31?</a></td><td>2026-10-23</td><td class="num">$13K</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/swe2-lkb-odd-2026-08-14-corners-team-home-4pt5" rel="noopener">Landskrona BoIS vs. IK Oddevold: Landskrona BoIS O/U 4.5 Corners</a></td><td>2026-10-25</td><td class="num">$4K</td>
+<td>Under</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/itf-lu4-matsum1-2026-10-21" rel="noopener">W15 Singapore: Jing-Jing Lu vs Yuka Matsumoto</a></td><td>2026-10-23</td><td class="num">$18K</td>
-<td>Jing-Jing Lu</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/swe2-lkb-odd-2026-08-14-corners-team-home-5pt5" rel="noopener">Landskrona BoIS vs. IK Oddevold: Landskrona BoIS O/U 5.5 Corners</a></td><td>2026-10-25</td><td class="num">$2K</td>
+<td>Under</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/itf-lu4-matsum1-2026-10-21-set-handicap-away-1pt5" rel="noopener">Set Handicap: Yuka Matsumoto (-1.5) vs Jing-Jing Lu (+1.5)</a></td><td>2026-10-23</td><td class="num">$5K</td>
-<td>Jing-Jing Lu</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/swe2-lkb-odd-2026-08-14-corners-total-7pt5" rel="noopener">Landskrona BoIS vs. IK Oddevold: O/U 7.5 Total Corners</a></td><td>2026-10-25</td><td class="num">$157</td>
+<td>Under</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/ucl-stu-atm-2026-10-20-shots-grischa-promel-90074463-gte3" rel="noopener">Grischa Prömel: 3+ shots</a></td><td>2026-10-23</td><td class="num">$710</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/swe2-lkb-odd-2026-08-14-corners-total-8pt5" rel="noopener">Landskrona BoIS vs. IK Oddevold: O/U 8.5 Total Corners</a></td><td>2026-10-25</td><td class="num">$15</td>
+<td>Under</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bra2-lon-cui-2026-10-20-total-5pt5" rel="noopener">Londrina EC vs. Cuiabá EC: O/U 5.5</a></td><td>2026-10-23</td><td class="num">$5K</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/dandre-swift-6pt5-rushing-touchdowns-2026-27" rel="noopener">Will D&#x27;Andre Swift have 6.5+ rushing touchdowns in the 2026-27 NFL regular season?</a></td><td>2026-10-25</td><td class="num">$2K</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-russia-target-kyiv-on-october-17-2026" rel="noopener">Will Russia target Kyiv on October 17, 2026?</a></td><td>2026-10-23</td><td class="num">$159K</td>
-<td>No</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/us-x-iran-ceasefire-continues-through-october-22" rel="noopener">US x Iran ceasefire continues through October 22?</a></td><td>2026-10-25</td><td class="num">$3.86M</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/ucl-liv-vil-2026-10-20-shots-tajon-buchanan-90072726-gte1" rel="noopener">Tajon Buchanan: 1+ shots</a></td><td>2026-10-23</td><td class="num">$511</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/us-x-iran-ceasefire-continues-through-october-22" rel="noopener">US x Iran ceasefire continues through October 22?</a></td><td>2026-10-25</td><td class="num">$3.86M</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-russia-target-kyiv-on-october-17-2026" rel="noopener">Will Russia target Kyiv on October 17, 2026?</a></td><td>2026-10-23</td><td class="num">$159K</td>
-<td>No</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-the-price-of-ethereum-be-between-2400-2500-on-october-22-2026" rel="noopener">Will the price of Ethereum be between $2,400 and $2,500 on October 22?</a></td><td>2026-10-25</td><td class="num">$269K</td>
+<td>No</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-yev-efimenk-2026-10-20-game-totals-3pt5" rel="noopener">Skorobahatyi Yevhen vs. Efimenko Ivan: Total Games O/U 3.5</a></td><td>2026-10-23</td><td class="num">$0</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-the-price-of-ethereum-be-between-2300-2400-on-october-22-2026" rel="noopener">Will the price of Ethereum be between $2,300 and $2,400 on October 22?</a></td><td>2026-10-25</td><td class="num">$225K</td>
+<td>Yes</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/setkameua-evheni-savoliu-2026-10-20-game-handicap-home-1pt5" rel="noopener">Game Handicap: Hrytsenko Evhenii (-1.5) vs Savoliuk Volodymyr (+1.5)</a></td><td>2026-10-23</td><td class="num">$5K</td>
-<td>Hrytsenko Evhenii</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-the-price-of-ethereum-be-between-2300-2400-on-october-22-2026" rel="noopener">Will the price of Ethereum be between $2,300 and $2,400 on October 22?</a></td><td>2026-10-25</td><td class="num">$225K</td>
+<td>Yes</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/atp-pellegr-tiffon-2026-10-19" rel="noopener">Lisbon: Andrea Pellegrino vs Pol Martin Tiffon</a></td><td>2026-10-23</td><td class="num">$101K</td>
-<td>Andrea Pellegrino</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/will-the-price-of-ethereum-be-between-2400-2500-on-october-22-2026" rel="noopener">Will the price of Ethereum be between $2,400 and $2,500 on October 22?</a></td><td>2026-10-25</td><td class="num">$269K</td>
+<td>No</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-toronto-on-october-19-2026-14c" rel="noopener">Will the highest temperature in Toronto be 14°C on October 19?</a></td><td>2026-10-23</td><td class="num">$1K</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/ethereum-above-2400-on-october-22-2026" rel="noopener">Will the price of Ethereum be above $2,400 on October 22?</a></td><td>2026-10-25</td><td class="num">$894K</td>
+<td>No</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-toronto-on-october-19-2026-13corbelow" rel="noopener">Will the highest temperature in Toronto be 13°C or below on October 19?</a></td><td>2026-10-23</td><td class="num">$965</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/ethereum-above-2400-on-october-22-2026" rel="noopener">Will the price of Ethereum be above $2,400 on October 22?</a></td><td>2026-10-25</td><td class="num">$894K</td>
+<td>No</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/highest-temperature-in-sao-paulo-on-october-19-2026-16c" rel="noopener">Will the highest temperature in Sao Paulo be 16°C on October 19?</a></td><td>2026-10-23</td><td class="num">$602</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game3-round-total-24pt5" rel="noopener">Map 3 Total Rounds: Over/Under 24.5</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/lowest-temperature-in-sao-paulo-on-october-19-2026-9corbelow" rel="noopener">Will the lowest temperature in Sao Paulo be 9°C or below on October 19?</a></td><td>2026-10-23</td><td class="num">$60</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game3-round-handicap-ssins-6pt5" rel="noopener">Map 3 Rounds Handicap: Saint Sinners (-6.5) vs Dark Moon (+6.5)</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-ukraine-target-moscow-on-october-19-2026" rel="noopener">Will Ukraine target Moscow on October 19, 2026?</a></td><td>2026-10-23</td><td class="num">$12K</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game2-round-total-24pt5" rel="noopener">Map 2 Total Rounds: Over/Under 24.5</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/wta-valento-zhang-2026-10-18-set-2-winner-Valentova-vs-Zhang" rel="noopener">Set 2 Winner: Tereza Valentova vs Shuai Zhang</a></td><td>2026-10-23</td><td class="num">$2K</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game2-round-handicap-ssins-6pt5" rel="noopener">Map 2 Rounds Handicap: Saint Sinners (-6.5) vs Dark Moon (+6.5)</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/wta-valento-zhang-2026-10-18-set-2-total-9pt5" rel="noopener">Valentova vs. Zhang: Set 2 Games O/U 9.5</a></td><td>2026-10-23</td><td class="num">$805</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game3-round-total-21pt5" rel="noopener">Map 3 Total Rounds: Over/Under 21.5</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/wta-valento-zhang-2026-10-18-set-2-total-8pt5" rel="noopener">Valentova vs. Zhang: Set 2 Games O/U 8.5</a></td><td>2026-10-23</td><td class="num">$805</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game2-round-total-21pt5" rel="noopener">Map 2 Total Rounds: Over/Under 21.5</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/wta-valento-zhang-2026-10-18-set-2-total-10pt5" rel="noopener">Valentova vs. Zhang: Set 2 Games O/U 10.5</a></td><td>2026-10-23</td><td class="num">$800</td>
-<td>other</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game3-round-handicap-ssins-3pt5" rel="noopener">Map 3 Rounds Handicap: Saint Sinners (-3.5) vs Dark Moon (+3.5)</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-christian-mccaffrey-be-the-highest-scoring-player-in-week-6-of-the-2026-27-nfl-season" rel="noopener">Will Christian McCaffrey be the highest-scoring player in Week 6 of the 2026-27 NFL season?</a></td><td>2026-10-23</td><td class="num">$2K</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/cs2-ssins-dm2-2026-10-22-game2-round-handicap-ssins-3pt5" rel="noopener">Map 2 Rounds Handicap: Saint Sinners (-3.5) vs Dark Moon (+3.5)</a></td><td>2026-10-25</td><td class="num">$0</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/will-jameis-winston-finish-week-6-of-the-2026-27-nfl-regular-season-with-the-most-interceptions-thrown" rel="noopener">Will Jameis Winston finish Week 6 of the 2026-27 NFL regular season with the most interceptions thrown?</a></td><td>2026-10-23</td><td class="num">$815</td>
-<td>Yes</td><td class="num">342</td>
+<td class="mk"><a href="https://polymarket.com/market/idn1-mau-pba-2026-10-22-pba" rel="noopener">Will Persib Bandung win on 2026-10-22?</a></td><td>2026-10-25</td><td class="num">$46K</td>
+<td>other</td><td class="num">340</td>
 <td class="num">0</td>
 <td>no</td></tr></tbody>
 </table>
@@ -343,7 +343,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="https://github.com/PugarHuda/saring/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
 <ul class="dl">
 <li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
-<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,461 rows).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,506 rows).</li>
 <li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market (2,256 rows).</li>
 </ul>
 <p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="https://github.com/PugarHuda/saring/tree/main/conflict-report" rel="noopener">source</a>).</p>
