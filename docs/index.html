@@ -87,18 +87,18 @@ footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); fo
 <p class="kicker">Saring research note · UMA × Polymarket</p>
 <h1>UMA Conflict Report</h1>
 <p class="dek">In one in five Polymarket disputes, at least one UMA voter held a position in the market they were deciding. For markets over $1M, it was two in three. Nothing in the protocol filters them out.</p>
-<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-10-31T11:27:06+00:00">2026-10-31 11:27:06 UTC</time>. <a href="#data">Download the data</a>.</p>
+<p class="byline">Window: every resolved UMA DVM <code>YES_OR_NO_QUERY</code> since 2025-01-01. Updated daily; last updated <time datetime="2026-11-01T12:23:03+00:00">2026-11-01 12:23:03 UTC</time>. <a href="#data">Download the data</a>.</p>
 
 <section class="stats" aria-label="Headline numbers">
   <div class="stat"><div class="n">60.3%</div><div class="l">of UMA voters control an active Polymarket Safe derived from the same address</div><div class="s">3,743 of 6,204 voters</div></div>
-  <div class="stat"><div class="n">17.7%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,717 disputes</div></div>
-  <div class="stat"><div class="n">64.7%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 654 disputes</div></div>
+  <div class="stat"><div class="n">17.6%</div><div class="l">of Polymarket disputes had a voter holding a position in that market at vote time</div><div class="s">834 of 4,733 disputes</div></div>
+  <div class="stat"><div class="n">64.5%</div><div class="l">of disputes on markets with ≥ $1M volume had a conflicted voter</div><div class="s">423 of 656 disputes</div></div>
   <div class="stat"><div class="n">$8.03M</div><div class="l">in positions held by conflicted voters while they voted</div><div class="s">405 voters · 2,256 conflicted votes</div></div>
 </section>
 
-<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 17.7% overall, 64.7% for markets at or above $1M volume">
-  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>17.7%</strong></div><div class="track"><div class="fill" style="width:17.68%"></div></div></div>
-  <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>64.7%</strong></div><div class="track"><div class="fill" style="width:64.68%"></div></div></div>
+<div class="bars" role="img" aria-label="Share of disputes with a conflicted voter: 17.6% overall, 64.5% for markets at or above $1M volume">
+  <div class="row"><div class="lab"><span>All mapped disputes</span><strong>17.6%</strong></div><div class="track"><div class="fill" style="width:17.62%"></div></div></div>
+  <div class="row"><div class="lab"><span>Markets ≥ $1M volume</span><strong>64.5%</strong></div><div class="track"><div class="fill" style="width:64.48%"></div></div></div>
 </div>
 
 <div class="callout">
@@ -110,7 +110,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <ol class="method">
 <li><strong>Votes.</strong> Resolved <code>YES_OR_NO_QUERY</code> price requests and their revealed votes (voter, price, tokens) from the final, deciding round, via UMA's public <code>mainnet-voting-v2</code> subgraph.</li>
 <li><strong>Question text.</strong> Ancillary data recovered from <code>OracleChildTunnel</code> logs on Polygon and matched by keccak hash.</li>
-<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,717 of 5,089 requests mapped.</li>
+<li><strong>Market match.</strong> Polymarket <code>questionID = keccak(ancillary data before ",ooRequester:")</code>, looked up on the Gamma API. Accepted only on an exact questionID match or an exact title match (mostly negRisk markets). 4,733 of 5,105 requests mapped.</li>
 <li><strong>Voter → wallet.</strong> Each voter's Polymarket Safe address is derived deterministically with CREATE2 from the voter address (Polymarket Safe factory). The derivation was verified on a sample by calling <code>getOwners()</code> on-chain: the Safe's owner is the voting address. A Safe at that address can only be controlled by the key that cast the vote, unless its owners were later changed. Funding-graph heuristics were <em>not</em> used.</li>
 <li><strong>Position at vote time.</strong> Polymarket Data API activity (trade, split, merge, redeem) in that market up to the round's last reveal time. A voter is "conflicted" if they held a net ≥ 1 share of any outcome.</li>
 <li><strong>Counterfactual.</strong> Vote weight per answer recomputed without conflicted voters; checked for a different winner, the 65% supermajority (SPAT) and the participation threshold (GAT).</li>
@@ -231,11 +231,67 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 </div>
 
 <h2 id="latest">Latest disputes</h2>
-<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-10-31 11:27:06 UTC; newest resolution indexed 2026-10-30.</p>
+<p>The 25 most recent DVM votes on Polymarket markets, re-checked every day by a scheduled job. Highlighted rows had at least one voter holding a position in that market when the vote closed (0 of 25 here). Last updated 2026-11-01 12:23:03 UTC; newest resolution indexed 2026-11-01.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Market</th><th>Vote ended</th><th class="num">Volume</th><th>Resolved</th><th class="num">Voters</th><th class="num">Conflicted voters</th><th>Flips if removed</th></tr></thead>
 <tbody><tr>
+<td class="mk"><a href="https://polymarket.com/market/cs2-rev-got1-2026-10-29" rel="noopener">Counter-Strike: Revenge vs gothboiclique (BO3) - United21 Playoffs</a></td><td>2026-10-31</td><td class="num">$15K</td>
+<td>gothboiclique</td><td class="num">361</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/cs2-rev-got1-2026-10-29-game2" rel="noopener">Counter-Strike: Revenge vs gothboiclique - Map 2 Winner</a></td><td>2026-10-31</td><td class="num">$4K</td>
+<td>gothboiclique</td><td class="num">361</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/nba-nyk-chi-2026-10-28-1h-team-total-chi-60pt5" rel="noopener">Bulls 1H Team Total: O/U 60.5</a></td><td>2026-10-31</td><td class="num">$366</td>
+<td>Over</td><td class="num">361</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/nba-nyk-chi-2026-10-28-1h-spread-home-5pt5" rel="noopener">1H Spread: Bulls (-5.5)</a></td><td>2026-10-31</td><td class="num">$2K</td>
+<td>Bulls</td><td class="num">361</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/setkamemd-ili-mihai-2026-10-28-game-totals-4pt5" rel="noopener">Crecessco Ilia vs. Midori Mihai: Total Games O/U 4.5</a></td><td>2026-10-31</td><td class="num">$0</td>
+<td>other</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/setkamemd-ili-mihai-2026-10-28-game-handicap-away-1pt5" rel="noopener">Game Handicap: Midori Mihai (-1.5) vs Crecessco Ilia (+1.5)</a></td><td>2026-10-31</td><td class="num">$0</td>
+<td>other</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/sea-par-udi-2026-10-28-shots-on-target-keinan-davis-90026325-gte1" rel="noopener">Keinan Davis: 1+ shots on target</a></td><td>2026-10-31</td><td class="num">$335</td>
+<td>Yes</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/setkameua-vasyl-nazar-2026-10-28-game-handicap-home-1pt5" rel="noopener">Game Handicap: Verbianyi Vasyl (-1.5) vs Danyliuk Nazarii (+1.5)</a></td><td>2026-10-31</td><td class="num">$0</td>
+<td>Danyliuk Nazarii</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-trump-say-two-percent-during-his-midterm-rally-in-lubbock-texas-october-27-lubbock-tx" rel="noopener">Will Trump say &quot;Two Percent&quot; during his Midterm Rally in Lubbock, Texas?</a></td><td>2026-10-31</td><td class="num">$308K</td>
+<td>Yes</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-trump-say-two-percent-during-his-midterm-rally-in-lubbock-texas-october-27-lubbock-tx" rel="noopener">Will Trump say &quot;Two Percent&quot; during his Midterm Rally in Lubbock, Texas?</a></td><td>2026-10-31</td><td class="num">$308K</td>
+<td>Yes</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/will-robinhood-say-weekend-during-earnings-call-october-27-5pm" rel="noopener">Will Robinhood say &quot;Weekend&quot; during earnings call?</a></td><td>2026-10-31</td><td class="num">$1K</td>
+<td>other</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/itf-brengl1-nilsso1-2026-10-27-set-handicap-home-1pt5" rel="noopener">Set Handicap: Madison Brengle (-1.5) vs Lea Nilsson (+1.5)</a></td><td>2026-10-31</td><td class="num">$10K</td>
+<td>Lea Nilsson</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/visa-v-q4-payments-volume-growth-constant-dollars-20261008120045000-9pt5-to-10pt5" rel="noopener">Visa (V) Q4 payments volume growth (constant dollars) 9.5% to 10.5%?</a></td><td>2026-10-31</td><td class="num">$10K</td>
+<td>Yes</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
+<td class="mk"><a href="https://polymarket.com/market/visa-v-q4-payments-volume-growth-constant-dollars-20261008120045000-8pt5-to-9pt5" rel="noopener">Visa (V) Q4 payments volume growth (constant dollars) 8.5% to 9.5%?</a></td><td>2026-10-31</td><td class="num">$9K</td>
+<td>No</td><td class="num">362</td>
+<td class="num">0</td>
+<td>no</td></tr><tr>
 <td class="mk"><a href="https://polymarket.com/market/npb-fuk-yok-2026-10-27" rel="noopener">Fukuoka SoftBank Hawks vs. Yokohama BayStars</a></td><td>2026-10-29</td><td class="num">$21K</td>
 <td>Fukuoka SoftBank Hawks</td><td class="num">429</td>
 <td class="num">0</td>
@@ -279,62 +335,6 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-total-1pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: O/U 1.5</a></td><td>2026-10-29</td><td class="num">$4K</td>
 <td>other</td><td class="num">429</td>
 <td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-away-0pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: Club Guabirá O/U 0.5</a></td><td>2026-10-29</td><td class="num">$308</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-exact-score-3-3" rel="noopener">Exact Score: CA Nacional Potosí 3 - 3 Club Guabirá?</a></td><td>2026-10-29</td><td class="num">$67</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-home-3pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: CA Nacional Potosí O/U 3.5</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-home-2pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: CA Nacional Potosí O/U 2.5</a></td><td>2026-10-29</td><td class="num">$85</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-spread-home-1pt5" rel="noopener">Spread: CA Nacional Potosí (-1.5)</a></td><td>2026-10-29</td><td class="num">$7K</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-total-4pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: O/U 4.5</a></td><td>2026-10-29</td><td class="num">$6K</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-total-3pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: O/U 3.5</a></td><td>2026-10-29</td><td class="num">$5K</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-btts" rel="noopener">CA Nacional Potosí vs. Club Guabirá: Both Teams to Score</a></td><td>2026-10-29</td><td class="num">$347</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-spread-home-5pt5" rel="noopener">Spread: CA Nacional Potosí (-5.5)</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-away-1pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: Club Guabirá O/U 1.5</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-spread-home-3pt5" rel="noopener">Spread: CA Nacional Potosí (-3.5)</a></td><td>2026-10-29</td><td class="num">$3K</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-spread-home-4pt5" rel="noopener">Spread: CA Nacional Potosí (-4.5)</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-home-0pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: CA Nacional Potosí O/U 0.5</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
-<td>no</td></tr><tr>
-<td class="mk"><a href="https://polymarket.com/market/bol1-nap-gua-2026-10-26-team-total-home-4pt5" rel="noopener">CA Nacional Potosí vs. Club Guabirá: CA Nacional Potosí O/U 4.5</a></td><td>2026-10-29</td><td class="num">$0</td>
-<td>other</td><td class="num">429</td>
-<td class="num">0</td>
 <td>no</td></tr></tbody>
 </table>
 </div>
@@ -343,7 +343,7 @@ The finding is not that outcomes were flipped. It is that conflicted jurors rout
 <p>Everything on this page is regenerated daily from public sources and published as an open dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Column definitions, method and citation: <a href="https://github.com/PugarHuda/saring/blob/main/docs/data/README.md" rel="noopener">data README</a>.</p>
 <ul class="dl">
 <li><a href="data/summary.json">summary.json</a>: headline numbers (the figures above).</li>
-<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,717 rows).</li>
+<li><a href="data/disputes.csv">disputes.csv</a>: one row per DVM request mapped to a Polymarket market (4,733 rows).</li>
 <li><a href="data/conflicts.csv">conflicts.csv</a>: one row per vote cast by a voter holding a position in that market (2,256 rows).</li>
 </ul>
 <p>Reproduce it: <code>pip install requests pycryptodome &amp;&amp; python conflict-report/conflict_report.py --incremental</code> (<a href="https://github.com/PugarHuda/saring/tree/main/conflict-report" rel="noopener">source</a>).</p>
